@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-900 p-2">
+  <div class="bg-gray-900 hidden md:block p-2">
     <UContainer>
       <div class="flex justify-between items-center">
         <div class="flex items-center gap-2 text-[12px] text-white">
@@ -8,7 +8,7 @@
         </div>
         <div class="flex items-center gap-2 text-[12px] text-white">
           <UIcon name="i-lucide-phone" />
-          HOTLINE: 0987654321
+          HOTLINE: 0972 97 0000
         </div>
       </div>
     </UContainer>

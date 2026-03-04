@@ -8,32 +8,90 @@ import {
   Time,
 } from "@internationalized/date";
 
-const df = new DateFormatter("vi-VN", {
+const dateTimeFormatter = new DateFormatter("vi-VN", {
   dateStyle: "medium",
+  timeStyle: "short",
 });
 const dateNow = today(getLocalTimeZone());
 
+const props = defineProps<{
+  modelValue?: Date | null;
+}>();
+
+const emit = defineEmits<{
+  (event: "update:modelValue", value: Date | null): void;
+}>();
+
 const modelValue = shallowRef(
-  new CalendarDate(dateNow.year, dateNow.month, dateNow.day + 1),
+  props.modelValue
+    ? new CalendarDate(
+        props.modelValue.getFullYear(),
+        props.modelValue.getMonth() + 1,
+        props.modelValue.getDate(),
+      )
+    : dateNow.add({ days: 1 }),
 );
 const isDateUnavailable = (date: DateValue) => {
   return date.compare(dateNow) <= 0;
 };
-const time = shallowRef(new Time(12, 30, 0));
+const time = shallowRef(
+  props.modelValue
+    ? new Time(
+        props.modelValue.getHours(),
+        props.modelValue.getMinutes(),
+        props.modelValue.getSeconds(),
+      )
+    : new Time(12, 30, 0),
+);
+
+const selectedDateTime = computed(() => {
+  if (!modelValue.value || !time.value) return null;
+
+  return new Date(
+    modelValue.value.year,
+    modelValue.value.month - 1,
+    modelValue.value.day,
+    time.value.hour,
+    time.value.minute,
+    time.value.second,
+  );
+});
+
+watch(
+  [modelValue, time],
+  ([newDate, newTime]) => {
+    if (!newDate || !newTime) {
+      emit("update:modelValue", null);
+      return;
+    }
+
+    const mergedDate = new Date(
+      newDate.year,
+      newDate.month - 1,
+      newDate.day,
+      newTime.hour,
+      newTime.minute,
+      newTime.second,
+    );
+
+    emit("update:modelValue", mergedDate);
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
   <UPopover>
     <UButton
       color="neutral"
-      size="xl"
+      size="lg"
       variant="outline"
       icon="i-lucide-calendar"
     >
       {{
-        modelValue
-          ? df.format(modelValue.toDate(getLocalTimeZone()))
-          : "Hãy chọn ngày"
+        selectedDateTime
+          ? dateTimeFormatter.format(selectedDateTime)
+          : "Hãy chọn ngày giờ"
       }}
     </UButton>
 
