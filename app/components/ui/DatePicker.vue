@@ -6,10 +6,12 @@ import {
   type DateValue,
   today,
   Time,
+  parseAbsoluteToLocal 
+  
 } from "@internationalized/date";
 
 const dateTimeFormatter = new DateFormatter("vi-VN", {
-  dateStyle: "medium",
+  dateStyle: "full",
   timeStyle: "short",
 });
 const dateNow = today(getLocalTimeZone());
@@ -19,7 +21,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (event: "update:modelValue", value: Date | null): void;
+  (event: "update:modelValue", value: Date | string | null): void;
 }>();
 
 const modelValue = shallowRef(
@@ -64,7 +66,6 @@ watch(
       emit("update:modelValue", null);
       return;
     }
-
     const mergedDate = new Date(
       newDate.year,
       newDate.month - 1,
@@ -74,7 +75,7 @@ watch(
       newTime.second,
     );
 
-    emit("update:modelValue", mergedDate);
+    emit("update:modelValue", parseAbsoluteToLocal(mergedDate.toISOString()).toString().split("+")[0] || null);
   },
   { immediate: true },
 );
@@ -84,7 +85,7 @@ watch(
   <UPopover>
     <UButton
       color="neutral"
-      size="lg"
+      size="xl"
       variant="outline"
       icon="i-lucide-calendar"
     >

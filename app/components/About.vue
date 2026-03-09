@@ -1,5 +1,5 @@
 <template>
-  <section class="py-24 " id="about">
+  <section class="py-24" id="about">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid lg:grid-cols-2 gap-20 items-center">
         <div class="relative">
@@ -16,10 +16,12 @@
             />
           </div>
           <div
-            class="absolute animate-bounce [animation-duration:5s] -bottom-10 -right-6 bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl z-20 border border-slate-100 dark:border-slate-700 max-w-xs"
+            class="absolute animate-bounce [animation-duration:5s] -bottom-10 right-0 md:-right-6 bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl z-20 border border-slate-100 dark:border-slate-700 max-w-xs"
           >
             <div class="flex items-center gap-4 mb-4">
-              <div class="bg-primary/10 p-3 rounded-lg flex items-center justify-center text-primary">
+              <div
+                class="bg-primary/10 p-3 rounded-lg flex items-center justify-center text-primary"
+              >
                 <UIcon name="i-lucide-shield-check" class="size-7" />
               </div>
               <div>
@@ -44,15 +46,15 @@
             Vì sao chọn chúng tôi?
           </h2>
           <h3 class="text-4xl lg:text-5xl font-extrabold mb-10 leading-tight">
-            Dịch vụ đặt xe <span class="text-primary">Tin Cậy</span> hàng đầu Việt
-            Nam.
+            Dịch vụ đặt xe <span class="text-primary">Tin Cậy</span> hàng đầu
+            Việt Nam.
           </h3>
           <div class="space-y-8">
             <div class="flex gap-6">
               <div
                 class="flex-shrink-0 w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center text-primary"
               >
-               <UIcon name="i-lucide-shield" class="text-3xl" />
+                <UIcon name="i-lucide-shield" class="text-3xl" />
               </div>
               <div>
                 <h4 class="text-xl font-bold mb-2">An toàn tuyệt đối</h4>

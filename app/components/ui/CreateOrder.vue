@@ -1,102 +1,27 @@
-import { UInput } from '../../../.nuxt/components';
 <template>
   <div
     class="p-5 drop-shadow-2xl inline-flex flex-col rounded-xl bg-white md:w-[450px] w-full gap-4 md:gap-y-6"
   >
+    <ElementAddress
+      :icon="'i-lucide-locate-fixed'"
+      :placeholder="'Bạn đang ở đâu ?'"
+    />
+    <ElementAddress
+      :icon="'i-lucide-map-pinned'"
+      :placeholder="'Điểm đến của bạn ?'"
+    />
     <UFormField
-      size="lg"
-      label="Điểm Đón"
-      required
-      name="pickup"
       :ui="{
         label:
           'font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider',
       }"
-      class="w-full"
-    >
-      <UInput
-        :ui="{
-          leadingIcon: 'text-primary',
-        }"
-        icon="i-lucide-locate-fixed"
-        placeholder="Bạn đang ở đâu?"
-        size="lg"
-        class="w-full"
-      />
-    </UFormField>
-    <UFormField
       size="lg"
-      label="Điểm Đến"
-      required
-      name="destination"
-      class="w-full"
-      :ui="{
-        label:
-          'font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider',
-      }"
+      label="Ngày Đi"
+      name="time"
     >
-      <UInput
-        icon="i-lucide-map-pinned"
-        :ui="{
-          leadingIcon: 'text-primary',
-        }"
-        placeholder="Bạn muốn đến đâu?"
-        size="lg"
-        class="w-full"
-      />
+      <UiDatePicker v-model="pickupDateTime" class="w-full" />
+      {{ pickupDateTime }}
     </UFormField>
-    <div class="md:flex gap-4">
-      <UFormField
-        :ui="{
-          label:
-            'font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider',
-        }"
-        size="lg"
-        label="Dịch Vụ"
-        name="vehicleType"
-        class="md:w-1/2"
-      >
-        <USelect v-model="value" class="w-full" :items="items" />
-      </UFormField>
-      <UFormField
-        :ui="{
-          label:
-            'font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider',
-        }"
-        size="lg"
-        label="Ngày Đi"
-        name="time"
-        class="md:w-1/2"
-      >
-        <UiDatePicker v-model="pickupDateTime" class="w-full" />
-      </UFormField>
-    </div>
-    <div class="md:flex gap-4">
-      <UFormField
-        :ui="{
-          label:
-            'font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider',
-        }"
-        size="lg"
-        label="Họ và Tên"
-        name="vehicleType"
-        class="md:w-1/2"
-      >
-        <UInput placeholder="Họ và tên của bạn"  class="w-full" />
-      </UFormField>
-      <UFormField
-        :ui="{
-          label:
-            'font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider',
-        }"
-        size="lg"
-        label="Số Điện Thoại"
-        name="phone"
-        class="md:w-1/2"
-      >
-        <UInput placeholder="Số liên lạc"  class="w-full" />
-      </UFormField>
-    </div>
     <UButton
       color="primary"
       size="lg"
@@ -119,20 +44,14 @@ import { UInput } from '../../../.nuxt/components';
       </div>
       <span
         class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter"
-        >Đã có 1.2k lượt đặt trong ngày</span
-      >
+        >
+        Đã có 1.2k lượt đặt trong ngày
+      </span>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-const items = ref([
-  "Xe 5 chỗ (1 chiều)",
-  "Xe 7 chỗ (1 chiều)",
-  "Xe 5 chỗ (2 chiều)",
-  "Xe 7 chỗ (2 chiều)",
-]);
-const value = ref("Xe 5 chỗ (1 chiều)");
 const pickupDateTime = ref<Date | null>(null);
 </script>
 

@@ -1,5 +1,7 @@
 <template>
-  <section class="bg-gray-300 bg-image-hero bg-gradient-to-b to-slate-50 from-primary/30">
+  <section
+    class="bg-gray-300 bg-image-hero bg-gradient-to-b to-slate-50 from-primary/30"
+  >
     <UContainer
       class="min-h-screen flex flex-col md:flex-row md:items-center gap-5 py-4"
     >
@@ -23,7 +25,7 @@
           Xe Ghép, Xe Tiện Chuyến Hàng Đầu Việt Nam
         </h1>
         <h1
-          class="md:text-7xl custom-font text-3xl italic flex gap-3 items-center flex-nowrap font-black text-primary justify-center md:justify-start drop-shadow-lg"
+          class="md:text-5xl custom-font text-3xl italic flex gap-3 items-center flex-nowrap font-black text-primary justify-center md:justify-start drop-shadow-lg"
         >
           HappyTrip
           <div
@@ -35,8 +37,9 @@
         <p
           class="md:text-xl text-xs text-center md:text-left text-dark md:text-white/90 mt-5 drop-shadow-md"
         >
-          Tận hưởng những chuyến đi an toàn cùng dòng xe hiện đại. Đưa đón
-          tận nơi với dịch vụ chuyên nghiệp chuẩn 5 sao trên mọi nẻo đường Hồ Chí Minh và các tỉnh lân cận. 
+          Tận hưởng những chuyến đi an toàn cùng dòng xe hiện đại. Đưa đón tận
+          nơi với dịch vụ chuyên nghiệp chuẩn 5 sao trên mọi nẻo đường Hồ Chí
+          Minh và các tỉnh lân cận.
         </p>
       </div>
     </UContainer>
@@ -50,7 +53,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-@media screen and (min-width:768px) {
+@media screen and (min-width: 768px) {
   .bg-image-hero {
     background:
       linear-gradient(rgba(15, 23, 42, 0.4), rgba(33, 31, 12, 0.8)),
