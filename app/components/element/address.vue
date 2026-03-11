@@ -86,6 +86,7 @@
                   <UInput
                     v-model="state.address"
                     ref="inputAddress"
+                    @input="emit('update:address', state.address)"
                     placeholder="Nhập địa chỉ cụ thể"
                     size="xl"
                     class="w-full"
@@ -107,8 +108,16 @@ const props = defineProps<{
   icon: string;
   placeholder: string;
   excludeCity?: string;
+  province: string;
+  city: string;
+  address: string;
 }>();
 
+const emit = defineEmits<{
+  (e: "update:province", value: string): void;
+  (e: "update:city", value: string): void;
+  (e: "update:address", value: string): void;
+}>();
 interface City {
   id: string;
   name: string;
@@ -194,16 +203,18 @@ const { data: districts, execute: fetchDistricts } = useFetch<DistrictResponse>(
 
 // Hàm xử lý khi chọn city
 const selectCity = async (city: City) => {
-  state.city = city;
-  state.district = null; // Reset district khi chọn city mới
-  await fetchDistricts();
-  state.active = 1; // Chuyển sang bước district
-};
+  state.city = city
+  state.district = null
+  emit("update:city", city.name)
+  await fetchDistricts()
+  state.active = 1
+}
 
 // Hàm xử lý khi chọn district
 const selectDistrict = (district: District) => {
   state.district = district;
   state.active = 2; // Chuyển sang bước address
+  emit("update:province", district.name);
   // Tự động focus vào input địa chỉ cụ thể khi chọn district
   nextTick(() => {
     inputAddress.value?.inputRef?.focus();

@@ -11,7 +11,7 @@ import {
 } from "@internationalized/date";
 
 const dateTimeFormatter = new DateFormatter("vi-VN", {
-  dateStyle: "full",
+  dateStyle: "medium",
   timeStyle: "short",
 });
 const dateNow = today(getLocalTimeZone());
@@ -100,7 +100,7 @@ watch(
       <UCalendar
         :is-date-unavailable="isDateUnavailable"
         v-model="modelValue"
-        class="p-2"
+        class="p-4"
       />
       <div class="flex justify-center pb-3">
         <UFormField label="Giờ đón" required>
