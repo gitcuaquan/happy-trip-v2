@@ -6,8 +6,7 @@ import {
   type DateValue,
   today,
   Time,
-  parseAbsoluteToLocal 
-  
+  parseAbsoluteToLocal,
 } from "@internationalized/date";
 
 const dateTimeFormatter = new DateFormatter("vi-VN", {
@@ -27,10 +26,10 @@ const emit = defineEmits<{
 const modelValue = shallowRef(
   props.modelValue
     ? new CalendarDate(
-        props.modelValue.getFullYear(),
-        props.modelValue.getMonth() + 1,
-        props.modelValue.getDate(),
-      )
+      props.modelValue.getFullYear(),
+      props.modelValue.getMonth() + 1,
+      props.modelValue.getDate(),
+    )
     : dateNow.add({ days: 1 }),
 );
 const isDateUnavailable = (date: DateValue) => {
@@ -39,10 +38,10 @@ const isDateUnavailable = (date: DateValue) => {
 const time = shallowRef(
   props.modelValue
     ? new Time(
-        props.modelValue.getHours(),
-        props.modelValue.getMinutes(),
-        props.modelValue.getSeconds(),
-      )
+      props.modelValue.getHours(),
+      props.modelValue.getMinutes(),
+      props.modelValue.getSeconds(),
+    )
     : new Time(12, 30, 0),
 );
 
@@ -75,7 +74,11 @@ watch(
       newTime.second,
     );
 
-    emit("update:modelValue", parseAbsoluteToLocal(mergedDate.toISOString()).toString().split("+")[0] || null);
+    emit(
+      "update:modelValue",
+      parseAbsoluteToLocal(mergedDate.toISOString()).toString().split("+")[0] ||
+      null,
+    );
   },
   { immediate: true },
 );
@@ -83,12 +86,9 @@ watch(
 
 <template>
   <UPopover>
-    <UButton
-      color="neutral"
-      size="xl"
-      variant="outline"
-      icon="i-lucide-calendar"
-    >
+    <UButton color="neutral" size="md" variant="outline" :ui="{
+      leadingIcon: 'text-primary',
+    }" icon="i-lucide-calendar" class="w-full flex justify-start text-left">
       {{
         selectedDateTime
           ? dateTimeFormatter.format(selectedDateTime)
@@ -97,11 +97,7 @@ watch(
     </UButton>
 
     <template #content>
-      <UCalendar
-        :is-date-unavailable="isDateUnavailable"
-        v-model="modelValue"
-        class="p-4"
-      />
+      <UCalendar :is-date-unavailable="isDateUnavailable" v-model="modelValue" class="p-4" />
       <div class="flex justify-center pb-3">
         <UFormField label="Giờ đón" required>
           <UInputTime v-model="time" />
