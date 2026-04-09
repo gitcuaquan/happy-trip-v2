@@ -7,7 +7,7 @@
       <div class="md:w-1/2 w-full flex flex-col md:gap-5 gap-3">
         <div class="text-center md:text-left">
           <div
-            class="border-1 inline-flex items-center gap-3 py-1 rounded-2xl px-4 text-[13px] backdrop-blur-sm text-dark md:text-white border-white bg-primary/10">
+            class="border inline-flex items-center gap-3 py-1 rounded-2xl px-4 text-[13px] backdrop-blur-sm text-dark md:text-white border-white bg-primary/10">
             <div class="bg-primary p-1 fw-bold rounded-full w-3 h-3 animate-pulse"></div>
             Đặt xe 24/7 - Hotline: 0972 97 0000
           </div>

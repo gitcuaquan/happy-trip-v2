@@ -11,7 +11,7 @@
           >
             <img
               alt="Xe du lịch cao cấp"
-              class="w-full object-cover aspect-[4/5]"
+              class="w-full object-cover aspect-4/5"
               src="/images/about.png"
             />
           </div>

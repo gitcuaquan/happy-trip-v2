@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { vi } from "@nuxt/ui/locale";
+
 useHead({
   meta: [{ name: "viewport", content: "width=device-width, initial-scale=1" }],
   link: [{ rel: "icon", href: "/favicon.ico" }],
   htmlAttrs: {
     lang: "en",
+    class: "light",
   },
 });
 
@@ -21,6 +23,11 @@ useSeoMeta({
   ogImage: "https://ui.nuxt.com/assets/templates/nuxt/starter-light.png",
   twitterImage: "https://ui.nuxt.com/assets/templates/nuxt/starter-light.png",
   twitterCard: "summary_large_image",
+});
+
+const colorMode = useColorMode();
+onMounted(() => {
+  colorMode.preference = "light";
 });
 </script>
 

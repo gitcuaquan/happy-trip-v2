@@ -1,23 +1,21 @@
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="grid grid-cols-2 gap-2">
 
-    <!-- Tỉnh / Thành phố -->
     <USelectMenu
       v-model="selectedCityId"
       :items="filteredCities"
       label-key="name"
       value-key="id"
       :leading-icon="props.icon"
-      :placeholder="`${props.label} — Tỉnh / Thành phố`"
+      :placeholder="`${props.label} — Tỉnh / TP`"
       :search-input="{ placeholder: 'Tìm tỉnh / thành phố...' }"
       color="neutral"
       variant="outline"
       size="sm"
-      class="w-full"
+      class="col-span-1 w-full"
       @update:model-value="onCityChange"
     />
 
-    <!-- Phường / Xã -->
     <USelectMenu
       v-model="selectedDistrictName"
       :items="availableDistrictNames"
@@ -28,11 +26,10 @@
       color="neutral"
       variant="outline"
       size="sm"
-      class="w-full"
+      class="col-span-1 w-full"
       @update:model-value="onDistrictChange"
     />
 
-    <!-- Địa chỉ chi tiết -->
     <UInput
       v-model="detailAddress"
       leading-icon="i-lucide-house"
@@ -41,7 +38,7 @@
       color="neutral"
       variant="outline"
       size="sm"
-      class="w-full"
+      class="col-span-2 w-full"
       @input="emit('update:address', detailAddress)"
     />
 
