@@ -9,10 +9,11 @@ import {
   parseAbsoluteToLocal,
 } from "@internationalized/date";
 
-const dateTimeFormatter = new DateFormatter("vi-VN", {
+
+const dateFormatter = new DateFormatter("vi-VN", {
   dateStyle: "medium",
-  timeStyle: "short",
-});
+})
+
 const dateNow = today(getLocalTimeZone());
 
 const props = defineProps<{
@@ -88,7 +89,7 @@ watch(
   <div class="flex items-center gap-2">
     <UPopover>
       <UButton color="neutral" size="md" variant="outline" :ui="{ leadingIcon: 'text-primary',}" icon="i-lucide-calendar" class="w-full  flex-3 justify-start text-left">
-        {{ selectedDateTime ? dateTimeFormatter.format(selectedDateTime) : "Hãy chọn ngày giờ"}}
+        {{ selectedDateTime ? dateFormatter .format(selectedDateTime) : "Hãy chọn ngày giờ"}}
       </UButton>
   
       <template #content>
