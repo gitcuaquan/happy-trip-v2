@@ -89,16 +89,42 @@ const selectedCityId = ref<string>('')
 const selectedDistrictName = ref<string>('')
 const detailAddress = ref('')
 
-const { data: cities } = useFetch<City[]>('https://sys.happytrip.vn/api/city/list', {
-  method: 'POST',
-  body: { status: true },
-  params: { fields: 'id,name' },
-})
+const cities = ref<City[]>([])
+const cityData = ref<CityResponse | null>(null)
 
-const { data: cityData, execute: fetchDistricts } = useFetch<CityResponse>(
-  () => `https://sys.happytrip.vn/api/city/${selectedCityId.value}`,
-  { method: 'GET', immediate: false },
-)
+async function fetchCities() {
+  try {
+    cities.value = await $fetch<City[]>('https://sys.happytrip.vn/api/city/list', {
+      method: 'POST',
+      body: { status: true },
+      params: { fields: 'id,name' }
+    })
+  }
+  catch {
+    cities.value = []
+  }
+}
+
+async function fetchDistricts() {
+  if (!selectedCityId.value) {
+    cityData.value = null
+    return
+  }
+
+  try {
+    cityData.value = await $fetch<CityResponse>(`https://sys.happytrip.vn/api/city/${selectedCityId.value}`, {
+      method: 'GET'
+    })
+  }
+  catch {
+    cityData.value = null
+  }
+}
+
+onMounted(() => {
+  fetchCities()
+  console.log('Address component mounted, fetching cities...')
+})
 
 const filteredCities = computed(() => {
   if (!cities.value) return []
