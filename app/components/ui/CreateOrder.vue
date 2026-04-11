@@ -1,128 +1,121 @@
 <template>
   <div class="relative w-full max-w-md mx-auto my-10 p-2">
 
-      <div class="absolute -top-10 -left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse [animation-duration:4s]"></div>
-      <div class="absolute -bottom-10 -right-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse [animation-duration:5s]"></div>
+    <div class="absolute -top-10 -left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse [animation-duration:4s]"></div>
+    <div class="absolute -bottom-10 -right-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse [animation-duration:5s]"></div>
 
-      <div class="absolute -right-2 -top-6 z-20 animate-bounce [animation-duration:2.5s]">
-        <div class="bg-white px-4 py-2 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-2">
-          <UIcon name="i-lucide-sparkles" class="size-5 text-yellow-500 animate-pulse [animation-duration:0.5s]" />
-          <span class="text-xs font-black text-slate-700 uppercase tracking-wider">Siêu tốc</span>
-        </div>
+    <div class="absolute right-2 -top-8 z-20 animate-bounce [animation-duration:2.5s]">
+      <div class="bg-white px-4 py-2 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-2">
+        <UIcon name="i-lucide-sparkles" class="size-5 text-yellow-500 animate-pulse [animation-duration:0.5s]" />
+        <span class="text-xs font-black text-slate-700 uppercase tracking-wider">Siêu tốc</span>
       </div>
+    </div>
 
-    <UCard class="relative z-10 backdrop-blur-md bg-white/95 border-2 border-white" :ui="{
+    <UCard class="relative z-10  backdrop-blur-md bg-white/95 border-2 border-white" :ui="{
       root: 'w-full overflow-visible shadow-2xl rounded-4xl',
       header: 'p-0 overflow-hidden rounded-t-4xl',
-      body: 'p-6 space-y-6',
-      footer: 'px-6 pb-6 pt-0 border-t-0'
+      body: 'p-3 space-y-6',
+      footer: 'px-1 pb-1 pt-0 border-t-0'
     }">
       <template #header>
-        <div class="bg-linear-to-r from-primary to-orange-500 px-6 py-5 relative overflow-hidden">
-          <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
-
-          <div class="flex items-center gap-2 mb-2 relative z-10">
+        <div class="bg-linear-to-r from-primary to-orange-500 px-4 py-4 relative overflow-hidden">
+          <div class="flex items-center gap-2 relative z-10">
             <UIcon name="i-lucide-car-taxi-front" class="size-6 text-white" />
             <span class="text-white font-black text-lg tracking-tight">Đặt xe HappyTrip</span>
-          </div>
-          <div class="flex items-center gap-2 mt-1 relative z-10">
-            <UBadge color="info" variant="solid" class="text-primary bg-white/90 font-bold" size="sm" label="Nhanh"
-              icon="i-lucide-zap" />
-            <UBadge color="info" variant="soft" class="text-primary bg-white/90 border-white/30" size="sm"
-              label="An toàn" icon="i-lucide-shield-check" />
           </div>
         </div>
       </template>
 
-      <UFormField>
-        <template #label>
-          <div class="flex items-center gap-2 mb-1">
+     <UForm :schema="schema" :state="order" class="space-y-4" @submit="onSubmit">
+        <div class="mb-2">
+          <div class="flex items-center gap-2 mb-2">
             <div class="p-1.5 bg-primary/10 rounded-lg">
               <div class="w-2.5 h-2.5 rounded-full bg-primary" />
             </div>
             <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Điểm đón</span>
           </div>
-        </template>
-        <ElementAddress icon="i-lucide-locate-fixed" label="Điểm đón" placeholder="Bạn đang ở đâu?"
-          v-model:city="order.departure_city" v-model:province="order.departure_dictrict"
-          v-model:address="order.departure_address_1" :exclude-city="order.destination_city" />
-      </UFormField>
+          <ElementAddress 
+            namePrefix="departure"
+            icon="i-lucide-locate-fixed" 
+            label="Điểm đón" 
+            placeholder="Bạn đang ở đâu?"
+            v-model:city="order.departure_city" 
+            v-model:province="order.departure_dictrict"
+            v-model:address="order.departure_address_1" 
+            :exclude-city="order.destination_city" 
+          />
+        </div>
 
-      <USeparator class="flex-1 opacity-70" />
-
-      <UFormField>
-        <template #label>
-          <div class="flex items-center gap-2 mb-1">
+        <div class="mb-4">
+          <div class="flex items-center gap-2 mb-2">
             <div class="p-1.5 bg-blue-500/10 rounded-lg">
               <div class="w-2.5 h-2.5 rounded-full bg-blue-500" />
             </div>
             <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Điểm đến</span>
           </div>
-        </template>
-        <ElementAddress icon="i-lucide-map-pin" label="Điểm đến" placeholder="Điểm đến của bạn?"
-          v-model:city="order.destination_city" v-model:province="order.destination_dictrict"
-          v-model:address="order.destination_address_1" :exclude-city="order.departure_city" />
-      </UFormField>
-
-      <UFormField>
-        <template #label>
-          <span class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Thời gian khởi hành</span>
-        </template>
-        <div
-          class="flex items-center gap-3 px-4 h-12 rounded-xl border-2 border-slate-100 bg-slate-50 focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10 transition-all">
-          <UIcon name="i-lucide-calendar-clock" class="size-5 text-primary" />
-          <UiDatePicker v-model="order.date_of_destination" class="flex-1 text-sm font-medium" />
+          <ElementAddress 
+            namePrefix="destination"
+            icon="i-lucide-map-pin" 
+            label="Điểm đến" 
+            placeholder="Điểm đến của bạn?"
+            v-model:city="order.destination_city" 
+            v-model:province="order.destination_dictrict"
+            v-model:address="order.destination_address_1" 
+            :exclude-city="order.departure_city" 
+          />
         </div>
-      </UFormField>
 
-      <Transition name="fade">
-        <div v-if="hasRouteData" class="space-y-3 pt-2">
-          <p class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
-            <UIcon name="i-lucide-car" class="size-4" /> Chọn loại xe
-          </p>
-          <div class="grid grid-cols-2 gap-3">
-            <div v-for="item in services" :key="item.id" @click="selectService(item)" :class="[
-              'relative overflow-hidden rounded-2xl border-2 p-4 cursor-pointer transition-all duration-300',
-              !getPreview(item.id) ? 'opacity-50 cursor-not-allowed bg-slate-50 border-slate-100' : 'hover:-translate-y-1 hover:shadow-lg',
-              order.id_service === item.id
-                ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
-                : 'border-slate-100 bg-white'
-            ]">
-              <div v-if="order.id_service === item.id"
-                class="absolute -bottom-4 -right-4 w-16 h-16 bg-primary/10 rounded-full blur-xl"></div>
 
-              <div class="flex items-start justify-between mb-3 relative z-10">
-                <div
-                  :class="['p-2 rounded-xl', order.id_service === item.id ? 'bg-primary text-white shadow-md shadow-primary/30' : 'bg-slate-100 text-slate-500']">
-                  <UIcon name="i-lucide-car-front" class="size-6" />
+        <UFormField>
+          <template #label>
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Thời gian khởi hành</span>
+          </template>
+          <UiDatePicker v-model="order.date_of_destination" class="flex-1 text-sm font-medium" />
+        </UFormField>
+  
+        <Transition name="fade">
+          <div v-if="hasRouteData" class="space-y-2 pt-2">
+            <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+              <UIcon name="i-lucide-car" class="size-3.5" /> Chọn loại xe
+            </p>
+  
+            <div class="grid grid-cols-2 gap-2">
+              <div v-for="item in services" :key="item.id" @click="selectService(item)" :class="[
+                'relative overflow-hidden rounded-xl border-2 p-2.5 cursor-pointer transition-all duration-200',
+                !getPreview(item.id) ? 'opacity-50 cursor-not-allowed bg-slate-50 border-slate-100' : 'active:scale-95',
+                order.id_service === item.id
+                  ? 'border-primary bg-primary/5 shadow-sm shadow-primary/10'
+                  : 'border-slate-100 bg-white'
+              ]">
+                <div v-if="order.id_service === item.id"
+                  class="absolute -bottom-2 -right-2 w-12 h-12 bg-primary/10 rounded-full blur-lg"></div>
+                <div class="relative z-10">
+                  <p class="text-xs font-black text-slate-800 leading-tight mb-0.5 truncate">{{ item.name }}</p>
+                  <p class="text-[10px] text-slate-500 font-medium mb-2 truncate">{{ item.description }}</p>
+  
+                  <div v-if="getPreview(item.id)"
+                    class="inline-flex items-center px-1.5 py-0.5 bg-green-50 text-green-600 rounded-md text-xs font-bold tracking-tight">
+                    {{ numberToCurrency(getPreview(item.id)?.price_guest_after || 0) }}
+                  </div>
+                  <p v-else class="text-[10px] text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded-md inline-block">
+                    Chưa hỗ trợ
+                  </p>
                 </div>
-                <UIcon v-if="order.id_service === item.id" name="i-lucide-check-circle-2" class="size-5 text-primary" />
-              </div>
-
-              <div class="relative z-10">
-                <p class="text-sm font-black text-slate-800 leading-tight mb-1">{{ item.name }}</p>
-                <p class="text-[11px] text-slate-500 font-medium mb-3">{{ item.description }}</p>
-                <div v-if="getPreview(item.id)"
-                  class="inline-flex items-center px-2 py-1 bg-green-50 text-green-600 rounded-lg text-sm font-black">
-                  {{ numberToCurrency(getPreview(item.id)?.price_guest_after || 0) }}
-                </div>
-                <p v-else class="text-[11px] text-red-500 font-bold bg-red-50 px-2 py-1 rounded-lg inline-block">Chưa hỗ
-                  trợ
-                </p>
               </div>
             </div>
           </div>
-        </div>
-      </Transition>
+        </Transition>
+  
+        <UButton type="submit"  size="xs" color="primary" 
+          class="rounded-2xl font-black text-sm shadow-xl transition-all duration-300">
+          <span class="flex items-center gap-2 py-1">
+            <UIcon name="i-lucide-rocket" class="size-3" />
+            ĐẶT CHUYẾN NGAY
+          </span>
+        </UButton>
+      </UForm>
 
-      <UButton block size="xl" color="primary" :disabled="!isReady"
-        class="rounded-2xl font-black text-lg shadow-xl transition-all duration-300"
-        :class="isReady ? 'shadow-primary/40 hover:scale-[1.02]' : ''" @click="openModal">
-        <span class="flex items-center gap-2 py-1">
-          <UIcon name="i-lucide-rocket" class="size-5" />
-          ĐẶT CHUYẾN NGAY
-        </span>
-      </UButton>
+
 
       <template #footer>
         <div class="flex items-center justify-center gap-2 bg-slate-50 py-3 rounded-xl border border-slate-100">
@@ -135,8 +128,7 @@
               class="w-6 h-6 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center text-[8px] font-bold">
               +</div>
           </div>
-          <span class="text-[11px] text-slate-500 font-medium">Hơn <strong class="text-slate-800">1.200+</strong> người
-            đã đặt hôm nay</span>
+          <span class="text-[11px] text-slate-500 font-medium">Hơn <strong class="text-slate-800">1.200+</strong> người đã đặt hôm nay</span>
         </div>
       </template>
     </UCard>
@@ -192,10 +184,35 @@
 
 
 <script lang="ts" setup>
+import type { FormSubmitEvent } from '@nuxt/ui'
+import z from 'zod'
 import type { OrderDetail, OrderPreview } from '~/type'
 
 const BASE = 'https://sysdev.happytrip.vn'
 const SECRET = '123'
+
+// ─── Validation Schema ────────────────────────────────────────────────
+
+const schema = z.object({
+  departure_city: z.string().min(1, 'Vui lòng chọn Tỉnh/TP đón'),
+  departure_dictrict: z.string().min(1, 'Vui lòng chọn Phường/Xã đón'),
+  departure_address_1: z.string().min(1, 'Vui lòng nhập địa chỉ đón'),
+  destination_city: z.string().min(1, 'Vui lòng chọn Tỉnh/TP đến'),
+  destination_dictrict: z.string().min(1, 'Vui lòng chọn Phường/Xã đến'),
+  destination_address_1: z.string().min(1, 'Vui lòng nhập địa chỉ đến'),
+  date_of_destination: z.date().nullable().refine(val => val !== null, { message: 'Vui lòng chọn thời gian' }),
+  id_service: z.string().min(1, 'Vui lòng chọn loại xe')
+})
+
+type Schema = z.infer<typeof schema>
+
+function onSubmit(event: FormSubmitEvent<Schema>){
+  isModalOpen.value = true
+  otpSent.value = false
+  otpValue.value = []
+  hookError.value = ''
+  otpError.value = ''
+}
 
 // ─── State ────────────────────────────────────────────────
 const order = ref<OrderPreview>({

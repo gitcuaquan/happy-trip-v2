@@ -1,6 +1,6 @@
 <template>
-  <section class="bg-gray-300 bg-image-hero bg-gradient-to-b to-slate-50 from-primary/30">
-    <UContainer class="min-h-screen flex flex-col md:flex-row md:items-center gap-5 py-4">
+  <section class="bg-gray-300 bg-image-hero bg-linear-to-b to-slate-50 from-primary/30">
+    <UContainer class="min-h-screen overflow-hidden flex flex-col md:flex-row md:items-center gap-5 py-4">
       <div class="md:w-1/2 w-full text-center">
         <UiCreateOrder />
       </div>

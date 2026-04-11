@@ -1,46 +1,52 @@
 <template>
   <div class="grid grid-cols-2 gap-2">
+    <UFormField :name="namePrefix ? `${namePrefix}_city` : undefined"   class="col-span-1 w-full">
+      <USelectMenu
+        v-model="selectedCityId"
+        :items="filteredCities"
+        label-key="name"
+        value-key="id"
+        :leading-icon="props.icon"
+        :placeholder="`${props.label} — Tỉnh / TP`"
+        :search-input="{ placeholder: 'Tìm tỉnh / thành phố...' }"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="w-full"
+        @update:model-value="onCityChange"
+      />
+    </UFormField>
 
-    <USelectMenu
-      v-model="selectedCityId"
-      :items="filteredCities"
-      label-key="name"
-      value-key="id"
-      :leading-icon="props.icon"
-      :placeholder="`${props.label} — Tỉnh / TP`"
-      :search-input="{ placeholder: 'Tìm tỉnh / thành phố...' }"
-      color="neutral"
-      variant="outline"
-      size="sm"
-      class="col-span-1 w-full"
-      @update:model-value="onCityChange"
-    />
+    <UFormField :name="namePrefix ? `${namePrefix}_dictrict` : undefined"  class="col-span-1 w-full">
+      <USelectMenu
+        v-model="selectedDistrictName"
+        :items="availableDistrictNames"
+        leading-icon="i-lucide-map"
+        placeholder="Phường / Xã"
+        :search-input="{ placeholder: 'Tìm phường / xã...' }"
+        :disabled="!selectedCityId"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="w-full"
+        @update:model-value="onDistrictChange"
+      />
+    </UFormField>
 
-    <USelectMenu
-      v-model="selectedDistrictName"
-      :items="availableDistrictNames"
-      leading-icon="i-lucide-map"
-      placeholder="Phường / Xã"
-      :search-input="{ placeholder: 'Tìm phường / xã...' }"
-      :disabled="!selectedCityId"
-      color="neutral"
-      variant="outline"
-      size="sm"
-      class="col-span-1 w-full"
-      @update:model-value="onDistrictChange"
-    />
 
-    <UInput
-      v-model="detailAddress"
-      leading-icon="i-lucide-house"
-      placeholder="Số nhà, tên đường..."
-      :disabled="!selectedDistrictName"
-      color="neutral"
-      variant="outline"
-      size="sm"
-      class="col-span-2 w-full"
-      @input="emit('update:address', detailAddress)"
-    />
+    <UFormField :name="namePrefix ? `${namePrefix}_address_1` : undefined" class="col-span-2 w-full">
+      <UInput
+        v-model="detailAddress"
+        leading-icon="i-lucide-house"
+        placeholder="Số nhà, tên đường..."
+        :disabled="!selectedDistrictName"
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="w-full"
+        @input="emit('update:address', detailAddress)"
+      />
+    </UFormField>
 
   </div>
 </template>
@@ -69,6 +75,7 @@ const props = defineProps<{
   province: string
   city: string
   address: string
+  namePrefix: string
 }>()
 
 const emit = defineEmits<{
