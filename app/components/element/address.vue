@@ -1,6 +1,10 @@
 <template>
-  <div class="grid grid-cols-2 gap-2">
-    <UFormField :name="namePrefix ? `${namePrefix}_city` : undefined"   class="col-span-1 w-full">
+  <div class="grid grid-cols-2 gap-2 text-left">
+    <UFormField
+      :name="namePrefix ? `${namePrefix}_city` : undefined"
+      class="col-span-1 w-full"
+      :ui="{ error: 'text-xs text-left' }"
+    >
       <USelectMenu
         v-model="selectedCityId"
         :items="filteredCities"
@@ -11,13 +15,17 @@
         :search-input="{ placeholder: 'Tìm tỉnh / thành phố...' }"
         color="neutral"
         variant="outline"
-        size="sm"
+       
         class="w-full"
         @update:model-value="onCityChange"
       />
     </UFormField>
 
-    <UFormField :name="namePrefix ? `${namePrefix}_dictrict` : undefined"  class="col-span-1 w-full">
+    <UFormField
+      :name="namePrefix ? `${namePrefix}_dictrict` : undefined"
+      class="col-span-1 w-full"
+      :ui="{ error: 'text-xs text-left' }"
+    >
       <USelectMenu
         v-model="selectedDistrictName"
         :items="availableDistrictNames"
@@ -27,14 +35,17 @@
         :disabled="!selectedCityId"
         color="neutral"
         variant="outline"
-        size="sm"
+       
         class="w-full"
         @update:model-value="onDistrictChange"
       />
     </UFormField>
 
-
-    <UFormField :name="namePrefix ? `${namePrefix}_address_1` : undefined" class="col-span-2 w-full">
+    <UFormField
+      :name="namePrefix ? `${namePrefix}_address_1` : undefined"
+      class="col-span-2 w-full"
+      :ui="{ error: 'text-xs text-left' }"
+    >
       <UInput
         v-model="detailAddress"
         leading-icon="i-lucide-house"
@@ -42,119 +53,122 @@
         :disabled="!selectedDistrictName"
         color="neutral"
         variant="outline"
-        size="sm"
+       
         class="w-full"
         @input="emit('update:address', detailAddress)"
       />
     </UFormField>
-
   </div>
 </template>
 
 <script lang="ts" setup>
 interface City {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface District {
-  status: boolean
-  name: string
+  status: boolean;
+  name: string;
 }
 
 interface CityResponse {
-  id: string
-  districts: District[]
+  id: string;
+  districts: District[];
 }
 
 const props = defineProps<{
-  icon: string
-  label: string
-  placeholder: string
-  excludeCity?: string
-  province: string
-  city: string
-  address: string
-  namePrefix: string
-}>()
+  icon: string;
+  label: string;
+  placeholder: string;
+  excludeCity?: string;
+  province: string;
+  city: string;
+  address: string;
+  namePrefix: string;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:province', value: string): void
-  (e: 'update:city', value: string): void
-  (e: 'update:address', value: string): void
-}>()
+  (e: "update:province", value: string): void;
+  (e: "update:city", value: string): void;
+  (e: "update:address", value: string): void;
+}>();
 
 // ─── dùng id để USelectMenu khớp kiểu giá trị emit ra ───
-const selectedCityId = ref<string>('')
-const selectedDistrictName = ref<string>('')
-const detailAddress = ref('')
+const selectedCityId = ref<string>("");
+const selectedDistrictName = ref<string>("");
+const detailAddress = ref("");
 
-const cities = ref<City[]>([])
-const cityData = ref<CityResponse | null>(null)
+const cities = ref<City[]>([]);
+const cityData = ref<CityResponse | null>(null);
 
 async function fetchCities() {
   try {
-    cities.value = await $fetch<City[]>('https://sys.happytrip.vn/api/city/list', {
-      method: 'POST',
-      body: { status: true },
-      params: { fields: 'id,name' }
-    })
-  }
-  catch {
-    cities.value = []
+    cities.value = await $fetch<City[]>(
+      "https://sys.happytrip.vn/api/city/list",
+      {
+        method: "POST",
+        body: { status: true },
+        params: { fields: "id,name" },
+      },
+    );
+  } catch {
+    cities.value = [];
   }
 }
 
 async function fetchDistricts() {
   if (!selectedCityId.value) {
-    cityData.value = null
-    return
+    cityData.value = null;
+    return;
   }
 
   try {
-    cityData.value = await $fetch<CityResponse>(`https://sys.happytrip.vn/api/city/${selectedCityId.value}`, {
-      method: 'GET'
-    })
-  }
-  catch {
-    cityData.value = null
+    cityData.value = await $fetch<CityResponse>(
+      `https://sys.happytrip.vn/api/city/${selectedCityId.value}`,
+      {
+        method: "GET",
+      },
+    );
+  } catch {
+    cityData.value = null;
   }
 }
 
 onMounted(() => {
-  fetchCities()
-  console.log('Address component mounted, fetching cities...')
-})
+  fetchCities();
+  console.log("Address component mounted, fetching cities...");
+});
 
 const filteredCities = computed(() => {
-  if (!cities.value) return []
+  if (!cities.value) return [];
   return [...cities.value]
     .sort((a, b) => a.name.localeCompare(b.name))
-    .filter(c => c.id !== props.excludeCity)
-})
+    .filter((c) => c.id !== props.excludeCity);
+});
 
 const availableDistrictNames = computed(() => {
-  return cityData.value?.districts
-    ?.filter(d => d.status)
-    .map(d => d.name) ?? []
-})
+  return (
+    cityData.value?.districts?.filter((d) => d.status).map((d) => d.name) ?? []
+  );
+});
 
 async function onCityChange(cityId: string) {
-  selectedDistrictName.value = ''
-  detailAddress.value = ''
-  emit('update:province', '')
-  emit('update:address', '')
+  selectedDistrictName.value = "";
+  detailAddress.value = "";
+  emit("update:province", "");
+  emit("update:address", "");
 
-  const city = cities.value?.find(c => c.id === cityId)
+  const city = cities.value?.find((c) => c.id === cityId);
   if (city) {
-    emit('update:city', city.name)
-    await fetchDistricts()
+    emit("update:city", city.name);
+    await fetchDistricts();
   }
 }
 
 function onDistrictChange(district: string) {
-  emit('update:province', district)
-  detailAddress.value = ''
-  emit('update:address', '')
+  emit("update:province", district);
+  detailAddress.value = "";
+  emit("update:address", "");
 }
 </script>
