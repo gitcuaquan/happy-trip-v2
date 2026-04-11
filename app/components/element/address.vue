@@ -11,8 +11,8 @@
         label-key="name"
         value-key="id"
         :leading-icon="props.icon"
-        :placeholder="`${props.label} — Tỉnh / TP`"
-        :search-input="{ placeholder: 'Tìm tỉnh / thành phố...' }"
+        placeholder="Tỉnh / TP"
+        :search-input="{ placeholder: 'Tìm kiếm...' }"
         color="neutral"
         variant="outline"
        
@@ -31,7 +31,7 @@
         :items="availableDistrictNames"
         leading-icon="i-lucide-map"
         placeholder="Phường / Xã"
-        :search-input="{ placeholder: 'Tìm phường / xã...' }"
+        :search-input="{ placeholder: 'Tìm kiếm...' }"
         :disabled="!selectedCityId"
         color="neutral"
         variant="outline"
@@ -144,7 +144,7 @@ const filteredCities = computed(() => {
   if (!cities.value) return [];
   return [...cities.value]
     .sort((a, b) => a.name.localeCompare(b.name))
-    .filter((c) => c.id !== props.excludeCity);
+    .filter((c) => c.name !== props.excludeCity);
 });
 
 const availableDistrictNames = computed(() => {

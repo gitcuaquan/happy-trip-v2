@@ -85,24 +85,29 @@ watch(
 </script>
 
 <template>
-  <UPopover>
-    <UButton color="neutral" size="md" variant="outline" :ui="{
-      leadingIcon: 'text-primary',
-    }" icon="i-lucide-calendar" class="w-full flex justify-start text-left">
-      {{
-        selectedDateTime
-          ? dateTimeFormatter.format(selectedDateTime)
-          : "Hãy chọn ngày giờ"
-      }}
-    </UButton>
-
-    <template #content>
-      <UCalendar :is-date-unavailable="isDateUnavailable" v-model="modelValue" class="p-4" />
-      <div class="flex justify-center pb-3">
-        <UFormField label="Giờ đón" required>
-          <UInputTime v-model="time" />
-        </UFormField>
-      </div>
-    </template>
-  </UPopover>
+  <div class="flex items-center gap-2">
+    <UPopover>
+      <UButton color="neutral" size="md" variant="outline" :ui="{ leadingIcon: 'text-primary',}" icon="i-lucide-calendar" class="w-full  flex-3 justify-start text-left">
+        {{ selectedDateTime ? dateTimeFormatter.format(selectedDateTime) : "Hãy chọn ngày giờ"}}
+      </UButton>
+  
+      <template #content>
+        <UCalendar :is-date-unavailable="isDateUnavailable" v-model="modelValue" class="p-4" />
+      </template>
+    </UPopover>
+  
+    <UPopover>
+      <UButton color="neutral" size="md" variant="outline" :ui="{ leadingIcon: 'text-primary',}" icon="i-lucide-clock" class="w-full flex flex-2 justify-start text-left">
+        {{ time ? `${String(time.hour).padStart(2, "0")}:${String(time.minute).padStart(2, "0")}` : "Hãy chọn giờ" }}
+      </UButton>
+  
+      <template #content>
+        <div class="p-4">
+          <UFormField label="Chọn giờ" required>
+            <UInputTime v-model="time" />
+          </UFormField>
+        </div>
+      </template>
+    </UPopover>
+  </div>
 </template>
