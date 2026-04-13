@@ -15,6 +15,7 @@
 
     <!-- Main card -->
     <UCard
+    :key="formKey"
       class="relative z-10 backdrop-blur-md bg-white/95 border-2 border-white"
       :ui="{
         root: 'w-full overflow-visible shadow-2xl rounded-4xl',
@@ -388,6 +389,8 @@ async function sendOTP() {
   }
 }
 
+
+const formKey = ref(0) 
 async function confirmOTP() {
   otpLoading.value = true
   otpError.value = ''
@@ -403,7 +406,27 @@ async function confirmOTP() {
       service_name: services.value.find(s => s.id === order.value.id_service)?.name || '',
       price: savedPrice.value,
     }
-    setTimeout(() => { openDepositModal.value = true }, 300)
+
+    // Reset toàn bộ state
+    order.value = {
+      id_service: '',
+      date_of_destination: null,
+      departure_city: '',
+      departure_dictrict: '',
+      departure_address_1: '',
+      destination_city: '',
+      destination_dictrict: '',
+      destination_address_1: '',
+    }
+    previews.value = []
+    contact.name = ''
+    contact.phone = ''
+    otpValue.value = []
+    formKey.value++ 
+    openDepositModal.value = true
+
+    setTimeout(() => { openDepositModal.value = false }, 3000)
+
   } catch {
     otpError.value = 'Mã OTP không đúng hoặc đã hết hạn.'
   } finally {
