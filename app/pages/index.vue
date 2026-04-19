@@ -6,4 +6,5 @@
   <TrustMetrics />
   <About />
   <Services class="mt-10" />
+  <Articles class="mt-10" />
 </template>

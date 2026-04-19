@@ -91,3 +91,25 @@ export class Address {
         }
     }
 }
+
+
+export class Article {
+  id: string = ''
+  slug: string = ''
+  name: string = ''
+  title?: string
+  thumbnail?: string
+  excerpt?: string
+  created_at?: string
+
+  constructor(data?: Partial<Article>) {
+    if (data) {
+      Object.assign(this, data)
+    }
+  }
+}
+
+export interface PageListResponse {
+  data: Article[]
+  total?: number
+}

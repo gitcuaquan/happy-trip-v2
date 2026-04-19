@@ -99,7 +99,7 @@
                 <div class="relative z-10">
                   <p class="text-[16px] font-black text-slate-800 leading-tight mb-0.5 truncate">{{ item.name }}</p>
                   <p class="text-[15px] text-slate-500 font-medium mb-2 truncate">{{ item.description }}</p>
-                  <div v-if="getPreview(item.id)" class="inline-flex items-center px-1.5 py-0.5 bg-green-50 text-green-600 rounded-md text-xs font-bold tracking-tight">
+                  <div v-if="getPreview(item.id)" class="inline-flex items-center px-1.5 py-0.5  text-green-600 rounded-md text-xs font-bold tracking-tight">
                     {{ numberToCurrency(getPreview(item.id)?.price_guest_after || 0) }}
                   </div>
                   <p v-else class="text-[10px] text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded-md inline-block">
