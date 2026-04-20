@@ -19,14 +19,15 @@
     </template>
     <UNavigationMenu
       :items="items"
+      variant="link"
       :ui="{
-        linkLabel: 'font-bold text-gray-900',
+        linkLabel: 'font-bold text-gray-900 hover:text-primary transition-colors duration-300 hover:border-b-2 hover:border-primary border-transparent border-b-2',
         list: 'gap-10',
       }"
       class="uppercase"
     />
     <template #body>
-      <UNavigationMenu :items="items" orientation="vertical" class="-mx-2.5" />
+      <UNavigationMenu  :items="items" orientation="vertical" class="-mx-2.5" />
     </template>
     <template #right>
       <UButton

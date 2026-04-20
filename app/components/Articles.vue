@@ -44,7 +44,7 @@
           :class="index === 1 ? 'md:scale-[1.02]' : ''" @click="navigateTo(`/bai-viet/${article.slug}`)">
           <!-- Thumbnail -->
           <div class="relative h-52 overflow-hidden bg-gray-50">
-            <img v-if="article.thumbnail" :src="article.thumbnail" :alt="article.title || article.name"
+            <img v-if="article.thumbnail" :src="`https://happytrip.vn${article.thumbnail}`" :alt="article.title || article.name"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
             <!-- Fallback placeholder with brand -->
             <div v-else
@@ -108,23 +108,19 @@
 </template>
 
 <script lang="ts" setup>
+import { BlogService } from '~/services/blog.service'
 import type { PageListResponse } from '~/type'
+
+const blogService = new BlogService()
 
 const { data, pending, error, refresh } = await useLazyAsyncData<PageListResponse>(
   'articles',
-  () => $fetch('https://sys.happytrip.vn/api/page/list', {
-    method: 'POST',
-    query: {
-      page: 1,
-      limit: 3,
-      sort_by: 'created_at',
-      field: 'id,slug,name,thumbnail,title,created_at'
-    },
-    body: {}
+  () => blogService.getPageList({
+    page: 1,
+    limit: 3,
+    sort_by: 'created_at',
+    field: 'id,slug,name,thumbnail,title,created_at'
   }),
-  {
-    default: () => ({ data: [] })
-  }
 )
 
 const displayedArticles = computed(() => {

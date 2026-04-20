@@ -7,6 +7,7 @@
     >
       <USelectMenu
         v-model="selectedCityId"
+        :ui="{ leadingIcon: 'text-primary' }"
         :items="filteredCities"
         label-key="name"
         value-key="id"
@@ -29,6 +30,7 @@
       <USelectMenu
         v-model="selectedDistrictName"
         :items="availableDistrictNames"
+        :ui="{ leadingIcon: 'text-primary' }"
         leading-icon="i-lucide-map"
         placeholder="Phường / Xã"
         :search-input="{ placeholder: 'Tìm kiếm...' }"
@@ -49,6 +51,7 @@
       <UInput
         v-model="detailAddress"
         leading-icon="i-lucide-house"
+        :ui="{ leadingIcon: 'text-primary' }"
         placeholder="Số nhà, tên đường..."
         :disabled="!selectedDistrictName"
         color="neutral"

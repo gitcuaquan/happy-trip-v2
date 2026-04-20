@@ -9,10 +9,9 @@ import {
   parseAbsoluteToLocal,
 } from "@internationalized/date";
 
-
 const dateFormatter = new DateFormatter("vi-VN", {
   dateStyle: "medium",
-})
+});
 
 const dateNow = today(getLocalTimeZone());
 
@@ -27,10 +26,10 @@ const emit = defineEmits<{
 const modelValue = shallowRef(
   props.modelValue
     ? new CalendarDate(
-      props.modelValue.getFullYear(),
-      props.modelValue.getMonth() + 1,
-      props.modelValue.getDate(),
-    )
+        props.modelValue.getFullYear(),
+        props.modelValue.getMonth() + 1,
+        props.modelValue.getDate(),
+      )
     : dateNow.add({ days: 1 }),
 );
 const isDateUnavailable = (date: DateValue) => {
@@ -39,10 +38,10 @@ const isDateUnavailable = (date: DateValue) => {
 const time = shallowRef(
   props.modelValue
     ? new Time(
-      props.modelValue.getHours(),
-      props.modelValue.getMinutes(),
-      props.modelValue.getSeconds(),
-    )
+        props.modelValue.getHours(),
+        props.modelValue.getMinutes(),
+        props.modelValue.getSeconds(),
+      )
     : new Time(12, 30, 0),
 );
 
@@ -78,7 +77,7 @@ watch(
     emit(
       "update:modelValue",
       parseAbsoluteToLocal(mergedDate.toISOString()).toString().split("+")[0] ||
-      null,
+        null,
     );
   },
   { immediate: true },
@@ -88,27 +87,30 @@ watch(
 <template>
   <div class="flex items-center gap-2">
     <UPopover>
-      <UButton color="neutral" size="md" variant="outline" :ui="{ leadingIcon: 'text-primary',}" icon="i-lucide-calendar" class="w-full  flex-3 justify-start text-left">
-        {{ selectedDateTime ? dateFormatter .format(selectedDateTime) : "Hãy chọn ngày giờ"}}
+      <UButton
+        color="neutral"
+        size="md"
+        variant="outline"
+        :ui="{ leadingIcon: 'text-primary' }"
+        icon="i-lucide-calendar"
+        class="w-full flex-3 justify-start text-left"
+      >
+        {{
+          selectedDateTime
+            ? dateFormatter.format(selectedDateTime)
+            : "Hãy chọn ngày giờ"
+        }}
       </UButton>
-  
+
       <template #content>
-        <UCalendar :is-date-unavailable="isDateUnavailable" v-model="modelValue" class="p-4" />
+        <UCalendar
+          :is-date-unavailable="isDateUnavailable"
+          v-model="modelValue"
+          class="p-4"
+        />
       </template>
     </UPopover>
-  
-    <UPopover>
-      <UButton color="neutral" size="md" variant="outline" :ui="{ leadingIcon: 'text-primary',}" icon="i-lucide-clock" class="w-full flex flex-2 justify-start text-left">
-        {{ time ? `${String(time.hour).padStart(2, "0")}:${String(time.minute).padStart(2, "0")}` : "Hãy chọn giờ" }}
-      </UButton>
-  
-      <template #content>
-        <div class="p-4">
-          <UFormField label="Chọn giờ" required>
-            <UInputTime v-model="time" />
-          </UFormField>
-        </div>
-      </template>
-    </UPopover>
+
+    <UInputTime :ui="{ leadingIcon: 'text-primary' }" v-model="time" icon="i-lucide-alarm-clock" />
   </div>
 </template>

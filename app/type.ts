@@ -110,6 +110,11 @@ export class Article {
 }
 
 export interface PageListResponse {
+  pagination: {
+    page: number
+    limit: number
+    count: number
+    total_page: number
+  }
   data: Article[]
-  total?: number
 }

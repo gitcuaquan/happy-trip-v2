@@ -1,18 +1,5 @@
 <template>
   <div class="relative w-full max-w-md mx-auto my-10 p-2">
-
-    <!-- Background blobs -->
-    <div class="absolute -top-10 -left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse [animation-duration:4s]" />
-    <div class="absolute -bottom-10 -right-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse [animation-duration:5s]" />
-
-    <!-- Badge -->
-    <div class="absolute right-2 -top-8 z-20 animate-bounce [animation-duration:2.5s]">
-      <div class="bg-white px-4 py-2 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-2">
-        <UIcon name="i-lucide-sparkles" class="size-5 text-yellow-500 animate-pulse [animation-duration:0.5s]" />
-        <span class="text-xs font-black text-slate-700 uppercase tracking-wider">Siêu tốc</span>
-      </div>
-    </div>
-
     <!-- Main card -->
     <UCard
     :key="formKey"
@@ -26,7 +13,7 @@
     >
       <template #header>
         <div class="flex items-center uppercase justify-center gap-2 relative z-10">
-          <span class="text-white font-black text-lg tracking-tight">Đặt xe HappyTrip</span>
+          <span class="text-white font-black text-lg tracking-tight">Bạn Muốn Đi Đâu</span>
         </div>
       </template>
 
@@ -90,16 +77,15 @@
                 :key="item.id"
                 @click="selectService(item)"
                 :class="[
-                  'relative overflow-hidden rounded-xl border-2 p-2.5 cursor-pointer transition-all duration-200',
+                  'relative overflow-hidden rounded-md border-2 p-2.5 cursor-pointer transition-all duration-200',
                   !getPreview(item.id) ? 'opacity-50 cursor-not-allowed bg-slate-50 border-slate-100' : 'active:scale-95',
-                  order.id_service === item.id ? 'border-primary bg-primary/5 shadow-sm shadow-primary/10' : 'border-slate-100 bg-white',
+                  order.id_service === item.id ? 'border-primary/50 shadow-sm shadow-primary/10' : 'border-slate-100 bg-white',
                 ]"
               >
                 <div v-if="order.id_service === item.id" class="absolute -bottom-2 -right-2 w-12 h-12 bg-primary/10 rounded-full blur-lg" />
                 <div class="relative z-10">
-                  <p class="text-[16px] font-black text-slate-800 leading-tight mb-0.5 truncate">{{ item.name }}</p>
-                  <p class="text-[15px] text-slate-500 font-medium mb-2 truncate">{{ item.description }}</p>
-                  <div v-if="getPreview(item.id)" class="inline-flex items-center px-1.5 py-0.5  text-green-600 rounded-md text-xs font-bold tracking-tight">
+                  <p class="text-sm font-black text-slate-800 leading-tight mb-0.5 truncate">{{ item.name }}</p>
+                  <div v-if="getPreview(item.id)" class="inline-flex items-center text-lg  py-0.5  text-primary rounded-md  font-bold tracking-tight">
                     {{ numberToCurrency(getPreview(item.id)?.price_guest_after || 0) }}
                   </div>
                   <p v-else class="text-[10px] text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded-md inline-block">
@@ -124,7 +110,7 @@
       </UForm>
 
       <template #footer>
-        <div class="flex items-center justify-center gap-2 bg-slate-50 py-3 rounded-xl border border-slate-100">
+        <div class="flex items-center justify-center gap-2  py-3">
           <div class="flex -space-x-2">
             <img class="w-6 h-6 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=1" alt="Avatar" />
             <img class="w-6 h-6 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=2" alt="Avatar" />
