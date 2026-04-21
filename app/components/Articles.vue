@@ -84,8 +84,7 @@
           </div>
 
           <!-- Bottom accent line -->
-          <div
-            class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+          <!-- <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" /> -->
         </article>
       </div>
 

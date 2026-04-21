@@ -55,6 +55,10 @@ const items = computed<NavigationMenuItem[]>(() => [
     to: "/docs/getting-started",
   },
   {
+    label: "TÀI XẾ",
+    to: '/driver-landing'
+  },
+  {
     label: "Chính sách",
     to: "/docs/components",
   },

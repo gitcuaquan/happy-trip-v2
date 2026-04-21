@@ -118,3 +118,62 @@ export interface PageListResponse {
   }
   data: Article[]
 }
+
+// ========== DRIVER TYPES ==========
+
+export interface Transport {
+  name: string
+  type: number
+  type_name: string
+  license_plate: string
+  hang_xe: string
+  ten_xe: string
+  created_year?: string
+}
+
+export interface BankInfo {
+  name: string
+  bank_card: string
+  bank_name: string
+}
+
+export interface DriverProfile {
+  id: string
+  full_name: string
+  phone: string
+  status_type: number
+  status_name: string
+  transport?: Transport
+  wallet_id?: string
+  bank_info?: BankInfo
+  created_at?: string
+  isFreezen?: boolean
+}
+
+export interface WalletDetail {
+  balance: number
+  wallet_id: string
+}
+
+export interface Order {
+  id: string
+  short_id: string
+  departure: { city: string; district: string; address_1: string }
+  destination: { city: string; district: string; address_1: string }
+  date_of_destination: string
+  price_guest_after: number
+  price_guest: number
+  status_type: number
+  status_name: string
+  name_service: string
+  time_label?: string
+  customer?: { full_name: string; phone: string }
+  created_at?: string
+}
+
+export interface Announcement {
+  id: string
+  title: string
+  file?: string
+  created_at: string
+}
