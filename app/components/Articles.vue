@@ -16,7 +16,7 @@
       </div>
 
       <!-- Skeleton Loading -->
-      <div v-if="pending" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div v-if="pending" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <div v-for="i in 3" :key="i" class="rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
           <USkeleton class="h-52 w-full rounded-none" />
           <div class="p-5 space-y-3">
@@ -38,54 +38,13 @@
       </div>
 
       <!-- Articles Grid -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <article v-for="(article, index) in displayedArticles" :key="article.id"
-          class="group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-          :class="index === 1 ? 'md:scale-[1.02]' : ''" @click="navigateTo(`/bai-viet/${article.slug}`)">
-          <!-- Thumbnail -->
-          <div class="relative h-52 overflow-hidden bg-gray-50">
-            <img v-if="article.thumbnail" :src="`https://happytrip.vn${article.thumbnail}`" :alt="article.title || article.name"
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <!-- Fallback placeholder with brand -->
-            <div v-else
-              class="w-full h-full flex items-center justify-center bg-linear-to-br from-orange-50 to-orange-100">
-              <span class="text-3xl font-extrabold text-primary/60 select-none">HappyTrip</span>
-            </div>
-
-            <!-- Date badge -->
-            <UBadge color="neutral" variant="solid"
-              class="absolute top-3 left-3 bg-white/90 text-gray-600 backdrop-blur-sm shadow-sm" size="sm">
-              <UIcon name="i-lucide-calendar" class="w-3 h-3 mr-1" />
-              {{ formatDate(article.created_at) }}
-            </UBadge>
-
-            <!-- Featured tag for center card -->
-            <UBadge v-if="index === 1" color="primary" variant="solid" class="absolute top-3 right-3" size="sm">
-              Nổi bật
-            </UBadge>
-          </div>
-
-          <!-- Card body -->
-          <div class="p-5">
-            <h3
-              class="font-bold text-gray-900 text-[15px] leading-snug mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-200">
-              {{ article.title || article.name }}
-            </h3>
-            <p class="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-4">
-              {{ article.excerpt || 'Khám phá những thông tin hữu ích và cập nhật mới nhất từ dịch vụ xe ghép hàng đầu HappyTrip.' }}
-            </p>
-
-            <!-- Read more -->
-            <div
-              class="flex items-center gap-1 text-primary font-semibold text-sm group-hover:gap-2 transition-all duration-200">
-              <span>Đọc tiếp</span>
-              <UIcon name="i-lucide-arrow-right" class="w-4 h-4" />
-            </div>
-          </div>
-
-          <!-- Bottom accent line -->
-          <!-- <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" /> -->
-        </article>
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <ModalBlogItem 
+          v-for="(article, index) in displayedArticles"
+          :key="article.id"
+          :article="article"
+          @click="navigateTo({ path: '/policy', query: { slug: article.slug } })"
+        />
       </div>
 
       <!-- Empty state -->
@@ -96,7 +55,7 @@
 
       <!-- CTA Button -->
       <div v-if="!pending && displayedArticles.length > 0" class="mt-10 text-center">
-        <UButton to="/bai-viet" size="lg" variant="outline" color="primary"
+        <UButton to="/policy" size="lg" variant="outline" color="primary"
           class="rounded-full px-8 font-semibold hover:bg-primary hover:text-white transition-colors duration-200"
           trailing-icon="i-lucide-arrow-right">
           Xem Tất Cả Bài Viết
@@ -109,6 +68,7 @@
 <script lang="ts" setup>
 import { BlogService } from '~/services/blog.service'
 import type { PageListResponse } from '~/type'
+import ModalBlogItem from './blog/modal-blog-item.vue'
 
 const blogService = new BlogService()
 
@@ -123,20 +83,8 @@ const { data, pending, error, refresh } = await useLazyAsyncData<PageListRespons
 )
 
 const displayedArticles = computed(() => {
-  return (data.value?.data ?? []).slice(0, 3)
+  return (data.value?.data ?? []).filter(article => article.title).slice(0, 3)
 })
 
-function formatDate(dateStr?: string): string {
-  if (!dateStr) return 'Hôm nay'
-  try {
-    return new Intl.DateTimeFormat('vi-VN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    }).format(new Date(dateStr))
-  }
-  catch {
-    return 'Hôm nay'
-  }
-}
+
 </script>

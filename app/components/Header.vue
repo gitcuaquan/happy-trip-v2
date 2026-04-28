@@ -55,24 +55,24 @@ const items = computed<NavigationMenuItem[]>(() => [
     to: "/docs/getting-started",
   },
   {
-    label: "TÀI XẾ",
-    to: '/driver-landing'
+    label: "Tài xế",
+    to: '/driver/landing',
   },
   {
     label: "Chính sách",
-    to: "/docs/components",
+    to: "/policy",
   },
   {
     label: "Dịch vụ",
-    to: "https://go.nuxt.com/figma-ui",
+    to: "/service",
   },
   {
     label: "Về chúng tôi",
-    to: "https://github.com/nuxt/ui/releases",
+    to: "/introduce",
   },
   {
     label: "Liên hệ",
-    to: "https://github.com/nuxt/ui/releases",
+    to: "/contact",
   },
 ]);
 </script>

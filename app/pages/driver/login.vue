@@ -1,3 +1,4 @@
+
 <template>
   <ClientOnly>
     <div class="w-screen h-screen grid grid-cols-1 md:grid-cols-2">

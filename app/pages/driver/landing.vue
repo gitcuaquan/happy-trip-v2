@@ -12,7 +12,6 @@
   <DriverRequirements />
 
   <!-- Register Form -->
-
   <!-- Footer CTA -->
   <DriverFooterCta />
 </template>
@@ -21,34 +20,28 @@
 import { useDriverService } from '~/services/driver.service'
 import type { Announcement } from '~/type'
 
-
 definePageMeta({
   layout: 'default'
 })
 
-
-// Services
 const driverService = useDriverService()
-
-//  State
 const announcements = ref<Announcement[]>([])
 const isLoadingAnnouncements = ref(false)
 
-// Fetch announcements (non-critical, fail silently)
 const fetchAnnouncements = async () => {
   isLoadingAnnouncements.value = true
   try {
     announcements.value = await driverService.getAnnouncements()
-  } catch (error) {
-    // Fail silently - không throw error
+  }
+  catch (error) {
     console.warn('Announcements fetch failed:', error)
     announcements.value = []
-  } finally {
+  }
+  finally {
     isLoadingAnnouncements.value = false
   }
 }
 
-//  Lifecycle
 onMounted(() => {
   fetchAnnouncements()
 })

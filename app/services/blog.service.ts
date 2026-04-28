@@ -36,4 +36,17 @@ export class BlogService {
             throw error;
         }
     }
+
+    async getPageDetail(slug: string): Promise<Article> {
+        try {
+            const response = await $fetch(`${this.baseURL}/page/${slug}`, {
+                method: 'GET',
+            });
+
+            return response as Article;
+        }catch (error) {
+            console.error('Error fetching page detail:', error);
+            throw error;
+        }
+    }
 }

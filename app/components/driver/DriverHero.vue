@@ -1,5 +1,5 @@
 <template>
-  <section class="relative bg-gradient-to-br from-orange-500 to-orange-600 pt-24 pb-32 overflow-hidden">
+  <section class="relative bg-linear-to-br from-orange-500 to-orange-600 pt-24 pb-32 overflow-hidden">
     <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
     
     <UContainer class="relative z-10">

@@ -7,42 +7,25 @@
       </div>
 
       <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden max-w-4xl mx-auto">
-        <div
-          v-for="(benefit, index) in benefits"
-          :key="benefit.label"
-          class="border-b border-slate-100 last:border-0 transition-colors"
-          :class="openIndex === index ? 'bg-orange-50/50' : 'bg-transparent'"
-        >
-          <button
-            class="w-full flex justify-between items-center py-5 px-6 text-left focus:outline-none hover:bg-orange-50/30 transition-colors"
-            @click="toggleAccordion(index)"
-          >
-            <span
-              class="text-lg font-bold transition-colors"
-              :class="openIndex === index ? 'text-primary' : 'text-slate-700'"
-            >
-              {{ benefit.label }}
-            </span>
-            <UIcon
-              name="i-lucide-chevron-down"
-              class="w-5 h-5 transition-transform"
-              :class="openIndex === index ? 'rotate-180 text-primary' : 'text-slate-400'"
-            />
-          </button>
+       <UCollapsible v-for="(benefit, index) in benefits" :key="benefit.label" :open="openIndex === index"
+            :unmount-on-hide="false" class="border-b border-slate-100 last:border-0"
+            :class="openIndex === index ? 'bg-orange-50/50' : 'bg-transparent'" @update:open="toggleAccordion(index)">
+            <button
+              class="w-full flex justify-between items-center py-5 px-6 text-left focus:outline-none hover:bg-orange-50/30 transition-colors">
+              <span class="text-lg font-bold transition-colors"
+                :class="openIndex === index ? 'text-primary' : 'text-slate-700'">
+                {{ benefit.label }}
+              </span>
+              <UIcon name="i-lucide-chevron-down" class="w-5 h-5 transition-transform duration-300"
+                :class="openIndex === index ? 'rotate-180 text-primary' : 'text-slate-400'" />
+            </button>
 
-          <Transition
-            enter-active-class="transition-all duration-300"
-            leave-active-class="transition-all duration-300"
-            enter-from-class="max-h-0 opacity-0"
-            enter-to-class="max-h-96 opacity-100"
-            leave-from-class="max-h-96 opacity-100"
-            leave-to-class="max-h-0 opacity-0"
-          >
-            <div v-show="openIndex === index" class="px-6 py-4 text-slate-600 leading-relaxed overflow-hidden">
-              {{ benefit.content }}
-            </div>
-          </Transition>
-        </div>
+            <template #content>
+              <div class="px-6 py-4 text-slate-600 leading-relaxed">
+                {{ benefit.content }}
+              </div>
+            </template>
+          </UCollapsible>
       </div>
     </UContainer>
   </section>

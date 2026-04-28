@@ -52,7 +52,7 @@
           <div class="space-y-8">
             <div class="flex gap-6">
               <div
-                class="flex-shrink-0 w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center text-primary"
+                class="shrink-0 w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center text-primary"
               >
                 <UIcon name="i-lucide-shield" class="text-3xl" />
               </div>
@@ -68,7 +68,7 @@
             </div>
             <div class="flex gap-6">
               <div
-                class="flex-shrink-0 w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center text-primary"
+                class="shrink-0 w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center text-primary"
               >
                 <UIcon name="i-lucide-tag" class="text-3xl" />
               </div>
@@ -86,7 +86,7 @@
             </div>
             <div class="flex gap-6">
               <div
-                class="flex-shrink-0 w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center text-primary"
+                class="shrink-0 w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center text-primary"
               >
                 <UIcon name="i-lucide-clock" class="text-3xl" />
               </div>

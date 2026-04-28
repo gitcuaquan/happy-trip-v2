@@ -101,6 +101,7 @@ export class Article {
   thumbnail?: string
   excerpt?: string
   created_at?: string
+  content: any
 
   constructor(data?: Partial<Article>) {
     if (data) {

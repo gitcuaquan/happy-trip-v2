@@ -1,5 +1,5 @@
 <template>
-  <section class="py-16 bg-gradient-to-br from-primary to-orange-600 text-white text-center">
+  <section class="py-16 bg-linear-to-br from-primary to-orange-600 text-white text-center">
     <UContainer>
       <h2 class="text-3xl md:text-4xl font-black mb-4">Sẵn Sàng Bắt Đầu?</h2>
       <p class="text-xl text-orange-50 mb-8 max-w-2xl mx-auto">
