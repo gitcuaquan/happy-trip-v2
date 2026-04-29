@@ -6,33 +6,15 @@
         <p class="text-slate-500 text-lg">Những đặc quyền chỉ dành riêng cho đối tác của chúng tôi.</p>
       </div>
 
-      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden max-w-4xl mx-auto">
-       <UCollapsible v-for="(benefit, index) in benefits" :key="benefit.label" :open="openIndex === index"
-            :unmount-on-hide="false" class="border-b border-slate-100 last:border-0"
-            :class="openIndex === index ? 'bg-orange-50/50' : 'bg-transparent'" @update:open="toggleAccordion(index)">
-            <button
-              class="w-full flex justify-between items-center py-5 px-6 text-left focus:outline-none hover:bg-orange-50/30 transition-colors">
-              <span class="text-lg font-bold transition-colors"
-                :class="openIndex === index ? 'text-primary' : 'text-slate-700'">
-                {{ benefit.label }}
-              </span>
-              <UIcon name="i-lucide-chevron-down" class="w-5 h-5 transition-transform duration-300"
-                :class="openIndex === index ? 'rotate-180 text-primary' : 'text-slate-400'" />
-            </button>
-
-            <template #content>
-              <div class="px-6 py-4 text-slate-600 leading-relaxed">
-                {{ benefit.content }}
-              </div>
-            </template>
-          </UCollapsible>
+      <div class="max-w-4xl mx-auto">
+        <CollapsibleCard :items="benefits" />
       </div>
     </UContainer>
   </section>
 </template>
 
 <script setup lang="ts">
-const openIndex = ref(0)
+import CollapsibleCard from '../shared/collapsible-card.vue';
 
 const benefits = [
   {
@@ -52,8 +34,4 @@ const benefits = [
     content: 'Ứng dụng hỗ trợ theo dõi lộ trình, cảnh báo an toàn và chính sách bảo hiểm toàn diện giúp đối tác yên tâm trên mọi nẻo đường.'
   }
 ]
-
-const toggleAccordion = (index: number) => {
-  openIndex.value = openIndex.value === index ? -1 : index
-}
 </script>

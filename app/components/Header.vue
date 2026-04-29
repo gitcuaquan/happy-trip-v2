@@ -52,7 +52,7 @@ onMounted(() => {
 const items = computed<NavigationMenuItem[]>(() => [
   {
     label: "Đặt xe",
-    to: "/docs/getting-started",
+    to: "/",
   },
   {
     label: "Tài xế",

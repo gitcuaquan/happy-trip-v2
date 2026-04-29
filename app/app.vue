@@ -38,3 +38,6 @@ onMounted(() => {
     </NuxtLayout>
   </UApp>
 </template>
+<style scoped>
+
+</style>

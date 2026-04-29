@@ -11,7 +11,6 @@
   <!-- Requirements Section -->
   <DriverRequirements />
 
-  <!-- Register Form -->
   <!-- Footer CTA -->
   <DriverFooterCta />
 </template>

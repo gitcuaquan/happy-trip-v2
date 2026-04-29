@@ -2,9 +2,8 @@
   <UContainer class="py-10">
     <!-- ── Header ──────────────────────────────────────────────────── -->
     <div class="text-center mb-12">
-      <h3 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6">
-        {{ contact.title }}
-      </h3>
+      <h2 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6" v-html="contact.title">
+      </h2>
       <div class="w-20 h-2 bg-primary mx-auto rounded-full"></div>
       <p class="mt-4 text-gray-500 mx-w-xl mx-auto text-base">
         {{ contact.description }}
@@ -225,7 +224,7 @@ const isLoading = ref(false)
 const isSuccess = ref(false)
 
 const contact = computed(() => ({
-  title: 'Liên hệ Happy Trip',
+  title: 'Liên hệ với <span class="text-primary"> HAPPY</span> TRIP' as string,
   description: 'Hỗ trợ đặt xe, hợp tác tài xế và chăm sóc khách hàng 24/7 — chúng tôi luôn ở đây khi bạn cần.',
   information: 'Thông tin liên hệ',
   map: {
