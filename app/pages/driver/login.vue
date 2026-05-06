@@ -17,7 +17,7 @@
           <UForm
             :state="form"
             class="flex flex-col gap-6 pt-6"
-            @submit="handleLogin"
+           
           >
             <UFormField label="Số điện thoại" name="phone" class="w-full">
               <UInput
@@ -50,18 +50,18 @@
             </UFormField>
 
             <UAlert
-              v-if="store.error"
+           
               icon="i-lucide-circle-x"
               :ui="{ icon: 'size-10' }"
               class="items-center"
               color="error"
               variant="subtle"
-              :description="store.error"
+             
             />
 
             <UButton
               type="submit"
-              :loading="store.loading"
+             
               class="w-full justify-center"
             >
               Đăng nhập
@@ -100,15 +100,12 @@
 </template>
 
 <script lang="ts" setup>
-import { useDriverStore } from '~/stores/driver'
+
 
 definePageMeta({ layout: false, middleware: 'auth-driver' })
 
-const store = useDriverStore()
 
-if (store.isLoggedIn) {
-  await navigateTo('/driver')
-}
+
 
 const form = reactive({ phone: '', password: '' })
 const showPw = ref(false)
@@ -122,10 +119,5 @@ const primaryColor = computed(() => {
   )
 })
 
-async function handleLogin() {
-  const ok = await store.login(form.phone, form.password)
-  if (ok) {
-    await navigateTo('/driver')
-  }
-}
+
 </script>

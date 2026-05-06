@@ -178,3 +178,50 @@ export interface Announcement {
   file?: string
   created_at: string
 }
+
+
+export type HistoryOrderStatus = 'in_progress' | 'completed' | 'cancelled'
+ 
+
+export const HISTORY_STATUS_MAP: Record<number, HistoryOrderStatus> = {
+  1:  'in_progress',
+  5:  'completed',
+  0:  'cancelled',
+  '-1': 'cancelled',
+} as unknown as Record<number, HistoryOrderStatus>
+ 
+
+export interface HistoryOrder {
+  id:                  string
+  short_id:            string
+  status:              HistoryOrderStatus  
+  status_name:         string               
+  departure:           Address              
+  destination:         Address             
+  date_of_destination: string              
+  price_guest_after:   number              
+  name_service:        string             
+  distance?:           number              
+  customer?: {
+    full_name: string
+    phone:     string
+  }
+}
+ 
+
+export function formatAddress(addr: Address, shortForm = false): string {
+  if (shortForm) return addr.city
+  return [addr.address_1, addr.district, addr.city].filter(Boolean).join(', ')
+}
+
+
+
+
+
+
+
+
+
+
+
+

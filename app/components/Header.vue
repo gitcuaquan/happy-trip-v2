@@ -56,7 +56,7 @@ const items = computed<NavigationMenuItem[]>(() => [
   },
   {
     label: "Tài xế",
-    to: '/driver/landing',
+    to: '/driver',
   },
   {
     label: "Chính sách",
