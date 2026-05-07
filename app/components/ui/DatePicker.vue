@@ -17,6 +17,9 @@ const dateNow = today(getLocalTimeZone());
 
 const props = defineProps<{
   modelValue?: Date | null;
+  hideTimeInput?: boolean;
+  noDefault?: boolean;
+  allowPast?: boolean; 
 }>();
 
 const emit = defineEmits<{
@@ -30,9 +33,10 @@ const modelValue = shallowRef(
         props.modelValue.getMonth() + 1,
         props.modelValue.getDate(),
       )
-    : dateNow.add({ days: 1 }),
+    : props.noDefault ? null : dateNow.add({ days: 1 }),
 );
 const isDateUnavailable = (date: DateValue) => {
+  if(props.allowPast) return false;
   return date.compare(dateNow) <= 0;
 };
 const time = shallowRef(
@@ -87,20 +91,22 @@ watch(
 <template>
   <div class="flex items-center gap-2">
     <UPopover>
-      <UButton
-        color="neutral"
-        size="md"
-        variant="outline"
-        :ui="{ leadingIcon: 'text-primary' }"
-        icon="i-lucide-calendar"
-        class="w-full flex-3 justify-start text-left"
-      >
-        {{
-          selectedDateTime
-            ? dateFormatter.format(selectedDateTime)
-            : "Hãy chọn ngày giờ"
-        }}
-      </UButton>
+      <slot>
+        <UButton
+          color="neutral"
+          size="md"
+          variant="outline"
+          :ui="{ leadingIcon: 'text-primary' }"
+          icon="i-lucide-calendar"
+          class="w-full flex-3 justify-start text-left"
+        >
+          {{
+            selectedDateTime
+              ? dateFormatter.format(selectedDateTime)
+              : "Hãy chọn ngày giờ"
+          }}
+        </UButton>
+      </slot>
 
       <template #content>
         <UCalendar
@@ -111,6 +117,6 @@ watch(
       </template>
     </UPopover>
 
-    <UInputTime :ui="{ leadingIcon: 'text-primary' }" v-model="time" icon="i-lucide-alarm-clock" />
+    <UInputTime v-if="!hideTimeInput" :ui="{ leadingIcon: 'text-primary' }" v-model="time" icon="i-lucide-alarm-clock" />
   </div>
 </template>
