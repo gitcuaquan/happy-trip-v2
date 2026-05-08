@@ -95,14 +95,6 @@ const mockOrders: HistoryOrder[] = [
     customer: { full_name: 'Lê Văn C', phone: '0912345678' },
   },
   {
-    id: 'HT-002', short_id: '002', status: 'in_progress', status_name: 'Đang thực hiện',
-    departure: { city: 'Hà Nội', district: 'Hoàng Mai', address_1: '15 Minh Khai' },
-    destination: { city: 'Bắc Ninh', district: 'Tiên Du', address_1: '29 Lê Thái Tổ' },
-    date_of_destination: '2026-05-07T14:10:00',
-    price_guest_after: 135000, name_service: 'Xe 4 chỗ', distance: 28.5,
-    customer: { full_name: 'Trần Văn B', phone: '0987654321' },
-  },
-  {
     id: 'HT-003', short_id: '003', status: 'completed', status_name: 'Đã hoàn thành',
     departure: { city: 'TP. HCM', district: 'Thủ Đức', address_1: 'KĐT Sala' },
     destination: { city: 'TP. HCM', district: 'Quận 1', address_1: 'Nhà thờ Đức Bà' },

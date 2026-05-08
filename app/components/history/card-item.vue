@@ -131,6 +131,7 @@ const formattedDate = computed(() => {
   return new Intl.DateTimeFormat('vi-VN', {
     day: '2-digit', month: 'short',
     hour: '2-digit', minute: '2-digit',
+    
   }).format(new Date(props.order.date_of_destination))
 })
 

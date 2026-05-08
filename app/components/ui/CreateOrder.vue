@@ -1,120 +1,127 @@
 <template>
   <div class="relative w-full max-w-md mx-auto my-10 p-2">
     <!-- Main card -->
-    <UCard
-    :key="formKey"
-      class="relative z-10 backdrop-blur-md bg-white/95 border-2 border-white"
-      :ui="{
-        root: 'w-full overflow-visible shadow-2xl rounded-4xl',
-        header: 'overflow-hidden rounded-t-4xl bg-primary',
-        body: 'p-3 space-y-6',
-        footer: 'px-1 pb-1 pt-0 border-t-0',
-      }"
-    >
+    <UCard :key="formKey" class="relative z-10 backdrop-blur-md bg-white/95 border-2 border-white" :ui="{
+      root: 'w-full overflow-visible shadow-2xl rounded-4xl',
+      header: 'overflow-hidden rounded-t-4xl bg-primary',
+      body: 'p-3 space-y-6',
+      footer: 'px-1 pb-1 pt-0 border-t-0',
+    }">
       <template #header>
         <div class="flex items-center uppercase justify-center gap-2 relative z-10">
-          <span class="text-white font-black text-lg tracking-tight">Bạn Muốn Đi Đâu</span>
+          <span v-if="hasActiveRide" class="text-white font-black text-lg tracking-tight"> Chuyến xe của bạn. </span>
+          <span v-else class="text-white font-black text-lg tracking-tight">Bạn Muốn Đi Đâu</span>
         </div>
       </template>
 
-      <UForm :schema="schema" :state="order" class="space-y-4 text-left" @submit="onSubmit">
-
-        <!-- Điểm đón -->
-        <div class="mb-2">
-          <div class="flex items-center gap-2 mb-2">
-            <div class="p-1.5 bg-primary/10 rounded-lg">
-              <div class="w-2.5 h-2.5 rounded-full bg-primary" />
-            </div>
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Điểm đón</span>
-          </div>
-          <ElementAddress
-            namePrefix="departure"
-            icon="i-lucide-locate-fixed"
-            label="Điểm đón"
-            placeholder="Bạn đang ở đâu?"
-            v-model:city="order.departure_city"
-            v-model:province="order.departure_dictrict"
-            v-model:address="order.departure_address_1"
-            :exclude-city="order.destination_city"
-          />
+      <div v-if="hasActiveRide" class="py-8 px-4 flex flex-col items-center justify-center text-center space-y-4">
+        <div class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center animate-pulse">
+          <UIcon name="i-lucide-car-front" class="size-10 text-primary mb-4" />
         </div>
-
-        <!-- Điểm đến -->
-        <div class="mb-4">
-          <div class="flex items-center gap-2 mb-2">
-            <div class="p-1.5 bg-blue-500/10 rounded-lg">
-              <div class="w-2.5 h-2.5 rounded-full bg-blue-500" />
-            </div>
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Điểm đến</span>
-          </div>
-          <ElementAddress
-            namePrefix="destination"
-            icon="i-lucide-map-pin"
-            label="Điểm đến"
-            placeholder="Điểm đến của bạn?"
-            v-model:city="order.destination_city"
-            v-model:province="order.destination_dictrict"
-            v-model:address="order.destination_address_1"
-            :exclude-city="order.departure_city"
-          />
+        <div>
+          <h3 class="text-lg font-black text-slate-800 mb-1">Chuyến xe đang diễn ra</h3>
+          <p class="text-sm text-slate-500 font-medium">Bạn đang có một chuyến xe chưa hoàn thành. Vui lòng kết thúc
+            chuyến
+            hiện tại trước khi đặt chuyến mới.</p>
         </div>
+        <UButton to="/history" color="primary" variant="soft" size="lg"
+          class="rounded-xl font-bold w-full mt-2 flex justify-center">
+          <UIcon name="i-lucide-history" class="size-5 mr-1" />
+          Xem hành trình hiện tại
+        </UButton>
+      </div>
 
-        <!-- Thời gian -->
-        <UFormField :ui="{ error: 'text-xs text-left' }">
-          <template #label>
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Thời gian khởi hành</span>
-          </template>
-          <UiDatePicker v-model="order.date_of_destination" class="flex-1 text-sm font-medium" />
-        </UFormField>
+      <div v-else>
+        <UForm :schema="schema" :state="order" class="space-y-4 text-left" @submit="onSubmit">
 
-        <!-- Chọn loại xe -->
-        <Transition name="fade">
-          <div v-if="hasRouteData" class="space-y-2 pt-2">
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Chọn loại xe</p>
-            <div class="grid grid-cols-2 gap-2">
-              <div
-                v-for="item in services"
-                :key="item.id"
-                @click="selectService(item)"
-                :class="[
+          <!-- Điểm đón -->
+          <div class="mb-2">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="p-1.5 bg-primary/10 rounded-lg">
+                <div class="w-2.5 h-2.5 rounded-full bg-primary" />
+              </div>
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Điểm đón</span>
+            </div>
+            <ElementAddress namePrefix="departure" icon="i-lucide-locate-fixed" label="Điểm đón"
+              placeholder="Bạn đang ở đâu?" v-model:city="order.departure_city"
+              v-model:province="order.departure_dictrict" v-model:address="order.departure_address_1"
+              :exclude-city="order.destination_city" />
+          </div>
+
+          <!-- Điểm đến -->
+          <div class="mb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="p-1.5 bg-blue-500/10 rounded-lg">
+                <div class="w-2.5 h-2.5 rounded-full bg-blue-500" />
+              </div>
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Điểm đến</span>
+            </div>
+            <ElementAddress namePrefix="destination" icon="i-lucide-map-pin" label="Điểm đến"
+              placeholder="Điểm đến của bạn?" v-model:city="order.destination_city"
+              v-model:province="order.destination_dictrict" v-model:address="order.destination_address_1"
+              :exclude-city="order.departure_city" />
+          </div>
+
+          <!-- Thời gian -->
+          <UFormField :ui="{ error: 'text-xs text-left' }">
+            <template #label>
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Thời gian khởi hành</span>
+            </template>
+            <UiDatePicker v-model="order.date_of_destination" class="flex-1 text-sm font-medium" />
+          </UFormField>
+
+          <!-- Chọn loại xe -->
+          <Transition name="fade">
+            <div v-if="hasRouteData" class="space-y-2 pt-2">
+              <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Chọn loại xe</p>
+              <div class="grid grid-cols-2 gap-2">
+                <div v-for="item in services" :key="item.id" @click="selectService(item)" :class="[
                   'relative overflow-hidden rounded-md border-2 p-2.5 cursor-pointer transition-all duration-200',
                   !getPreview(item.id) ? 'opacity-50 cursor-not-allowed bg-slate-50 border-slate-100' : 'active:scale-95',
                   order.id_service === item.id ? 'border-primary/50 shadow-sm shadow-primary/10' : 'border-slate-100 bg-white',
-                ]"
-              >
-                <div v-if="order.id_service === item.id" class="absolute -bottom-2 -right-2 w-12 h-12 bg-primary/10 rounded-full blur-lg" />
-                <div class="relative z-10">
-                  <p class="text-sm font-black text-slate-800 leading-tight mb-0.5 truncate">{{ item.name }}</p>
-                  <div v-if="getPreview(item.id)" class="inline-flex items-center text-lg  py-0.5  text-primary rounded-md  font-bold tracking-tight">
-                    {{ numberToCurrency(getPreview(item.id)?.price_guest_after || 0) }}
+                ]">
+                  <div v-if="order.id_service === item.id"
+                    class="absolute -bottom-2 -right-2 w-12 h-12 bg-primary/10 rounded-full blur-lg" />
+                  <div class="relative z-10">
+                    <p class="text-sm font-black text-slate-800 leading-tight mb-0.5 truncate">{{ item.name }}</p>
+                    <div v-if="getPreview(item.id)"
+                      class="inline-flex items-center text-lg  py-0.5  text-primary rounded-md  font-bold tracking-tight">
+                      {{ numberToCurrency(getPreview(item.id)?.price_guest_after || 0) }}
+                    </div>
+                    <p v-else
+                      class="text-[10px] text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded-md inline-block">
+                      Chưa hỗ trợ
+                    </p>
                   </div>
-                  <p v-else class="text-[10px] text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded-md inline-block">
-                    Chưa hỗ trợ
-                  </p>
                 </div>
               </div>
+              <p v-if="hasValidPrice" class="text-[12px] text-slate-500 leading-relaxed mt-3">
+                Giá tiền này đã bao gồm tất cả các khoản phí. <b>Không phát sinh thêm</b>
+              </p>
             </div>
-            <p v-if="hasValidPrice" class="text-[12px] text-slate-500 leading-relaxed mt-3">
-              Giá tiền này đã bao gồm tất cả các khoản phí. <b>Không phát sinh thêm</b>
-            </p>
-          </div>
-        </Transition>
+          </Transition>
 
-        <UButton type="submit" color="primary" class="rounded-2xl font-black text-sm shadow-xl transition-all duration-300 w-full block">
-          <span class="flex items-center justify-center gap-2 py-1 w-full">
-            <UIcon name="i-lucide-rocket" class="size-5" />
-            ĐẶT CHUYẾN NGAY
-          </span>
-        </UButton>
+          <UButton type="submit" color="primary"
+            class="rounded-2xl font-black text-sm shadow-xl transition-all duration-300 w-full block">
+            <span class="flex items-center justify-center gap-2 py-1 w-full">
+              <UIcon name="i-lucide-rocket" class="size-5" />
+              ĐẶT CHUYẾN NGAY
+            </span>
+          </UButton>
 
-      </UForm>
+        </UForm>
+      </div>
 
       <template #footer>
         <div class="flex items-center justify-center gap-2  py-3">
           <div class="flex -space-x-2">
-            <img class="w-6 h-6 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=1" alt="Avatar" />
-            <img class="w-6 h-6 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=2" alt="Avatar" />
-            <div class="w-6 h-6 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center text-[8px] font-bold">+</div>
+            <img class="w-6 h-6 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=1"
+              alt="Avatar" />
+            <img class="w-6 h-6 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=2"
+              alt="Avatar" />
+            <div
+              class="w-6 h-6 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center text-[8px] font-bold">
+              +</div>
           </div>
           <span class="text-[11px] text-slate-500 font-medium">
             Hơn <strong class="text-slate-800">1.200+</strong> người đã đặt hôm nay
@@ -139,15 +146,21 @@
           <div class="p-5 sm:px-8 sm:py-6 flex flex-col gap-3.5">
 
             <!-- Bước 1: Nhập thông tin -->
-            <UForm v-if="!otpSent" :schema="contactSchema" :state="contact" class="flex flex-col gap-3.5" @submit="onSubmitContact">
+            <UForm v-if="!otpSent" :schema="contactSchema" :state="contact" class="flex flex-col gap-3.5"
+              @submit="onSubmitContact">
               <UFormField name="name" label="Họ và tên" required :ui="{ label: 'text-xs font-medium' }">
-                <UInput v-model="contact.name" placeholder="Nguyễn Văn A" leading-icon="i-lucide-user" class="w-full" size="md" />
+                <UInput v-model="contact.name" placeholder="Nguyễn Văn A" leading-icon="i-lucide-user" class="w-full"
+                  size="md" />
               </UFormField>
-              <UFormField name="phone" label="Số điện thoại" description="Ưu tiên số có đăng ký Zalo" required :ui="{ label: 'text-xs font-medium', description: 'text-xs' }">
-                <UInput v-model="contact.phone" placeholder="0901 234 567" type="tel" leading-icon="i-lucide-phone" class="w-full" size="md" />
+              <UFormField name="phone" label="Số điện thoại" description="Ưu tiên số có đăng ký Zalo" required
+                :ui="{ label: 'text-xs font-medium', description: 'text-xs' }">
+                <UInput v-model="contact.phone" placeholder="0901 234 567" type="tel" leading-icon="i-lucide-phone"
+                  class="w-full" size="md" />
               </UFormField>
-              <UAlert v-if="hookError" color="error" variant="soft" :description="hookError" icon="i-lucide-circle-alert" />
-              <UButton type="submit" block color="primary" icon="i-lucide-send" label="Gửi mã OTP" :loading="hookLoading" class="mt-1" />
+              <UAlert v-if="hookError" color="error" variant="soft" :description="hookError"
+                icon="i-lucide-circle-alert" />
+              <UButton type="submit" block color="primary" icon="i-lucide-send" label="Gửi mã OTP"
+                :loading="hookLoading" class="mt-1" />
             </UForm>
 
             <!-- Bước 2: Nhập OTP -->
@@ -156,8 +169,10 @@
                 <UPinInput v-model="otpValue" otp :length="6" size="md" />
               </div>
               <UAlert v-if="otpError" color="error" variant="soft" :description="otpError" icon="i-lucide-circle-x" />
-              <UButton block color="primary" icon="i-lucide-check-circle" label="Xác nhận OTP" :loading="otpLoading" :disabled="otpValue.length < 6" @click="confirmOTP" />
-              <UButton block size="sm" color="neutral" variant="ghost" icon="i-lucide-arrow-left" label="Đổi số điện thoại" @click="otpSent = false" />
+              <UButton block color="primary" icon="i-lucide-check-circle" label="Xác nhận OTP" :loading="otpLoading"
+                :disabled="otpValue.length < 6" @click="confirmOTP" />
+              <UButton block size="sm" color="neutral" variant="ghost" icon="i-lucide-arrow-left"
+                label="Đổi số điện thoại" @click="otpSent = false" />
             </div>
 
             <div class="flex items-center gap-2">
@@ -211,10 +226,8 @@
               </div>
             </div>
 
-            <button
-              @click="resetAll"
-              class="w-full bg-linear-to-r from-primary to-orange-500 hover:to-orange-600 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_20px_rgba(249,115,22,0.25)] transition-all active:scale-[0.98]"
-            >
+            <button @click="resetAll"
+              class="w-full bg-linear-to-r from-primary to-orange-500 hover:to-orange-600 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_20px_rgba(249,115,22,0.25)] transition-all active:scale-[0.98]">
               Về trang chủ
             </button>
           </div>
@@ -232,7 +245,7 @@
 import type { FormSubmitEvent } from '@nuxt/ui'
 import z from 'zod'
 import type { OrderDetail, OrderPreview } from '~/type'
-
+import { orderService  } from '../../services/order.service'
 const BASE = 'https://sysdev.happytrip.vn'
 const SECRET = '123'
 
@@ -264,6 +277,35 @@ const hookLoading = ref(false)
 const otpLoading = ref(false)
 const hookError = ref('')
 const otpError = ref('')
+
+// kiểm tra cuốc đang chạy
+const hasActiveRide = ref<boolean>(false)
+const isLoadingActiveRide = ref<boolean>(true)
+
+async function checkActiveRide() {
+  isLoadingActiveRide.value = true
+  try {
+      const res =  await orderService.getActiveRide()
+
+      if(!res) {
+        hasActiveRide.value = false
+      }else if(Array.isArray(res)){
+        hasActiveRide.value = res.length > 0
+      }else{
+        hasActiveRide.value = Object.keys(res).length > 0
+      }
+
+  } catch (error) {
+    console.error('Lỗi khi kiểm tra cuốc xe đang chạy:', error)
+    hasActiveRide.value = false
+  } finally {
+    isLoadingActiveRide.value = false
+  }
+}
+
+onMounted(() => {
+  checkActiveRide()
+})
 
 // ─── Success state ────────────────────────────────────────
 const openDepositModal = ref(false)
@@ -376,7 +418,7 @@ async function sendOTP() {
 }
 
 
-const formKey = ref(0) 
+const formKey = ref(0)
 async function confirmOTP() {
   otpLoading.value = true
   otpError.value = ''
@@ -408,7 +450,7 @@ async function confirmOTP() {
     contact.name = ''
     contact.phone = ''
     otpValue.value = []
-    formKey.value++ 
+    formKey.value++
     openDepositModal.value = true
 
     setTimeout(() => { openDepositModal.value = false }, 3000)
@@ -426,6 +468,7 @@ async function confirmOTP() {
 .fade-leave-active {
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
@@ -444,6 +487,7 @@ async function confirmOTP() {
   box-shadow: inset 0px 0px 0px #f97316;
   animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both;
 }
+
 .checkmark__circle {
   stroke-dasharray: 166;
   stroke-dashoffset: 166;
@@ -453,6 +497,7 @@ async function confirmOTP() {
   fill: none;
   animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
 }
+
 .checkmark__check {
   transform-origin: 50% 50%;
   stroke-dasharray: 48;
@@ -460,7 +505,27 @@ async function confirmOTP() {
   animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
 }
 
-@keyframes stroke { 100% { stroke-dashoffset: 0; } }
-@keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
-@keyframes fill { 100% { box-shadow: inset 0px 0px 0px 50px #f97316; } }
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+
+  0%,
+  100% {
+    transform: none;
+  }
+
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 50px #f97316;
+  }
+}
 </style>
