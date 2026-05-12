@@ -43,7 +43,7 @@
           v-for="(article, index) in displayedArticles"
           :key="article.id"
           :article="article"
-          @click="navigateTo({ path: '/policy', query: { slug: article.slug } })"
+          @click="navigateTo(`/policy/${article.slug}`)"
         />
       </div>
 

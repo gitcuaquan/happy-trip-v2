@@ -2,11 +2,11 @@
   <div class="min-h-screen bg-gray-50">
 
     <!-- ─── Header cam ─── -->
-    <div class="bg-[#FF7A00] px-5 pt-12 pb-8 relative overflow-hidden rounded-b-[40px] lg:rounded-none">
+    <div class="bg-[#FF7A00] px-5 pt-12 pb-8 relative overflow-hidden rounded-b-[40px]  lg:rounded-none">
       <div class="absolute -top-10 -right-8 w-40 h-40 rounded-full bg-white/10 pointer-events-none" />
       <div class="absolute top-8 -right-2 w-20 h-20 rounded-full bg-white/10 pointer-events-none" />
 
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between items-center w-full mx-auto md:max-w-[80vw] md:px-0 sm:px-6 lg:px-8">
         <div class="flex items-center gap-3 relative z-10">
           <UAvatar icon="i-lucide-user-round" size="md" class="bg-transparent border border-white/40 text-white" />
           <div>
@@ -23,7 +23,7 @@
     </div>
 
     <UContainer>
-      <div class="px-5 -mt-7 relative z-10 mb-2">
+      <div class=" -mt-7 relative z-10 mb-2">
         <div
           class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-1.5 flex gap-2 items-center border-gray-50">
           <UInput v-model="q" icon="i-lucide-search" placeholder="Tìm điểm đến, điểm đón..." variant="none"
@@ -32,13 +32,8 @@
               base: 'text-sm text-gray-700'
             }" />
 
-          <DatePicker 
-            v-model="searchDate" 
-            hide-time-input
-            no-default
-            allow-past
-            >
-           
+          <DatePicker v-model="searchDate" hide-time-input no-default allow-past>
+
             <UButton icon="i-lucide-calendar" color="primary" variant="soft"
               class="rounded-xl px-3 py-2.5 bg-orange-50 hover:bg-orange-100 text-orange-500">
             </UButton>
@@ -47,31 +42,28 @@
       </div>
 
       <!-- Tabs -->
-      <div>
+      <div class="flex justify-end">
         <UTabs v-model="activeTab" :items="tabs" variant="pill" :ui="{
-          list: 'bg-gray-100 p-1.5 rounded-xl w-full',
+          root: 'w-full md:w-1/2',
+          list: 'bg-gray-100 p-1.5 rounded-xl',
           indicator: 'bg-white shadow-sm rounded-lg',
-          trigger: 'flex-1 justify-center text-xs font-bold py-2 rounded-lg text-gray-500 data-[state=active]:text-[#FF7A00]',
+          trigger: 'flex-1 justify-center text-xs font-bold rounded-lg text-gray-500 data-[state=active]:text-[#FF7A00]',
         }" />
       </div>
 
       <!-- ─── Content ─── -->
-      <UContainer class="py-5">
-        <!-- List -->
-        <div v-if="filteredOrders.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          <HistoryCardItem v-for="order in filteredOrders" :key="order.id" :order="order" />
-        </div>
+      <div v-if="filteredOrders.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <HistoryCardItem v-for="order in filteredOrders" :key="order.id" :order="order" />
+      </div>
 
-        <!-- Empty -->
-        <div v-else class="py-16 flex flex-col items-center text-center">
-          <div class="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center mb-3">
-            <UIcon name="i-lucide-car" class="size-8 text-orange-200" />
-          </div>
-          <p class="text-gray-700 font-bold text-sm mb-1">Chưa có cuốc xe nào</p>
-          <p class="text-gray-400 text-xs">Không có chuyến đi nào trong mục này.</p>
+      <!-- Empty -->
+      <div v-else class="py-16 flex flex-col items-center text-center">
+        <div class="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center mb-3">
+          <UIcon name="i-lucide-car" class="size-8 text-orange-200" />
         </div>
-
-      </UContainer>
+        <p class="text-gray-700 font-bold text-sm mb-1">Chưa có cuốc xe nào</p>
+        <p class="text-gray-400 text-xs">Không có chuyến đi nào trong mục này.</p>
+      </div>
 
     </UContainer>
   </div>
