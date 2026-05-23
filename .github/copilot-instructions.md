@@ -10,16 +10,17 @@ Stack: Nuxt 4, Vue 3, TypeScript, Tailwind CSS, Nuxt UI, Pinia, GSAP, Zod valida
 ## Critical Architecture Patterns
 
 ### Service Layer Design
-Services are **class-based singletons** with static factory functions, NOT composables:
+Services are **class-based singletons** exported as both factory functions and direct instances:
 ```typescript
 // `app/services/*.service.ts`
 export class DriverService {
   private baseURL = 'https://sysdev.happytrip.vn/api'
   async login(phone: string, password: string) { ... }
 }
-export const useDriverService = () => new DriverService()
+export const useDriverService = () => new DriverService()     // Factory for SSR safety
+export const customerService = new CustomerService()           // Direct singleton export
 ```
-**Usage**: Import service and instantiate with factory function in components/pages.
+**Usage**: Use factory function in components (`useDriverService()`) for SSR safety; direct export for standalone use.
 
 ### Type System
 - Core types live in `app/type.ts` (OrderDetail, DriverProfile, Address, WalletDetail, Order, HistoryOrder)
@@ -78,8 +79,9 @@ pnpm typecheck        # TypeScript validation
 
 ### Navigation & Routing
 - Hero section with call-to-action buttons link to `/driver` or `/contact`
-- No authentication middleware on public pages; driver routes rely on client-side checks
-- Pages use `ClientOnly` wrapper when accessing browser APIs (see `pages/driver/login.vue`)
+- No global authentication middleware; driver routes rely on client-side checks
+- Pages use `definePageMeta` to set layout: `layout: 'default'` (standard), `layout: false` (fullscreen), or `layout: 'driver'` (driver dashboard)
+- Auth composable `useAuth()` manages global state via `useState` + cookie-based tokens (`ht_token`)
 
 ### Styling
 - **Utility-first Tailwind + Nuxt UI**: Never create custom CSS files (only `assets/css/main.css` exists)
@@ -87,16 +89,17 @@ pnpm typecheck        # TypeScript validation
 - **Container**: All full-width sections use UContainer component for responsive max-width
 
 ### Error Handling
-- Services throw errors on critical API failures (login, profile fetch)
-- Non-critical endpoints fail silently with console.warn and return empty fallbacks:
-  ```typescript
-  async getAnnouncements(): Promise<Announcement[]> {
-    try { ... } catch (error) {
-      console.warn('Could not fetch announcements:', error)
-      return []  // Fail gracefully
-    }
+- **Critical API failures** (login, profile fetch): Throw error to caller for handling
+- **Non-critical endpoints** (announcements, page list): Fail silently with `console.error()` + `console.warn()` and return empty fallback
+- **Auth sync failures** (plugin): Log warning and call `logOut()` to clear invalid auth
+```typescript
+async getAnnouncements(): Promise<Announcement[]> {
+  try { ... } catch (error) {
+    console.error('Error fetching announcements:', error)
+    return []  // Fail gracefully
   }
-  ```
+}
+```
 
 ### Data Transformation
 - `app/utils/index.ts` contains utility functions (e.g., `numberToCurrency` for VND formatting)
@@ -113,9 +116,10 @@ pnpm typecheck        # TypeScript validation
 ## Integration Points & External Dependencies
 
 ### APIs
-- **Partner API**: `https://sysdev.happytrip.vn/api` (driver registration, login, announcements)
-- **Order API**: `https://sys.happytrip.vn/api` (order management)
+- **Partner/Customer API**: `https://sysdev.happytrip.vn/api` (driver/customer registration, login, announcements, auth)
+- **Order/Content API**: `https://sys.happytrip.vn/api` (order management, articles/pages, active rides)
 - All requests use `$fetch` from Nuxt (built-in composable)
+- Protected routes require `Authorization: Bearer ${token}` header
 
 ### Libraries & Patterns
 - **Nuxt UI**: Pre-built components (UButton, UForm, UHeader, UNavigationMenu, UIcon)
@@ -124,8 +128,9 @@ pnpm typecheck        # TypeScript validation
 - **Tailwind CSS v4**: Utility-first styling with custom container configs
 
 ### State Management
-- **Pinia module enabled** in nuxt.config but not actively used in current codebase
-- If state management needed, add stores in `app/stores/` directory
+- **Global auth state**: `useAuth()` composable manages `token` (cookie), `customerGlobal` (useState), and `isLoggedIn` computed
+- **Service calls**: Direct instantiation in pages (`const service = useDriverService()` or `import { customerService }`)
+- **Pinia module enabled** in nuxt.config but not actively used; for new state, add to `useAuth()` composable or create stores in `app/stores/` if needed
 
 ## Common Tasks & Examples
 
@@ -151,6 +156,34 @@ pnpm typecheck        # TypeScript validation
 - Props for parent→child data
 - Emits for child→parent events
 - Direct service instantiation and $fetch calls in page components (no dedicated state stores)
+
+## Key Patterns & Gotchas
+
+### API Response Unwrapping
+Backend wraps responses in data fields. Services must unwrap:
+```typescript
+// API returns: { data: DriverProfile }
+const response = await $fetch<{ data: DriverProfile }>(`${url}/partner/me`, { headers })
+return response.data  // Extract the payload
+```
+
+### Service Factory vs Direct Export
+- **Use factory** (`useDriverService()`) in components for SSR compatibility
+- **Use direct export** (`customerService`) for standalone/non-component code
+- Both patterns exist; choose appropriate one per context
+
+### Status Mapping
+Use `HISTORY_STATUS_MAP` in `type.ts` to convert numeric status codes:
+```typescript
+import { HISTORY_STATUS_MAP } from '~/type'
+const statusLabel = HISTORY_STATUS_MAP[order.status_type]  // e.g., 'in_progress', 'completed'
+```
+
+### Address Formatting
+Use `formatAddress(addr: Address, shortForm?: boolean)` utility to consistently format location data across components.
+
+### Cookie-Based Auth
+Auth token stored in `ht_token` cookie (managed via `useCookie()` in `useAuth()` composable). Token persists across page reloads for SSR safety.
 
 ## Debugging Notes
 - Dev tools enabled in nuxt.config (devtools: enabled)

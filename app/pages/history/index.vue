@@ -5,21 +5,6 @@
     <div class="bg-[#FF7A00] px-5 pt-12 pb-8 relative overflow-hidden rounded-b-[40px]  lg:rounded-none">
       <div class="absolute -top-10 -right-8 w-40 h-40 rounded-full bg-white/10 pointer-events-none" />
       <div class="absolute top-8 -right-2 w-20 h-20 rounded-full bg-white/10 pointer-events-none" />
-
-      <div class="flex justify-between items-center w-full mx-auto md:max-w-[80vw] md:px-0 sm:px-6 lg:px-8">
-        <div class="flex items-center gap-3 relative z-10">
-          <UAvatar icon="i-lucide-user-round" size="md" class="bg-transparent border border-white/40 text-white" />
-          <div>
-            <p class="text-white/80 text-xs">Xin chào,</p>
-            <p class="text-white font-extrabold text-sm">{{ getCustomer?.full_name }}</p>
-            <p class="text-white/80 text-xs">{{ getCustomer?.phone }}</p>
-          </div>
-        </div>
-
-        <div class="ml-28 px-1">
-          <UButton variant="ghost" icon="i-lucide-log-out" class="text-white hover:bg-white/20" @click="logOut" />
-        </div>
-      </div>
     </div>
 
     <UContainer>

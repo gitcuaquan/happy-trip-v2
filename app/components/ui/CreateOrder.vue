@@ -21,8 +21,7 @@
         <div>
           <h3 class="text-lg font-black text-slate-800 mb-1">Chuyến xe đang diễn ra</h3>
           <p class="text-sm text-slate-500 font-medium">Bạn đang có một chuyến xe chưa hoàn thành. Vui lòng kết thúc
-            chuyến
-            hiện tại trước khi đặt chuyến mới.</p>
+            chuyến hiện tại trước khi đặt chuyến mới.</p>
         </div>
         <UButton to="/history" color="primary" variant="soft" size="lg"
           class="rounded-xl font-bold w-full mt-2 flex justify-center">
@@ -32,7 +31,8 @@
       </div>
 
       <div v-else>
-        <UForm :schema="schema" :state="order" class="space-y-4 text-left" @submit="onSubmit" :validate-on="['input', 'blur', 'change']"   >
+        <UForm :schema="schema" :state="order" class="space-y-4 text-left" @submit="onSubmit"
+          :validate-on="['input', 'blur', 'change']">
 
           <!-- Điểm đón -->
           <div class="mb-2">
@@ -101,7 +101,7 @@
             </div>
           </Transition>
 
-          <UButton type="submit" color="primary" 
+          <UButton type="submit" color="primary"
             class="rounded-2xl font-black text-sm shadow-xl transition-all duration-300 w-full block">
             <span class="flex items-center justify-center gap-2 py-1 w-full">
               <UIcon name="i-lucide-rocket" class="size-5" />
@@ -131,23 +131,21 @@
     </UCard>
 
     <!-- Modal: Thông tin liên hệ & OTP -->
-    <UModal v-model:open="isModalOpen" @update:open="handleModalClose"   :ui="{ content: 'sm:w-120 overflow-hidden p-0', body: 'p-0' }">
+    <UModal :open="isModalOpen" @update:open="handleModalClose"
+      :ui="{ content: 'sm:w-120 overflow-hidden p-0', body: 'p-0' }">
       <template #content>
-        <div>
-          <!-- Bước 1: Nhập thông tin liên hệ -->
-          <template v-if="!showOtpModal">
+        <!-- [SỬA ĐỔI]: Thêm Transition với mode out-in -->
+        <Transition name="slide-step" mode="out-in">
+
+          <!-- Bước 1: Nhập thông tin liên hệ (Đổi từ template sang div và thêm key) -->
+          <div v-if="!showOtpModal" key="step-info">
             <div class="bg-primary px-4 pt-3 pb-2 sm:px-8 sm:pt-5 sm:pb-4 text-center">
-              <p class="text-white font-semibold text-sm sm:text-base">
-                Thông tin liên hệ
-              </p>
-              <p class="text-white/75 text-xs sm:text-sm sm:mt-1">
-                Chúng tôi sẽ xác nhận qua tin nhắn
-              </p>
+              <p class="text-white font-semibold text-sm sm:text-base">Thông tin liên hệ</p>
+              <p class="text-white/75 text-xs sm:text-sm sm:mt-1">Chúng tôi sẽ xác nhận qua tin nhắn</p>
             </div>
 
             <div class="p-5 sm:px-8 sm:py-6 flex flex-col gap-3.5">
-              <UForm :schema="contactSchema" :state="contact" class="flex flex-col gap-3.5"
-                @submit="onSubmitContact">
+              <UForm :schema="contactSchema" :state="contact" class="flex flex-col gap-3.5" @submit="onSubmitContact">
                 <UFormField name="name" label="Họ và tên" required :ui="{ label: 'text-xs font-medium' }">
                   <UInput v-model="contact.name" placeholder="Nguyễn Văn A" leading-icon="i-lucide-user" class="w-full"
                     size="md" />
@@ -169,29 +167,23 @@
                 <div class="flex-1 h-px bg-slate-100" />
               </div>
             </div>
-          </template>
+          </div>
 
-          <!-- Bước 2: Nhập OTP -->
-          <template v-else>
+          <!-- Bước 2: Nhập OTP (Đổi từ template sang div và thêm key) -->
+          <div v-else key="step-otp">
             <div class="bg-primary px-4 pt-3 pb-2 sm:px-8 sm:pt-5 sm:pb-4 text-center">
-              <p class="text-white font-semibold text-sm sm:text-base">
-                Nhập mã OTP
-              </p>
-              <p class="text-white/75 text-xs sm:text-sm sm:mt-1">
-                Mã đã gửi về {{ contact.phone }}
-              </p>
+              <p class="text-white font-semibold text-sm sm:text-base">Nhập mã OTP</p>
+              <p class="text-white/75 text-xs sm:text-sm sm:mt-1">Mã đã gửi về {{ contact.phone }}</p>
             </div>
 
             <div class="p-5 sm:px-8 sm:py-6 flex flex-col gap-3.5">
               <div class="flex justify-center">
                 <UPinInput v-model="otpValue" otp :length="6" size="md" />
               </div>
-              <UAlert v-if="otpError" color="error" variant="soft" :description="otpError"
-                icon="i-lucide-circle-x" />
+              <UAlert v-if="otpError" color="error" variant="soft" :description="otpError" icon="i-lucide-circle-x" />
               <UButton block color="primary" icon="i-lucide-check-circle" label="Xác nhận OTP" :loading="otpLoading"
                 :disabled="otpValue.length < 6" @click="confirmOTP" />
-              
-              <!-- Gửi lại OTP -->
+
               <p class="text-center text-xs text-slate-500">
                 Không nhận được mã?
                 <button type="button" class="text-primary font-semibold disabled:opacity-40"
@@ -209,8 +201,9 @@
                 <div class="flex-1 h-px bg-slate-100" />
               </div>
             </div>
-          </template>
-        </div>
+          </div>
+
+        </Transition>
       </template>
     </UModal>
 
@@ -266,21 +259,30 @@
         </div>
       </template>
     </UModal>
-
   </div>
 </template>
 
 <script lang="ts" setup>
+// ─── 1. Imports & Configs ──────────────────────────────────────────
 import type { FormSubmitEvent } from '@nuxt/ui'
 import z from 'zod'
-import type { OrderDetail, OrderPreview } from '~/type'
-import { orderService  } from '../../services/order.service'
+import type { OrderDetail, OrderPreview, CustomerProfile } from '~/type'
+import { orderService } from '../../services/order.service'
 
 const BASE = 'https://sysdev.happytrip.vn'
 const SECRET = '123'
-import type {CustomerProfile} from '~/type'
+
+// ─── 2. Composables ────────────────────────────────────────────────
 const { setAuth } = useAuth()
-// ─── Order state ──────────────────────────────────────────
+
+// ─── 3. State & Refs ───────────────────────────────────────────────
+const formKey = ref(0)
+
+// Active Ride State
+const hasActiveRide = ref<boolean>(false)
+const isLoadingActiveRide = ref<boolean>(true)
+
+// Order Form State
 const order = ref<OrderPreview>({
   id_service: '',
   date_of_destination: null,
@@ -299,10 +301,10 @@ const services = ref([
 
 const previews = ref<OrderDetail[]>([])
 
-// ─── Contact & OTP state ──────────────────────────────────
-const contact = reactive({ name: '', phone: '' })
+// Contact & OTP Modal State
 const isModalOpen = ref(false)
 const showOtpModal = ref(false)
+const contact = reactive({ name: '', phone: '' })
 const otpValue = ref<string[]>([])
 const resendCooldown = ref(0)
 const hookLoading = ref(false)
@@ -310,56 +312,12 @@ const otpLoading = ref(false)
 const hookError = ref('')
 const otpError = ref('')
 
-// kiểm tra cuốc đang chạy
-const hasActiveRide = ref<boolean>(false)
-const isLoadingActiveRide = ref<boolean>(true)
-
-async function checkActiveRide() {
-  isLoadingActiveRide.value = true
-  try {
-      const res =  await orderService.getActiveRide()
-
-      if(!res) {
-        hasActiveRide.value = false
-      }else if(Array.isArray(res)){
-        hasActiveRide.value = res.length > 0
-      }else{
-        hasActiveRide.value = Object.keys(res).length > 0
-      }
-
-  } catch (error) {
-    console.error('Lỗi khi kiểm tra cuốc xe đang chạy:', error)
-    hasActiveRide.value = false
-  } finally {
-    isLoadingActiveRide.value = false
-  }
-}
-
-onMounted(() => {
-  checkActiveRide()
-})
-
-// ─── Success state ────────────────────────────────────────
+// Success Modal State
 const openDepositModal = ref(false)
 const savedPrice = ref(0)
 const successData = ref({ departure_city: '', destination_city: '', service_name: '', price: 0 })
 
-// ─── Computed ─────────────────────────────────────────────
-const addressReady = computed(() => {
-  const o = order.value
-  return !!(
-    o.departure_city && o.departure_dictrict && o.departure_address_1 &&
-    o.destination_city && o.destination_dictrict && o.destination_address_1
-  )
-})
-
-
-const hasRouteData = computed(() => previews.value.length > 0)
-const hasValidPrice = computed(() => previews.value.some(p => p.price_guest_after > 0))
-const getPreview = (id: string) => previews.value.find(p => p.id_service === id && p.price_guest_after > 0)
-const canSubmit = computed(() => hasValidPrice.value && order.value.id_service)
-
-// ─── Schemas ──────────────────────────────────────────────
+// ─── 4. Schemas ────────────────────────────────────────────────────
 const schema = z.object({
   departure_city: z.string().min(1, 'Vui lòng chọn Tỉnh/TP'),
   departure_dictrict: z.string().min(1, 'Vui lòng chọn Phường/Xã'),
@@ -377,10 +335,84 @@ const contactSchema = z.object({
 type Schema = z.infer<typeof schema>
 type ContactSchema = z.infer<typeof contactSchema>
 
-// ─── Handlers ─────────────────────────────────────────────
+// ─── 5. Computed ───────────────────────────────────────────────────
+const addressReady = computed(() => {
+  const o = order.value
+  return !!(
+    o.departure_city && o.departure_dictrict && o.departure_address_1 &&
+    o.destination_city && o.destination_dictrict && o.destination_address_1
+  )
+})
+
+const hasRouteData = computed(() => previews.value.length > 0)
+const hasValidPrice = computed(() => previews.value.some(p => p.price_guest_after > 0))
+const getPreview = (id: string) => previews.value.find(p => p.id_service === id && p.price_guest_after > 0)
+const canSubmit = computed(() => hasValidPrice.value && order.value.id_service)
+
+// ─── 6. Methods (Handlers & API) ───────────────────────────────────
+function handleModalClose(value: boolean) {
+  if (!value) {
+    // Nếu đang ở màn hình nhập OTP -> Lùi lại màn hình thông tin, KHÔNG đóng Modal
+    if (showOtpModal.value) {
+      showOtpModal.value = false
+      return
+    }
+  }
+
+  // Nếu đang ở form thông tin hoặc có lệnh mở -> Thực hiện đóng/mở bình thường
+  isModalOpen.value = value
+
+  // Tùy chọn: Xóa dữ liệu OTP để lần sau mở lên mượt hơn
+  if (!value) {
+    setTimeout(() => {
+      otpValue.value = []
+      otpError.value = ''
+    }, 200)
+  }
+}
+
+async function checkActiveRide() {
+  isLoadingActiveRide.value = true
+  try {
+    const res = await orderService.getActiveRide()
+
+    if (!res) {
+      hasActiveRide.value = false
+    } else if (Array.isArray(res)) {
+      hasActiveRide.value = res.length > 0
+    } else {
+      hasActiveRide.value = Object.keys(res).length > 0
+    }
+  } catch (error) {
+    console.error('Lỗi khi kiểm tra cuốc xe đang chạy:', error)
+    hasActiveRide.value = false
+  } finally {
+    isLoadingActiveRide.value = false
+  }
+}
+
+async function calcPreviews() {
+  const results = await Promise.allSettled(
+    services.value.map(s =>
+      $fetch<OrderDetail>(`${BASE}/api/order/preview`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', origin: 'https://happytrip.vn', referer: 'https://happytrip.vn/' },
+        body: { ...order.value, id_service: s.id },
+      })
+    )
+  )
+  previews.value = results
+    .filter((r): r is PromiseFulfilledResult<OrderDetail> => r.status === 'fulfilled')
+    .map(r => r.value)
+}
+
+function selectService(item: { id: string }) {
+  if (!getPreview(item.id)) return
+  order.value.id_service = item.id
+}
+
 function onSubmit(_e: FormSubmitEvent<Schema>) {
   if (!canSubmit.value) return
-  
   isModalOpen.value = true
   hookError.value = ''
   otpError.value = ''
@@ -390,18 +422,32 @@ function onSubmitContact(_e: FormSubmitEvent<ContactSchema>) {
   sendOTP()
 }
 
-function selectService(item: { id: string }) {
-  if (!getPreview(item.id)) return
-  order.value.id_service = item.id
-}
+async function sendOTP() {
+  hookLoading.value = true
+  hookError.value = ''
+  const preview = getPreview(order.value.id_service)
+  savedPrice.value = preview?.price_guest_after || 0
 
-function handleModalClose(value: boolean) {
-  // Nếu click outside ở bước OTP (showOtpModal = true) → quay lại bước info (không đóng modal)
-  if (value === false && showOtpModal.value) {
-    showOtpModal.value = false
-  } else {
-    // Nếu ở bước info → cho phép đóng modal
-    isModalOpen.value = value
+  try {
+    await $fetch(`${BASE}/api/order/hook`, {
+      method: 'POST',
+      params: { secret: SECRET },
+      headers: { 'Content-Type': 'application/json' },
+      body: {
+        ...order.value,
+        full_name: contact.name,
+        phone: contact.phone,
+        price_guest_after: preview?.price_guest_after ?? 0,
+        price_guest: preview?.price_guest ?? 0,
+        price: preview?.price_original ?? 0,
+      },
+    })
+    showOtpModal.value = true
+    startResendCooldown()
+  } catch {
+    hookError.value = 'Không thể gửi OTP. Vui lòng thử lại.'
+  } finally {
+    hookLoading.value = false
   }
 }
 
@@ -413,7 +459,7 @@ function handleBackToInfo() {
 
 async function handleResend() {
   if (resendCooldown.value > 0 || hookLoading.value) return
-  
+
   hookLoading.value = true
   hookError.value = ''
   const preview = getPreview(order.value.id_service)
@@ -451,74 +497,11 @@ function startResendCooldown() {
   }, 1000)
 }
 
-function resetAll() {
-  openDepositModal.value = false
-  navigateTo('/')
-}
-
-// ─── Watch ────────────────────────────────────────────────
-watch(addressReady, async (val) => {
-  if (!val) {
-    previews.value = []
-    order.value.id_service = ''  
-    return
-  }
-  await calcPreviews()
-  order.value.id_service = services.value[0]?.id || ''
-})
-
-// ─── API ──────────────────────────────────────────────────
-async function calcPreviews() {
-  const results = await Promise.allSettled(
-    services.value.map(s =>
-      $fetch<OrderDetail>(`${BASE}/api/order/preview`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', origin: 'https://happytrip.vn', referer: 'https://happytrip.vn/' },
-        body: { ...order.value, id_service: s.id },
-      })
-    )
-  )
-  previews.value = results
-    .filter((r): r is PromiseFulfilledResult<OrderDetail> => r.status === 'fulfilled')
-    .map(r => r.value)
-}
-
-async function sendOTP() {
-  hookLoading.value = true
-  hookError.value = ''
-  const preview = getPreview(order.value.id_service)
-  savedPrice.value = preview?.price_guest_after || 0
-
-  try {
-    await $fetch(`${BASE}/api/order/hook`, {
-      method: 'POST',
-      params: { secret: SECRET },
-      headers: { 'Content-Type': 'application/json' },
-      body: {
-        ...order.value,
-        full_name: contact.name,
-        phone: contact.phone,
-        price_guest_after: preview?.price_guest_after ?? 0,
-        price_guest: preview?.price_guest ?? 0,
-        price: preview?.price_original ?? 0,
-      },
-    })
-    showOtpModal.value = true
-    startResendCooldown()
-  } catch {
-    hookError.value = 'Không thể gửi OTP. Vui lòng thử lại.'
-  } finally {
-    hookLoading.value = false
-  }
-}
-
-
-const formKey = ref(0)
 async function confirmOTP() {
   otpLoading.value = true
   otpError.value = ''
   try {
-    const res = await $fetch<{ token: string, customer: CustomerProfile }>( // ← typed
+    const res = await $fetch<{ token: string, customer: CustomerProfile }>(
       `${BASE}/api/order/confirm-otp/${SECRET}`,
       {
         method: 'POST',
@@ -566,14 +549,25 @@ async function confirmOTP() {
   }
 }
 
-// Nếu người dùng click outside modal ở bước nhập OTP, sẽ không đóng modal mà quay lại bước nhập thông tin liên hệ
-watch(isModalOpen, (val) => {
-  if (!val && showOtpModal.value) {
-    nextTick(() => {
-      isModalOpen.value = true
-      showOtpModal.value = false
-    })
+function resetAll() {
+  openDepositModal.value = false
+  navigateTo('/')
+}
+
+// ─── 7. Watchers & Lifecycles ──────────────────────────────────────
+watch(addressReady, async (val) => {
+  if (!val) {
+    previews.value = []
+    order.value.id_service = ''
+    return
   }
+  await calcPreviews()
+  order.value.id_service = services.value[0]?.id || ''
+})
+
+
+onMounted(() => {
+  checkActiveRide()
 })
 </script>
 
@@ -641,5 +635,21 @@ watch(isModalOpen, (val) => {
   100% {
     box-shadow: inset 0px 0px 0px 50px #f97316;
   }
+}
+
+/* [SỬA ĐỔI]: Thêm CSS cho hiệu ứng chuyển bước trong Modal OTP */
+.slide-step-enter-active,
+.slide-step-leave-active {
+  transition: all 0.25s ease-out;
+}
+
+.slide-step-enter-from {
+  opacity: 0;
+  transform: translateX(15px);
+}
+
+.slide-step-leave-to {
+  opacity: 0;
+  transform: translateX(-15px);
 }
 </style>

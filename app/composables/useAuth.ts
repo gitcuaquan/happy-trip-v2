@@ -2,7 +2,13 @@ import type { CustomerProfile } from '~/type'
 import { customerService } from '~/services/customer.service'
 
 export const useAuth = () => {
-    const token = useCookie<string | null>('ht_token')
+    // Cookie lưu vĩnh viễn: maxAge 365 ngày, path '/' để tất cả route có thể dùng
+    const token = useCookie<string | null>('ht_token', {
+        maxAge: 60 * 60 * 24 * 365, // 365 ngày (tính bằng giây)
+        path: '/',
+        secure: false, // Set true nếu dùng HTTPS
+        httpOnly: false, // Client-side cookie
+    })
 
     // Customer lưu trong ref (client-only, tránh SSR hydration issues)
     const customerGlobal = useState<CustomerProfile | null>('customerGlobal', () => null)
@@ -18,7 +24,6 @@ export const useAuth = () => {
     // Set auth sau khi OTP thành công
     function setAuth(newToken: string, customer: CustomerProfile) {
         token.value = newToken
-        refreshCookie('ht_token')
         customerGlobal.value = customer
     }
 
