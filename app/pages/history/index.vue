@@ -11,13 +11,13 @@
           <UAvatar icon="i-lucide-user-round" size="md" class="bg-transparent border border-white/40 text-white" />
           <div>
             <p class="text-white/80 text-xs">Xin chào,</p>
-            <p class="text-white font-extrabold text-sm">{{ user.name }}</p>
-            <p class="text-white/80 text-xs">{{ user.phone }}</p>
+            <p class="text-white font-extrabold text-sm">{{ getCustomer?.full_name }}</p>
+            <p class="text-white/80 text-xs">{{ getCustomer?.phone }}</p>
           </div>
         </div>
 
         <div class="ml-28 px-1">
-          <UButton variant="ghost" icon="i-lucide-log-out" class="text-white hover:bg-white/20" to="/" />
+          <UButton variant="ghost" icon="i-lucide-log-out" class="text-white hover:bg-white/20" @click="logOut" />
         </div>
       </div>
     </div>
@@ -75,8 +75,8 @@ import HistoryCardItem from '~/components/history/card-item.vue'
 import DatePicker from '~/components/ui/DatePicker.vue'
 import type { HistoryOrder, HistoryOrderStatus } from '~/type'
 
-const user = { name: 'Nguyễn Văn An', phone: '0123 456 789' }
 
+const { getCustomer, logOut } = useAuth()
 const mockOrders: HistoryOrder[] = [
   {
     id: 'HT-001', short_id: '001', status: 'in_progress', status_name: 'Đang thực hiện',

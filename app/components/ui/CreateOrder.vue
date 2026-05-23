@@ -32,7 +32,7 @@
       </div>
 
       <div v-else>
-        <UForm :schema="schema" :state="order" class="space-y-4 text-left" @submit="onSubmit">
+        <UForm :schema="schema" :state="order" class="space-y-4 text-left" @submit="onSubmit" :validate-on="['input', 'blur', 'change']"   >
 
           <!-- Điểm đón -->
           <div class="mb-2">
@@ -101,7 +101,7 @@
             </div>
           </Transition>
 
-          <UButton type="submit" color="primary"
+          <UButton type="submit" color="primary" 
             class="rounded-2xl font-black text-sm shadow-xl transition-all duration-300 w-full block">
             <span class="flex items-center justify-center gap-2 py-1 w-full">
               <UIcon name="i-lucide-rocket" class="size-5" />
@@ -131,56 +131,85 @@
     </UCard>
 
     <!-- Modal: Thông tin liên hệ & OTP -->
-    <UModal v-model:open="isModalOpen" :ui="{ content: 'sm:w-120 overflow-hidden p-0', body: 'p-0' }">
+    <UModal v-model:open="isModalOpen" @update:open="handleModalClose"   :ui="{ content: 'sm:w-120 overflow-hidden p-0', body: 'p-0' }">
       <template #content>
         <div>
-          <div class="bg-primary px-4 pt-3 pb-2 sm:px-8 sm:pt-5 sm:pb-4 text-center">
-            <p class="text-white font-semibold text-sm sm:text-base">
-              {{ otpSent ? 'Nhập mã OTP' : 'Thông tin liên hệ' }}
-            </p>
-            <p class="text-white/75 text-xs sm:text-sm sm:mt-1">
-              {{ otpSent ? `Mã đã gửi đến ${contact.phone}` : 'Chúng tôi sẽ xác nhận qua tin nhắn' }}
-            </p>
-          </div>
+          <!-- Bước 1: Nhập thông tin liên hệ -->
+          <template v-if="!showOtpModal">
+            <div class="bg-primary px-4 pt-3 pb-2 sm:px-8 sm:pt-5 sm:pb-4 text-center">
+              <p class="text-white font-semibold text-sm sm:text-base">
+                Thông tin liên hệ
+              </p>
+              <p class="text-white/75 text-xs sm:text-sm sm:mt-1">
+                Chúng tôi sẽ xác nhận qua tin nhắn
+              </p>
+            </div>
 
-          <div class="p-5 sm:px-8 sm:py-6 flex flex-col gap-3.5">
+            <div class="p-5 sm:px-8 sm:py-6 flex flex-col gap-3.5">
+              <UForm :schema="contactSchema" :state="contact" class="flex flex-col gap-3.5"
+                @submit="onSubmitContact">
+                <UFormField name="name" label="Họ và tên" required :ui="{ label: 'text-xs font-medium' }">
+                  <UInput v-model="contact.name" placeholder="Nguyễn Văn A" leading-icon="i-lucide-user" class="w-full"
+                    size="md" />
+                </UFormField>
+                <UFormField name="phone" label="Số điện thoại" description="Ưu tiên số có đăng ký Zalo" required
+                  :ui="{ label: 'text-xs font-medium', description: 'text-xs' }">
+                  <UInput v-model="contact.phone" placeholder="0901 234 567" type="tel" leading-icon="i-lucide-phone"
+                    class="w-full" size="md" />
+                </UFormField>
+                <UAlert v-if="hookError" color="error" variant="soft" :description="hookError"
+                  icon="i-lucide-circle-alert" />
+                <UButton type="submit" block color="primary" icon="i-lucide-send" label="Gửi mã OTP"
+                  :loading="hookLoading" class="mt-1" />
+              </UForm>
 
-            <!-- Bước 1: Nhập thông tin -->
-            <UForm v-if="!otpSent" :schema="contactSchema" :state="contact" class="flex flex-col gap-3.5"
-              @submit="onSubmitContact">
-              <UFormField name="name" label="Họ và tên" required :ui="{ label: 'text-xs font-medium' }">
-                <UInput v-model="contact.name" placeholder="Nguyễn Văn A" leading-icon="i-lucide-user" class="w-full"
-                  size="md" />
-              </UFormField>
-              <UFormField name="phone" label="Số điện thoại" description="Ưu tiên số có đăng ký Zalo" required
-                :ui="{ label: 'text-xs font-medium', description: 'text-xs' }">
-                <UInput v-model="contact.phone" placeholder="0901 234 567" type="tel" leading-icon="i-lucide-phone"
-                  class="w-full" size="md" />
-              </UFormField>
-              <UAlert v-if="hookError" color="error" variant="soft" :description="hookError"
-                icon="i-lucide-circle-alert" />
-              <UButton type="submit" block color="primary" icon="i-lucide-send" label="Gửi mã OTP"
-                :loading="hookLoading" class="mt-1" />
-            </UForm>
+              <div class="flex items-center gap-2">
+                <div class="flex-1 h-px bg-slate-100" />
+                <span class="text-[10px] text-slate-400">bảo mật & an toàn</span>
+                <div class="flex-1 h-px bg-slate-100" />
+              </div>
+            </div>
+          </template>
 
-            <!-- Bước 2: Nhập OTP -->
-            <div v-else class="flex flex-col gap-3.5">
+          <!-- Bước 2: Nhập OTP -->
+          <template v-else>
+            <div class="bg-primary px-4 pt-3 pb-2 sm:px-8 sm:pt-5 sm:pb-4 text-center">
+              <p class="text-white font-semibold text-sm sm:text-base">
+                Nhập mã OTP
+              </p>
+              <p class="text-white/75 text-xs sm:text-sm sm:mt-1">
+                Mã đã gửi về {{ contact.phone }}
+              </p>
+            </div>
+
+            <div class="p-5 sm:px-8 sm:py-6 flex flex-col gap-3.5">
               <div class="flex justify-center">
                 <UPinInput v-model="otpValue" otp :length="6" size="md" />
               </div>
-              <UAlert v-if="otpError" color="error" variant="soft" :description="otpError" icon="i-lucide-circle-x" />
+              <UAlert v-if="otpError" color="error" variant="soft" :description="otpError"
+                icon="i-lucide-circle-x" />
               <UButton block color="primary" icon="i-lucide-check-circle" label="Xác nhận OTP" :loading="otpLoading"
                 :disabled="otpValue.length < 6" @click="confirmOTP" />
-              <UButton block size="sm" color="neutral" variant="ghost" icon="i-lucide-arrow-left"
-                label="Đổi số điện thoại" @click="otpSent = false" />
-            </div>
+              
+              <!-- Gửi lại OTP -->
+              <p class="text-center text-xs text-slate-500">
+                Không nhận được mã?
+                <button type="button" class="text-primary font-semibold disabled:opacity-40"
+                  :disabled="resendCooldown > 0 || otpLoading" @click="handleResend">
+                  {{ resendCooldown > 0 ? `Gửi lại (${resendCooldown}s)` : 'Gửi lại' }}
+                </button>
+              </p>
 
-            <div class="flex items-center gap-2">
-              <div class="flex-1 h-px bg-slate-100" />
-              <span class="text-[10px] text-slate-400">bảo mật & an toàn</span>
-              <div class="flex-1 h-px bg-slate-100" />
+              <UButton block size="sm" color="neutral" variant="ghost" icon="i-lucide-arrow-left"
+                label="Đổi số điện thoại" @click="handleBackToInfo" />
+
+              <div class="flex items-center gap-2">
+                <div class="flex-1 h-px bg-slate-100" />
+                <span class="text-[10px] text-slate-400">bảo mật & an toàn</span>
+                <div class="flex-1 h-px bg-slate-100" />
+              </div>
             </div>
-          </div>
+          </template>
         </div>
       </template>
     </UModal>
@@ -246,9 +275,11 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import z from 'zod'
 import type { OrderDetail, OrderPreview } from '~/type'
 import { orderService  } from '../../services/order.service'
+
 const BASE = 'https://sysdev.happytrip.vn'
 const SECRET = '123'
-
+import type {CustomerProfile} from '~/type'
+const { setAuth } = useAuth()
 // ─── Order state ──────────────────────────────────────────
 const order = ref<OrderPreview>({
   id_service: '',
@@ -271,8 +302,9 @@ const previews = ref<OrderDetail[]>([])
 // ─── Contact & OTP state ──────────────────────────────────
 const contact = reactive({ name: '', phone: '' })
 const isModalOpen = ref(false)
-const otpSent = ref(false)
+const showOtpModal = ref(false)
 const otpValue = ref<string[]>([])
+const resendCooldown = ref(0)
 const hookLoading = ref(false)
 const otpLoading = ref(false)
 const hookError = ref('')
@@ -315,12 +347,17 @@ const successData = ref({ departure_city: '', destination_city: '', service_name
 // ─── Computed ─────────────────────────────────────────────
 const addressReady = computed(() => {
   const o = order.value
-  return !!(o.departure_city && o.departure_dictrict && o.destination_city && o.destination_dictrict)
+  return !!(
+    o.departure_city && o.departure_dictrict && o.departure_address_1 &&
+    o.destination_city && o.destination_dictrict && o.destination_address_1
+  )
 })
+
 
 const hasRouteData = computed(() => previews.value.length > 0)
 const hasValidPrice = computed(() => previews.value.some(p => p.price_guest_after > 0))
 const getPreview = (id: string) => previews.value.find(p => p.id_service === id && p.price_guest_after > 0)
+const canSubmit = computed(() => hasValidPrice.value && order.value.id_service)
 
 // ─── Schemas ──────────────────────────────────────────────
 const schema = z.object({
@@ -342,9 +379,9 @@ type ContactSchema = z.infer<typeof contactSchema>
 
 // ─── Handlers ─────────────────────────────────────────────
 function onSubmit(_e: FormSubmitEvent<Schema>) {
+  if (!canSubmit.value) return
+  
   isModalOpen.value = true
-  otpSent.value = false
-  otpValue.value = []
   hookError.value = ''
   otpError.value = ''
 }
@@ -358,15 +395,72 @@ function selectService(item: { id: string }) {
   order.value.id_service = item.id
 }
 
+function handleModalClose(value: boolean) {
+  // Nếu click outside ở bước OTP (showOtpModal = true) → quay lại bước info (không đóng modal)
+  if (value === false && showOtpModal.value) {
+    showOtpModal.value = false
+  } else {
+    // Nếu ở bước info → cho phép đóng modal
+    isModalOpen.value = value
+  }
+}
+
+function handleBackToInfo() {
+  showOtpModal.value = false
+  otpValue.value = []
+  otpError.value = ''
+}
+
+async function handleResend() {
+  if (resendCooldown.value > 0 || hookLoading.value) return
+  
+  hookLoading.value = true
+  hookError.value = ''
+  const preview = getPreview(order.value.id_service)
+  savedPrice.value = preview?.price_guest_after || 0
+
+  try {
+    await $fetch(`${BASE}/api/order/hook`, {
+      method: 'POST',
+      params: { secret: SECRET },
+      headers: { 'Content-Type': 'application/json' },
+      body: {
+        ...order.value,
+        full_name: contact.name,
+        phone: contact.phone,
+        price_guest_after: preview?.price_guest_after ?? 0,
+        price_guest: preview?.price_guest ?? 0,
+        price: preview?.price_original ?? 0,
+      },
+    })
+    otpValue.value = []
+    otpError.value = ''
+    startResendCooldown()
+  } catch {
+    otpError.value = 'Không thể gửi lại OTP. Vui lòng thử lại.'
+  } finally {
+    hookLoading.value = false
+  }
+}
+
+function startResendCooldown() {
+  resendCooldown.value = 60
+  const interval = setInterval(() => {
+    resendCooldown.value--
+    if (resendCooldown.value <= 0) clearInterval(interval)
+  }, 1000)
+}
+
 function resetAll() {
   openDepositModal.value = false
-  window.location.reload()
+  navigateTo('/')
 }
 
 // ─── Watch ────────────────────────────────────────────────
 watch(addressReady, async (val) => {
   if (!val) {
     previews.value = []
+    order.value.id_service = ''  
     return
   }
   await calcPreviews()
@@ -409,7 +503,8 @@ async function sendOTP() {
         price: preview?.price_original ?? 0,
       },
     })
-    otpSent.value = true
+    showOtpModal.value = true
+    startResendCooldown()
   } catch {
     hookError.value = 'Không thể gửi OTP. Vui lòng thử lại.'
   } finally {
@@ -423,11 +518,20 @@ async function confirmOTP() {
   otpLoading.value = true
   otpError.value = ''
   try {
-    await $fetch(`${BASE}/api/order/confirm-otp/${SECRET}`, {
-      method: 'POST',
-      params: { otp: otpValue.value.join('') },
-    })
+    const res = await $fetch<{ token: string, customer: CustomerProfile }>( // ← typed
+      `${BASE}/api/order/confirm-otp/${SECRET}`,
+      {
+        method: 'POST',
+        params: { otp: otpValue.value.join('') },
+      }
+    )
+
+    if (res.token && res.customer) {
+      setAuth(res.token, res.customer)
+    }
     isModalOpen.value = false
+    showOtpModal.value = false
+    otpValue.value = []
     successData.value = {
       departure_city: order.value.departure_city,
       destination_city: order.value.destination_city,
@@ -449,7 +553,7 @@ async function confirmOTP() {
     previews.value = []
     contact.name = ''
     contact.phone = ''
-    otpValue.value = []
+    resendCooldown.value = 0
     formKey.value++
     openDepositModal.value = true
 
@@ -461,6 +565,16 @@ async function confirmOTP() {
     otpLoading.value = false
   }
 }
+
+// Nếu người dùng click outside modal ở bước nhập OTP, sẽ không đóng modal mà quay lại bước nhập thông tin liên hệ
+watch(isModalOpen, (val) => {
+  if (!val && showOtpModal.value) {
+    nextTick(() => {
+      isModalOpen.value = true
+      showOtpModal.value = false
+    })
+  }
+})
 </script>
 
 <style scoped>

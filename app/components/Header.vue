@@ -17,34 +17,66 @@
     <template #left>
       <AppLogo class="w-auto h-6 shrink-0" />
     </template>
-    <UNavigationMenu
-      :items="items"
-      variant="link"
-      :ui="{
-        linkLabel: 'font-bold text-gray-900 hover:text-primary transition-colors duration-300 hover:border-b-2 hover:border-primary border-transparent border-b-2',
-        list: 'gap-10',
-      }"
-      class="uppercase"
-    />
+    <UNavigationMenu :items="items" variant="link" :ui="{
+      linkLabel: 'font-bold text-gray-900 hover:text-primary transition-colors duration-300 hover:border-b-2 hover:border-primary border-transparent border-b-2',
+      list: 'gap-10',
+    }" class="uppercase" />
     <template #body>
-      <UNavigationMenu  :items="items" orientation="vertical" class="-mx-2.5" />
+      <UNavigationMenu :items="items" orientation="vertical" class="-mx-2.5" />
     </template>
     <template #right>
-      <UButton
-        to="/contact"
-        size="md"
-        icon="i-lucide-phone"
-        label="Hotline"
-        color="primary"
-        class="rounded-4xl"
-      />
+      <ClientOnly>
+        <!-- Chưa login -->
+        <template v-if="!isLoggedIn">
+          <UButton to="/login" label="Đăng nhập" icon="i-lucide-user" color="primary" variant="solid" size="xs"
+            class="rounded-full uppercase font-bold text-xs tracking-wide py-2.5 lg:px-5" />
+        </template>
+
+        <!-- Đã login -->
+        <template v-else>
+          <UDropdownMenu :items="menuItems">
+            <UButton variant="ghost"
+              class="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-primary/10 transition-colors">
+              <div class="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
+                <span class="text-xs font-bold text-primary uppercase leading-none">
+                  {{ getCustomer?.full_name?.charAt(0) ?? '?' }}
+                </span>
+              </div>
+              <span class="text-sm font-semibold text-gray-800 dark:text-white max-w-24 truncate">
+                {{ getCustomer?.phone }}
+              </span>
+              <UIcon name="i-lucide-chevron-down" class="size-3.5 text-muted shrink-0" />
+            </UButton>
+          </UDropdownMenu>
+        </template>
+      </ClientOnly>
     </template>
   </UHeader>
 </template>
 
 <script lang="ts" setup>
 import type { NavigationMenuItem } from "@nuxt/ui";
-const route = useRoute();
+
+const { isLoggedIn, getCustomer, logOut } = useAuth()
+
+const menuItems = computed(() => [
+  [
+    {
+      label: 'Chuyến xe của tôi',
+      icon: 'i-lucide-package',
+      onSelect: () => navigateTo('/history')
+    }
+  ],
+  [
+    {
+      label: 'Đăng xuất',
+      icon: 'i-lucide-log-out',
+      color: 'error' as const,
+      onSelect: logOut
+    }
+  ]
+])
+
 const isMounted = ref(false);
 onMounted(() => {
   isMounted.value = true;

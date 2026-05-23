@@ -16,7 +16,6 @@
         :search-input="{ placeholder: 'Tìm kiếm...' }"
         color="neutral"
         variant="outline"
-       
         class="w-full"
         @update:model-value="onCityChange"
       />
@@ -37,7 +36,6 @@
         :disabled="!selectedCityId"
         color="neutral"
         variant="outline"
-       
         class="w-full"
         @update:model-value="onDistrictChange"
       />
@@ -56,14 +54,12 @@
         :disabled="!selectedDistrictName"
         color="neutral"
         variant="outline"
-       
         class="w-full"
-        @input="emit('update:address', detailAddress)"
+        @update:model-value="emit('update:address', $event)"  
       />
     </UFormField>
   </div>
 </template>
-
 <script lang="ts" setup>
 interface City {
   id: string;
@@ -174,4 +170,16 @@ function onDistrictChange(district: string) {
   detailAddress.value = "";
   emit("update:address", "");
 }
+
+watch(() => props.address, (val) => {
+  if (val !== detailAddress.value) detailAddress.value = val
+})
+
+watch(() => props.city, (val) => {
+  if (!val) {
+    selectedCityId.value = ''
+    cityData.value = null
+  }
+})
+
 </script>

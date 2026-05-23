@@ -215,10 +215,28 @@ export function formatAddress(addr: Address, shortForm = false): string {
 }
 
 
+// === LOGIN ===
+export interface CustomerProfile {
+  id: string
+  full_name: string
+  phone: string
+  created_at: string
+} 
+
+export interface ConfirmOtpResponse {
+  token: string
+  customer: CustomerProfile
+  order?: unknown // có khi đặt xe, k có khi chỉ đăng nhập
+} 
 
 
-
-
+export interface LoginResponse {
+  accessToken: string
+  id: string
+  fullName: string
+  phone: string
+  tokenType: string
+}
 
 
 
