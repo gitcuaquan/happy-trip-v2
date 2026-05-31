@@ -156,21 +156,6 @@ export interface WalletDetail {
   wallet_id: string
 }
 
-export interface Order {
-  id: string
-  short_id: string
-  departure: { city: string; district: string; address_1: string }
-  destination: { city: string; district: string; address_1: string }
-  date_of_destination: string
-  price_guest_after: number
-  price_guest: number
-  status_type: number
-  status_name: string
-  name_service: string
-  time_label?: string
-  customer?: { full_name: string; phone: string }
-  created_at?: string
-}
 
 export interface Announcement {
   id: string
@@ -226,7 +211,7 @@ export interface CustomerProfile {
 export interface ConfirmOtpResponse {
   token: string
   customer: CustomerProfile
-  order?: unknown // có khi đặt xe, k có khi chỉ đăng nhập
+  order?: unknown 
 } 
 
 
@@ -239,7 +224,77 @@ export interface LoginResponse {
 }
 
 
+// === ORDER ===
 
+// Phân trang 
+export interface OrderListQueryParams {
+  page?: number
+  limit?: number
+  sort_by?: string
+}
 
+// Bộ lọc lịch sử chuyến xe
+export interface OrderListBodyFilter {
+  keyword?: string
+  from_date_of_destination?: string
+  to_date_of_destination?: string
+  status_type?: number
+  order_status_list?: number[]
+  city_diemdon?: string
+  city_diemden?: string
+}
 
+// Thông tin trả về
+export interface PaginationInfo{
+  page: number
+  limit: number
+  count: number
+  total_page: number
+}
 
+// Form địa chỉ 
+export interface LocationInfo{
+  address_1: string
+  city: string
+  district: string
+} 
+
+// Form thông tin
+export interface CustomerInfo {
+  full_name: string
+  phone: string
+}
+
+// Form chuyển xe 
+export interface Order {
+  id: string; // ID chuyến xe
+  short_id: string; // Mã ngắn hiển thị cho khách
+  id_service: string; // ID dịch vụ (ví dụ: xe 4 chỗ, xe 7 chỗ)
+  name_service: string; // Tên dịch vụ (ví dụ: Xe 4 chỗ, Xe 7 chỗ)
+  departure: LocationInfo; // Thông tin điểm đi
+  destination: LocationInfo; // Thông tin điểm đến
+  date_of_destination: string; // Ngày giờ dự kiến đến nơi
+  quantity: number; // Số lượng (thường là 1, nhưng có thể có nhiều hơn nếu đặt cho nhóm)
+  price_original: number; // Giá gốc của chuyến xe
+  price_after: number; // Giá sau khi áp dụng khuyến mãi (nếu có)
+  price_guest_after: number; // Giá khách phải trả sau khi áp dụng khuyến mãi (có thể khác price_after nếu có phí phụ thêm)
+  price_guest: number; // Giá khách phải trả trước khi áp dụng khuyến mãi
+  price: number; // Giá cuối cùng của chuyến xe (có thể là price_guest_after hoặc price_after tùy vào logic tính giá)
+  status_type: number; // Mã trạng thái chuyến xe: 0-Chờ tài xế, 1-Tài xế đã nhận, 2-Đang hoạt động, 3-Hoàn thành, 4-Đã hủy
+  status_name: string; // Tên trạng thái chuyến xe
+  customer: CustomerInfo; // Thông tin khách hàng đặt chuyến xe
+  created: string; // Ngày giờ tạo chuyến xe
+  distance: number; // Quãng đường dự kiến của chuyến xe (tính bằng km)
+}
+
+// Danh sách chuyến xe 
+export interface OrderListResponse {
+  pagination: PaginationInfo;
+  data: Order[];
+}
+
+// Hủy chuyến xe 
+export interface ActionResponse {
+  success?: boolean;
+  message?: string;
+}

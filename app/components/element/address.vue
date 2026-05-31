@@ -139,6 +139,17 @@ onMounted(() => {
   console.log("Address component mounted, fetching cities...");
 });
 
+watch(() => cities.value, (newCities) => {
+  // Khi cities load xong, nếu có props.city thì set selectedCityId
+  if (newCities && newCities.length > 0 && props.city) {
+    const city = newCities.find((c) => c.name === props.city)
+    if (city && selectedCityId.value !== city.id) {
+      selectedCityId.value = city.id
+      fetchDistricts()
+    }
+  }
+})
+
 const filteredCities = computed(() => {
   if (!cities.value) return [];
   return [...cities.value]
@@ -175,10 +186,27 @@ watch(() => props.address, (val) => {
   if (val !== detailAddress.value) detailAddress.value = val
 })
 
-watch(() => props.city, (val) => {
+watch(() => props.city, async (val) => {
   if (!val) {
     selectedCityId.value = ''
+    selectedDistrictName.value = ''
     cityData.value = null
+  } else {
+    // Nếu cities đã load, tìm và set ngay
+    if (cities.value && cities.value.length > 0) {
+      const city = cities.value.find((c) => c.name === val)
+      if (city) {
+        selectedCityId.value = city.id
+        await fetchDistricts()
+      }
+    }
+    // Nếu cities chưa load, watch trên cities.value sẽ handle
+  }
+})
+
+watch(() => props.province, (val) => {
+  if (val !== selectedDistrictName.value) {
+    selectedDistrictName.value = val
   }
 })
 

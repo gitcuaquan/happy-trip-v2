@@ -1,26 +1,16 @@
 <template>
-  <UCard
-  
-    variant="outline"
-    :ui="{
-      root: 'rounded-2xl',
-      header: 'px-4 py-3 sm:px-4',
-      body: 'px-4 py-3 sm:px-4 sm:py-3',
-      footer: 'px-4 py-3 sm:px-4'
-    }"
-  >
+  <UCard variant="outline" :ui="{
+    root: 'rounded-2xl',
+    header: 'px-4 py-3 sm:px-4',
+    body: 'px-4 py-3 sm:px-4 sm:py-3',
+    footer: 'px-4 py-3 sm:px-4'
+  }">
 
     <!-- ─── HEADER ─── -->
     <template #header>
-      <div class="flex items-center justify-between">
-        <UBadge
-          :color="statusColor"
-          variant="subtle"
-          size="sm"
-          :icon="statusIcon"
-          :label="statusLabel"
-          class="rounded-full"
-        />
+      <div class="flex items-center justify-between" @click="emit('navigate', order.id)">
+        <UBadge :color="statusColor" variant="subtle" size="sm" :icon="statusIcon" :label="statusLabel"
+          class="rounded-full" />
         <div class="flex items-center gap-1 text-xs text-muted">
           <UIcon name="i-lucide-clock" class="size-3 shrink-0" />
           {{ formattedDate }}
@@ -30,7 +20,7 @@
 
     <!-- ─── BODY ─── -->
     <template #default>
-      <div class="space-y-3">
+      <div class="space-y-3" @click="emit('navigate', order.id)">
 
         <!-- Route -->
         <div class="flex gap-3">
@@ -59,7 +49,8 @@
             <UIcon name="i-lucide-wallet" class="size-3.5 shrink-0" />
             <span class="text-xs">Tổng tiền</span>
           </div>
-          <span :class="['text-base font-black tracking-tight', order.status === 'cancelled' ? 'text-muted line-through' : 'text-primary']">
+          <span
+            :class="['text-base font-black tracking-tight', order.status_type === 3 ? 'text-muted line-through' : 'text-primary']">
             {{ numberToCurrency(order.price_guest_after) }}
           </span>
         </div>
@@ -67,8 +58,10 @@
         <!-- Meta chips -->
         <div class="flex flex-wrap gap-1.5">
           <UBadge color="neutral" variant="outline" size="sm" :icon="'i-lucide-car'" :label="order.name_service" />
-          <UBadge v-if="order.distance" color="neutral" variant="outline" size="sm" icon="i-lucide-route" :label="`${order.distance} km`" />
-          <UBadge v-if="order.customer?.full_name" color="neutral" variant="outline" size="sm" icon="i-lucide-user" :label="order.customer.full_name" class="max-w-30 truncate" />
+          <UBadge v-if="order.distance" color="neutral" variant="outline" size="sm" icon="i-lucide-route"
+            :label="`${order.distance} km`" />
+          <UBadge v-if="order.customer?.full_name" color="neutral" variant="outline" size="sm" icon="i-lucide-user"
+            :label="order.customer.full_name" class="max-w-30 truncate" />
         </div>
 
       </div>
@@ -76,43 +69,38 @@
 
     <!-- ─── FOOTER ─── -->
     <template #footer>
-      <div v-if="order.status === 'in_progress'" class="flex gap-2">
-        <UButton
-          color="success"
-          variant="soft"
-          icon="i-lucide-phone"
-          label="Liên hệ"
-          class="flex-1 justify-center rounded-xl"
-        />
-        <UButton
-          color="error"
-          variant="soft"
-          icon="i-lucide-x"
-          label="Hủy chuyến"
-          class="flex-1 justify-center rounded-xl"
-        />
+      <div v-if="order.status_type < 3" class="flex gap-2">
+        <UButton color="success" variant="soft" icon="i-lucide-phone" label="Liên hệ"
+          class="flex-1 justify-center rounded-xl" to="/contact" />
+        <UButton color="error" variant="soft" icon="i-lucide-x" label="Hủy chuyến"
+          class="flex-1 justify-center rounded-xl" @click.stop="emit('cancel', order.id)" />
       </div>
 
-      
       <div v-else class="flex justify-center">
-        <UButton
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-refresh-cw"
-          label="Đặt lại chuyến"
-          class="justify-center rounded-xl"
-        />
+        <UButton color="neutral" variant="soft" icon="i-lucide-refresh-cw" label="Đặt lại chuyến"
+          class="justify-center rounded-xl" @click.stop="emit('rebook')" />
       </div>
     </template>
 
   </UCard>
+
 </template>
 
 <script lang="ts" setup>
-import type { HistoryOrder } from '~/type'
+import type { Order } from '~/type'
 import { formatAddress } from '~/type'
+import { useAuth } from '~/composables/useAuth'
 
-const props = defineProps<{ order: HistoryOrder }>()
+const props = defineProps<{ order: Order }>()
+const emit = defineEmits<{
+  (e: 'refreshList'): void
+  (e: 'cancel', orderId: string): void
+  (e: 'navigate', orderId: string): void
+  (e: 'rebook'): void
+}>()
+
+const { token } = useAuth()
+const toast = useToast()
 
 const departureDisplay = computed(() =>
   props.order.departure.address_1
@@ -131,27 +119,26 @@ const formattedDate = computed(() => {
   return new Intl.DateTimeFormat('vi-VN', {
     day: '2-digit', month: 'short',
     hour: '2-digit', minute: '2-digit',
-    
+
   }).format(new Date(props.order.date_of_destination))
 })
 
-const statusLabel = computed(() => ({
-  in_progress: 'Đang thực hiện',
-  completed:   'Đã hoàn thành',
-  cancelled:   'Đã hủy',
-}[props.order.status] ?? ''))
+const statusLabel = computed(() => props.order.status_name)
 
 const statusColor = computed(() => ({
-  in_progress: 'info',
-  completed:   'success',
-  cancelled:   'error',
-}[props.order.status] as 'info' | 'success' | 'error'))
+  0: 'warning',  // 0: Chờ tài xế (Màu vàng cam)
+  1: 'info',     // 1: Đang thực hiện (Màu xanh dương)
+  2: 'success',  // 2: Hoàn thành (Màu xanh lá)
+  3: 'error',    // 3: Đã hủy (Màu đỏ)
+}as const)[props.order.status_type] || 'neutral')
 
+// Icon map theo 4 trạng thái
 const statusIcon = computed(() => ({
-  in_progress: 'i-lucide-radio',
-  completed:   'i-lucide-check-circle',
-  cancelled:   'i-lucide-x-circle',
-}[props.order.status] ?? ''))
+  0: 'i-lucide-loader',
+  1: 'i-lucide-radio',
+  2: 'i-lucide-check-circle',
+  3: 'i-lucide-x-circle',
+}[props.order.status_type] || 'i-lucide-info'))
 
 function numberToCurrency(value: number) {
   return new Intl.NumberFormat('vi-VN').format(value) + ' ₫'
