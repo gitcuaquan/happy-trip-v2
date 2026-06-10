@@ -11,7 +11,7 @@ useHead({
 });
 
 const title =
-  "Happy Trip - Dịch vụ xe ghép xe tiện chuyến hàng đầu tại Việt Nam";
+  "Happy Trip - Dịch vụ xe tiện chuyến hàng đầu tại Việt Nam";
 const description =
   "A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours.";
 

@@ -26,7 +26,7 @@
         {{ article.title || article.name }}
       </h3>
       <p class="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-4">
-        {{ article.excerpt || 'Khám phá những thông tin hữu ích và cập nhật mới nhất từ dịch vụ xe ghép hàng đầu HappyTrip.' }}
+        {{ article.excerpt || 'Khám phá những thông tin hữu ích và cập nhật mới nhất từ dịch vụ xe tiện chuyến hàng đầu HappyTrip.' }}
       </p>
 
       <div

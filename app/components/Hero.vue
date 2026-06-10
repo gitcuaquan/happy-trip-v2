@@ -13,7 +13,7 @@
           </div>
         </div>
         <h1 class="md:text-5xl text-center md:text-left font-bold text-dark md:text-white drop-shadow-lg">
-          Xe Ghép, Xe Tiện Chuyến Hàng Đầu Việt Nam
+          Xe Tiện Chuyến Hàng Đầu Việt Nam
         </h1>
         <h1
           class="md:text-5xl custom-font text-3xl italic flex gap-3 items-center flex-nowrap font-black text-primary justify-center md:justify-start drop-shadow-lg">

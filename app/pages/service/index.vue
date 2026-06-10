@@ -18,7 +18,7 @@
       <div class="grid lg:grid-cols-2 gap-12 items-center mb-24">
         <div class="relative">
           <div class="rounded-3xl overflow-hidden shadow-lg aspect-4/3 bg-slate-100 dark:bg-slate-800">
-            <img :src="service.carpool.image" alt="Xe ghép Happy Trip" class="w-full h-full object-cover" />
+            <img :src="service.carpool.image" alt="Xe tiện chuyến Happy Trip" class="w-full h-full object-cover" />
           </div>
           <div
             class="absolute top-4 left-4 w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl shadow-md flex items-center justify-center">
@@ -125,7 +125,7 @@ import CollapsibleCard from '~/components/shared/collapsible-card.vue'
 
 useSeoMeta({
   title: 'Dịch vụ | Happy Trip',
-  description: 'Xe ghép và xe tiện chuyến hàng đầu Việt Nam. Giá rẻ, an toàn, đúng giờ.',
+  description: 'Xe tiện chuyến hàng đầu Việt Nam. Giá rẻ, an toàn, đúng giờ.',
 })
 
 const service = {
@@ -134,7 +134,7 @@ const service = {
 
   carpool: {
     badge: 'Tiết kiệm tối đa · Đi chung, vui hơn',
-    title: 'Dịch Vụ Xe Ghép',
+    title: 'Dịch Vụ Xe Tiện Chuyến',
     description: 'Giải pháp kinh tế nhất cho nhu cầu di chuyển hàng ngày. Chia sẻ hành trình, tiết kiệm chi phí mà vẫn đảm bảo sự thoải mái và an toàn tuyệt đối.',
     image: 'https://datxegiare.vn/wp-content/uploads/2023/11/taxi-noi-bai-phu-tho-3-datxegiare.jpg',
     features: [

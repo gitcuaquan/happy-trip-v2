@@ -121,7 +121,7 @@ import CardItem from '~/components/shared/card-item.vue'
 
 const introduce = computed(() => ({
   title: 'Giới thiệu về <span class="text-primary">HAPPY TRIP</span>' as string,
-  description: 'Kiến tạo giải pháp xe ghép và vận chuyển hàng đầu Việt Nam.',
+  description: 'Kiến tạo giải pháp xe tiện chuyến và vận chuyển hàng đầu Việt Nam.',
   benefits: [
     {
       icon: 'i-lucide-shield-check',
