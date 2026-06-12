@@ -195,6 +195,25 @@
             </div>
           </Transition>
 
+          <!-- Ghi chú -->
+          <UFormField name="note" :ui="{ error: 'text-xs text-left' }">
+            <template #label>
+              <span
+                class="text-xs font-bold text-slate-500 uppercase tracking-widest"
+              >Ghi chú</span>
+            </template>
+            <UTextarea
+              v-model="order.note"
+              placeholder="Ví dụ: có người già, trẻ em, thú cưng, cần xe xăng/xe điện..."
+              :rows="3"
+              :maxrows="6"
+              autoresize
+              :maxlength="500"
+              class="w-full"
+              :ui="{ base: 'text-sm' }"
+            />
+          </UFormField>
+
           <UButton
             type="submit"
             color="primary"
@@ -241,7 +260,7 @@
       title="Thông tin liên hệ"
       description="Thông tin để tài xế liên hệ và xác nhận chuyến đi của bạn"
       @update:open="handleModalClose"
-      :ui="{ content: 'sm:w-120 overflow-hidden p-0', body: 'p-0' }"
+      :ui="{ content: 'sm:w-120 overflow-hidden', body: 'p-5 sm:p-6' }"
     >
       <template #body>
         <!-- Bước 1: Nhập thông tin liên hệ -->
@@ -469,6 +488,10 @@
               </div>
             </div>
 
+            <div class="mb-6">
+              <SharedSafetyNotice />
+            </div>
+
             <div class="grid-cols-2 grid gap-3.5">
               <UButton
                 color="primary"
@@ -524,6 +547,7 @@ const order = ref<OrderPreview>({
   destination_city: "",
   destination_dictrict: "",
   destination_address_1: "",
+  note: "",
 });
 
 const services = ref([
@@ -708,6 +732,7 @@ async function handleResend() {
         price_guest_after: preview?.price_guest_after ?? 0,
         price_guest: preview?.price_guest ?? 0,
         price: preview?.price_original ?? 0,
+        note: order.value.note?.trim() || "",
       },
     });
     otpValue.value = [];
@@ -784,6 +809,7 @@ async function sendOTP() {
         price_guest_after: preview?.price_guest_after ?? 0,
         price_guest: preview?.price_guest ?? 0,
         price: preview?.price_original ?? 0,
+        note: order.value.note?.trim() || "",
       },
     });
     showOtpModal.value = true;
@@ -832,6 +858,7 @@ async function confirmOTP() {
       destination_city: "",
       destination_dictrict: "",
       destination_address_1: "",
+      note: "",
     };
     previews.value = [];
     contact.name = "";

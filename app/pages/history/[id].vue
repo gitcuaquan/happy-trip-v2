@@ -123,6 +123,24 @@
                     </div>
                 </UCard>
 
+                <!-- Safety Notice - hiện khi Chờ tài xế hoặc Đã nhận -->
+                <SharedSafetyNotice v-if="[0, 1].includes(orderDetail.status_type)" />
+
+                <!-- Note Card - chỉ hiện khi đơn đang Chờ tài xế -->
+                <UCard v-if="orderDetail.status_type === 0 && orderDetail.note">
+                    <template #header>
+                        <p class="text-xs font-bold text-muted uppercase tracking-wider">Ghi chú</p>
+                    </template>
+                    <div class="flex gap-3 items-start">
+                        <div class="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center shrink-0">
+                            <UIcon name="i-lucide-sticky-note" class="size-4 text-primary" />
+                        </div>
+                        <p class="text-sm leading-relaxed whitespace-pre-line flex-1 text-slate-700">
+                            {{ orderDetail.note }}
+                        </p>
+                    </div>
+                </UCard>
+
                 <!-- Creator Card -->
                 <UCard v-if="orderDetail.creator?.user_phone">
                     <template #header>
