@@ -175,11 +175,11 @@ const service = {
     items: [
       {
         label: 'Tôi có thể huỷ chuyến đi không?',
-        content: 'Bạn có thể huỷ chuyến miễn phí trước 30 phút khởi hành. Sau thời gian đó sẽ áp dụng phí huỷ theo chính sách của Happy Trip.',
+        content: 'Bạn có thể hủy chuyến nhưng khuyến nghị trước ít nhất 30 phút trước giờ khởi hành.',
       },
       {
         label: 'Các phương thức thanh toán được chấp nhận?',
-        content: 'Happy Trip chấp nhận thanh toán tiền mặt, chuyển khoản ngân hàng, ví điện tử MoMo, ZaloPay và thẻ ATM/Visa/Mastercard.',
+        content: 'Happy Trip chấp nhận thanh toán tiền mặt hoặc chuyển khoản ngân hàng.',
       },
       {
         label: 'Xe của tôi có được bảo hiểm không?',
@@ -187,7 +187,7 @@ const service = {
       },
       {
         label: 'Làm thế nào để xuất hóa đơn VAT?',
-        content: 'Vui lòng liên hệ bộ phận kế toán qua email happytripexpress@gmail.com hoặc hotline 1900 1234 với thông tin doanh nghiệp và mã chuyến đi.',
+        content: 'Vui lòng liên hệ bộ phận kế toán qua hotline 097 297 0000 khi đặt chuyến',
       },
       {
         label: 'Tôi có thể đặt xe cho người khác không?',

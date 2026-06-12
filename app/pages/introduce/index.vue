@@ -25,7 +25,8 @@
             <img src="/images/about.png" alt="Đội ngũ Happy Trip" class="w-full h-auto object-cover aspect-4/3" />
             <div class="absolute inset-0 bg-linear-to-t from-black/30 to-transparent rounded-2xl pointer-events-none" />
           </div>
-          <div class="absolute bottom-5 left-5 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-5 py-3 rounded-xl shadow-lg">
+          <div
+            class="absolute bottom-5 left-5 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-5 py-3 rounded-xl shadow-lg">
             <p class="text-sm font-bold text-slate-800 dark:text-white">Chuẩn 5 sao</p>
             <p class="text-xs text-slate-500 dark:text-slate-400">Trên mọi nẻo đường</p>
           </div>
@@ -75,18 +76,13 @@
         <!-- Cột phải: 2 ảnh so le -->
         <div class="flex gap-4 items-start">
           <div class="flex-1 mt-10 rounded-2xl overflow-hidden shadow-lg">
-            <img
-              src="https://xetienchuyen.net/wp-content/uploads/2021/11/dich-vu-xe-ghep.jpg"
-              alt="Tài xế Happy Trip"
-              class="w-full h-56 object-cover"
-            />
+            <img src="https://xetienchuyen.net/wp-content/uploads/2021/11/dich-vu-xe-ghep.jpg" alt="Tài xế Happy Trip"
+              class="w-full h-56 object-cover" />
           </div>
           <div class="flex-1 rounded-2xl overflow-hidden shadow-lg">
             <img
               src="https://dungminh.vn/wp-content/uploads/2026/02/Uu-diem-noi-bat-cuaXe-ghep-Ha-Noi-Uong-Bi-don-tan-nha-nhu-xe-rieng-ghe-ngoi-thoai-mai-chay-cao-toc-nhanh-va-em-han-che-say-xe-ma-chi-phi-van-tiet-kiem.jpg"
-              alt="Xe Happy Trip"
-              class="w-full h-56 object-cover"
-            />
+              alt="Xe Happy Trip" class="w-full h-56 object-cover" />
           </div>
         </div>
 
@@ -95,13 +91,10 @@
       <!-- === FOOTER INFO BAR === -->
       <div class="border-t border-slate-200 dark:border-slate-800 pt-8">
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-0">
-          <div
-            v-for="(info, i) in introduce.info"
-            :key="info.label"
-            class="flex items-center gap-2.5 sm:px-10"
-            :class="i !== 0 ? 'sm:border-l border-slate-200 dark:border-slate-700' : ''"
-          >
-            <div class="shrink-0 w-8 h-8 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center">
+          <div v-for="(info, i) in introduce.info" :key="info.label" class="flex items-center gap-2.5 sm:px-10"
+            :class="i !== 0 ? 'sm:border-l border-slate-200 dark:border-slate-700' : ''">
+            <div
+              class="shrink-0 w-8 h-8 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center">
               <UIcon :name="info.icon" class="size-4 text-primary" />
             </div>
             <span class="text-sm font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap">
@@ -177,7 +170,7 @@ const introduce = computed(() => ({
   ],
   info: [
     { icon: 'i-lucide-map-pin', label: '47 Nguyễn Tuân, Thanh Xuân, TP.Hà Nội' },
-    { icon: 'i-lucide-phone', label: '0972 97 00 00 / 1900 1234' },
+    { icon: 'i-lucide-phone', label: '0972 97 00 00' },
     { icon: 'i-lucide-mail', label: 'happytripexpress@gmail.com' },
   ]
 }))

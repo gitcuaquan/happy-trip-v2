@@ -75,7 +75,8 @@
           <!-- Success state -->
           <Transition name="scale-fade" mode="out-in">
             <div v-if="isSuccess" class="flex flex-col items-center justify-center gap-5 py-14 text-center">
-              <div class="flex size-20 items-center justify-center rounded-full bg-primary-100 ring-8 ring-primary-50 animate-pulse">
+              <div
+                class="flex size-20 items-center justify-center rounded-full bg-primary-100 ring-8 ring-primary-50 animate-pulse">
                 <UIcon name="i-lucide-check" class="size-10 text-primary-500 animate-check" />
               </div>
               <div>
@@ -102,51 +103,26 @@
               </div>
 
               <UForm :schema="schema" :state="form" @submit="onSubmit" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <UFormField 
-                  v-for="field in contact.form.fields" 
-                  :key="field.name" 
-                  :name="field.name"
-                  :label="field.label" 
-                  :required="field.required"
-                  :class="field.fullWidth ? 'col-span-2' : 'sm:col-span-1'"
-                  class="col-span-2"
-                  >
-                  <UInput 
-                    v-if="field.type === 'input'" 
-                    v-model="form[field.name]" 
-                    :type="field.inputType || 'text'"
-                    :placeholder="field.placeholder"
-                    :leading-icon="field.icon" 
-                    size="xl" 
-                    class="w-full" :ui="{
+                <UFormField v-for="field in contact.form.fields" :key="field.name" :name="field.name"
+                  :label="field.label" :required="field.required"
+                  :class="field.fullWidth ? 'col-span-2' : 'sm:col-span-1'" class="col-span-2">
+                  <UInput v-if="field.type === 'input'" v-model="form[field.name]" :type="field.inputType || 'text'"
+                    :placeholder="field.placeholder" :leading-icon="field.icon" size="xl" class="w-full" :ui="{
                       base: 'h-14 text-base px-4',
                       leading: 'ps-4',
                       leadingIcon: 'size-5'
                     }" />
 
-                  <USelect 
-                    v-else-if="field.type === 'select'" 
-                    v-model="form[field.name]"
-                    :placeholder="field.placeholder" 
-                    :leading-icon="field.icon" 
-                    :items="field.items" 
-                    value-key="value"
+                  <USelect v-else-if="field.type === 'select'" v-model="form[field.name]"
+                    :placeholder="field.placeholder" :leading-icon="field.icon" :items="field.items" value-key="value"
                     label-key="label" size="xl" class="w-full" :ui="{
                       base: 'h-14 text-base px-4',
                       leading: 'ps-4',
                       leadingIcon: 'size-5'
                     }" />
 
-                  <UTextarea 
-                    v-else-if="field.type === 'textarea'" 
-                    v-model="form[field.name]"
-                    :placeholder="field.placeholder" 
-                    :rows="5" 
-                    :maxrows="8" 
-                    autoresize 
-                    size="xl" 
-                    class="w-full" 
-                    :ui="{
+                  <UTextarea v-else-if="field.type === 'textarea'" v-model="form[field.name]"
+                    :placeholder="field.placeholder" :rows="5" :maxrows="8" autoresize size="xl" class="w-full" :ui="{
                       base: 'text-base px-4 py-3',
                     }" />
                 </UFormField>
@@ -168,19 +144,10 @@
                   </div>
                 </UFormField>
 
-                <UButton 
-                  type="submit"
-                  color="primary"
-                  size="lg"
-                  block
-                  :loading="isLoading"
-                  :disabled="isLoading"
-                  trailing
-                  class="col-span-2 mt-1 font-semibold tracking-wide"
-                  :ui="{
+                <UButton type="submit" color="primary" size="lg" block :loading="isLoading" :disabled="isLoading"
+                  trailing class="col-span-2 mt-1 font-semibold tracking-wide" :ui="{
                     base: 'relative justify-center text-base px-4 py-4',
-                  }"
-                >
+                  }">
                   {{ isLoading ? 'Đang gửi...' : contact.form.header.send }}
                 </UButton>
               </UForm>
@@ -236,16 +203,16 @@ const contact = computed(() => ({
     {
       icon: 'i-lucide-phone',
       label: 'TỔNG ĐÀI HỖ TRỢ 24/7',
-      main: '1900 1234',
+      main: '097 297 0000',
       sub: 'Miễn phí cước gọi',
-      href: 'tel:19001234',
+      href: 'tel:097 297 0000',
     },
     {
       icon: 'i-lucide-mail',
       label: 'EMAIL LIÊN HỆ',
-      main: 'support@happytrip.vn',
+      main: 'happytripexpress@gmail.com',
       sub: 'Phản hồi trong vòng 2h làm việc',
-      href: 'mailto:support@happytrip.vn',
+      href: 'mailto:happytripexpress@gmail.com',
     },
     {
       icon: 'i-lucide-map-pin',
@@ -332,9 +299,9 @@ const contact = computed(() => ({
   }
 }))
 
-async function onSubmit(_event: FormSubmitEvent<Schema>){
+async function onSubmit(_event: FormSubmitEvent<Schema>) {
   isLoading.value = true
-  try{
+  try {
     await new Promise(resolve => setTimeout(resolve, 2000))
     isSuccess.value = true
   } catch (error) {
@@ -384,6 +351,7 @@ function resetForm() {
     opacity: 0;
     transform: scale(0.5);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
