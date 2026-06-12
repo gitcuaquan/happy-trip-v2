@@ -9,6 +9,7 @@ export interface OrderPreview {
     destination_dictrict: string
     destination_address_1: string
     id_service: string
+    note?: string
 }
 
 export class OrderDetail {
@@ -74,6 +75,7 @@ export class OrderDetail {
     price: number = 0;
     price_system: number = 0;
     net_profit: number = 0;
+    note: string = '';
 
     constructor(data: Partial<OrderDetail>) {
         Object.assign(this, data);
@@ -285,6 +287,7 @@ export interface Order {
   customer: CustomerInfo; // Thông tin khách hàng đặt chuyến xe
   created: string; // Ngày giờ tạo chuyến xe
   distance: number; // Quãng đường dự kiến của chuyến xe (tính bằng km)
+  note?: string; // Ghi chú của khách (vd: có trẻ em, thú cưng, yêu cầu loại xe...)
 }
 
 // Danh sách chuyến xe 

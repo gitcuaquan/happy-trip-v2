@@ -164,8 +164,8 @@ const service = {
     steps: [
       { icon: 'i-lucide-smartphone', label: 'Bước 1: Đặt xe', desc: 'Qua web hoặc hotline 24/7' },
       { icon: 'i-lucide-map-pin', label: 'Bước 2: Chọn điểm đến', desc: 'Nhập lộ trình bạn muốn đi' },
-      { icon: 'i-lucide-credit-card', label: 'Bước 3: Thanh toán', desc: 'Linh hoạt tiền mặt hoặc ví' },
-      { icon: 'i-lucide-check', label: 'Bước 4: Lên xe', desc: 'Tài xế đón bạn trong ít phút' },
+      { icon: 'i-lucide-car', label: 'Bước 3: Lên xe', desc: 'Tài xế đón đúng giờ' },
+      { icon: 'i-lucide-credit-card', label: 'Bước 4: Thanh toán', desc: 'Linh hoạt tiền mặt hoặc ví' },
     ],
   },
 
