@@ -160,7 +160,7 @@ const introduce = computed(() => ({
       icon: 'i-lucide-clock',
       title: 'Đúng Giờ, Đúng Hẹn',
       description:
-        'Chúng tôi trân trọng thời gian của khách hàng. Xe luôn đến trước 10–15 phút để chuẩn bị đón khách.',
+        'Chúng tôi trân trọng thời gian của khách hàng. Xe luôn đến trước 10-15 phút để chuẩn bị đón khách.',
     },
   ],
   reasons: [

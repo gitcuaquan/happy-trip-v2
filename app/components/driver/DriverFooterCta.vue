@@ -10,15 +10,6 @@
         <UButton
           size="lg"
           color="neutral"
-          @click="scrollToRegister"
-          class="rounded-full font-bold"
-        >
-          Đăng Ký Ngay
-        </UButton>
-
-        <UButton
-          size="lg"
-          color="neutral"
           variant="outline"
           icon="i-lucide-phone"
           @click="callHotline"
@@ -33,11 +24,6 @@
 
 <script setup lang="ts">
 const hotline = '0972 97 0000'
-
-const scrollToRegister = () => {
-  const el = document.getElementById('register-section')
-  el?.scrollIntoView({ behavior: 'smooth' })
-}
 
 const callHotline = () => {
   window.location.href = `tel:${hotline.replace(/\s/g, '')}`
