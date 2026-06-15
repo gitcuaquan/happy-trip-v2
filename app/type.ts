@@ -312,8 +312,31 @@ export interface OrderListResponse {
   data: Order[];
 }
 
-// Hủy chuyến xe 
+// Hủy chuyến xe
 export interface ActionResponse {
   success?: boolean;
   message?: string;
+}
+
+
+// === PAGE / BLOG (admin) ===
+
+// Body gửi lên POST/PUT /api/page — mọi field theo swagger đều nullable
+export interface PagePayload {
+  id?: string
+  short_id?: string
+  title?: string
+  slug?: string
+  status?: boolean
+  content?: string
+  thumbnail?: string
+}
+
+// Response của POST /api/upload — swagger không document
+// cover các shape phổ biến để code chạy ngay
+export interface UploadResponse {
+  url?: string
+  path?: string
+  fileName?: string
+  data?: { url?: string; path?: string }
 }
