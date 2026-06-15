@@ -7,12 +7,14 @@ export default defineNuxtConfig({
   },
   devServer: {
     port: 2711,
+    host: "127.0.0.1",
   },
 
   css: ["~/assets/css/main.css"],
 
   routeRules: {
     "/": { prerender: true },
+    "/admin/**": { robots: false }
   },
   colorMode: {
     preference: 'light'

@@ -1,6 +1,6 @@
 <template>
   <UContainer class="py-10">
-    <div class="text-center mb-12">
+    <div class="text-center mb-12 relative">
       <h3 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6">
         Tài Liệu & Chính Sách
       </h3>
@@ -8,6 +8,18 @@
       <p class="mt-4 text-gray-500 max-w-xl mx-auto text-base">
         Tổng hợp các quy định, điều khoản và chính sách dịch vụ của HappyTrip
       </p>
+
+      <div v-if="isAdmin" class="mt-6 flex justify-center">
+        <UButton
+          size="lg"
+          color="primary"
+          icon="i-lucide-plus"
+          class="rounded-full px-6 font-semibold shadow-md hover:shadow-lg transition-shadow"
+          @click="navigateTo('/policy/create')"
+        >
+          Tạo bài viết
+        </UButton>
+      </div>
     </div>
 
     <div v-if="listPending" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -52,6 +64,8 @@
 import ModalBlogItem from '~/components/blog/modal-blog-item.vue'
 import { BlogService } from '~/services/blog.service'
 import type { PageListResponse } from '~/type'
+
+const { isAdmin } = useAdminAuth()
 
 const blogService = new BlogService()
 const PAGE_LIMIT = 12

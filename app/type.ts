@@ -226,6 +226,22 @@ export interface LoginResponse {
 }
 
 
+// === ADMIN ===
+export interface AdminProfile {
+  id: string
+  full_name: string
+  phone: string
+  role?: string
+  created_at?: string
+}
+
+export interface AdminLoginResponse {
+  accessToken: string
+  user: AdminProfile
+  tokenType?: string
+}
+
+
 // === ORDER ===
 
 // Phân trang 
