@@ -46,12 +46,12 @@ export const useAuth = () => {
         }
     }
 
-    return{
+    return {
         token,
         getCustomer,
         isLoggedIn,
         setAuth,
         logOut,
-        syncMe
+        syncMe,
     }
 }
