@@ -226,10 +226,11 @@ function getStatus(article: Article): boolean {
 }
 
 async function toggleStatus(article: Article) {
+  if (!adminToken.value) return
   const next = !getStatus(article)
   statusMap.value[article.id] = next
   try {
-    await blogService.togglePageStatus(adminToken.value || '', article.id, next)
+    await blogService.togglePageStatus(adminToken.value, article.id, next)
     toast.add({
       title: next ? 'Đã bật bài viết' : 'Đã tắt bài viết',
       color: 'success',
@@ -261,10 +262,10 @@ function askDelete(article: Article) {
 }
 
 async function confirmDelete() {
-  if (!deleteTarget.value) return
+  if (!deleteTarget.value || !adminToken.value) return
   deleting.value = true
   try {
-    await blogService.deletePage(adminToken.value || '', deleteTarget.value.id)
+    await blogService.deletePage(adminToken.value, deleteTarget.value.id)
     toast.add({
       title: 'Đã xóa bài viết',
       color: 'success',

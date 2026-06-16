@@ -37,33 +37,35 @@ export class BlogService {
         })
     }
 
-    // ===== ADMIN =====
-    // BE từ chối Partner token với lỗi "signature key not found" → không gửi Authorization,
-    // để BE xử lý ẩn danh giống /api/upload (tương tự cách production happytrip.vn làm).
-    async createPage(_token: string, data: PagePayload): Promise<Article> {
+    // ===== ADMIN (cần token) =====
+    async createPage(token: string, data: PagePayload): Promise<Article> {
         return await $fetch<Article>(`${this.baseURL}/page`, {
             method: 'POST',
+            headers: this.authHeaders(token),
             body: data,
         })
     }
 
-    async updatePage(_token: string, id: string, data: PagePayload): Promise<Article> {
+    async updatePage(token: string, id: string, data: PagePayload): Promise<Article> {
         return await $fetch<Article>(`${this.baseURL}/page/${id}`, {
             method: 'PUT',
+            headers: this.authHeaders(token),
             body: data,
         })
     }
 
-    async togglePageStatus(_token: string, id: string, status: boolean): Promise<void> {
+    async togglePageStatus(token: string, id: string, status: boolean): Promise<void> {
         await $fetch(`${this.baseURL}/page/${id}/status`, {
             method: 'PUT',
+            headers: this.authHeaders(token),
             query: { status },
         })
     }
 
-    async deletePage(_token: string, id: string): Promise<void> {
+    async deletePage(token: string, id: string): Promise<void> {
         await $fetch(`${this.baseURL}/page/${id}`, {
             method: 'DELETE',
+            headers: this.authHeaders(token),
         })
     }
 

@@ -241,13 +241,7 @@ function pickThumbnail() {
 }
 
 async function onThumbnailSelected(e: Event) {
-  console.log('[onThumbnailSelected] fired')
   const file = (e.target as HTMLInputElement).files?.[0]
-  console.log('[onThumbnailSelected] file:', file)
-  if (!file) {
-    console.warn('[onThumbnailSelected] no file selected')
-    return
-  }
   uploadingThumb.value = true
   try {
     const url = await blogService.uploadFile(adminToken.value || '', file, 'page')
@@ -341,6 +335,16 @@ async function loadDetail() {
 
 // === Submit ===
 async function onSubmit(_e: FormSubmitEvent<{ title: string; slug: string }>) {
+  if (!adminToken.value) {
+    toast.add({
+      title: 'Chưa đăng nhập admin',
+      description: 'Vui lòng đăng nhập lại để tiếp tục',
+      color: 'error',
+      icon: 'i-lucide-circle-x',
+    })
+      await navigateTo('/admin/login')
+      return
+  }
   contentError.value = ''
   if (!form.content || form.content.replace(/<[^>]*>/g, '').trim() === '') {
     contentError.value = 'Vui lòng nhập nội dung bài viết'
