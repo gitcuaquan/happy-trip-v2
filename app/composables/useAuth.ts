@@ -1,40 +1,33 @@
-import type { CustomerProfile } from '~/type'
+import type { CustomerProfile, AdminProfile } from '~/type'
 import { customerService } from '~/services/customer.service'
 
 export const useAuth = () => {
-    // Cookie lưu vĩnh viễn: maxAge 365 ngày, path '/' để tất cả route có thể dùng
+    // ===== CUSTOMER =====
     const token = useCookie<string | null>('ht_token', {
-        maxAge: 60 * 60 * 24 * 365, // 365 ngày (tính bằng giây)
+        maxAge: 60 * 60 * 24 * 365,
         path: '/',
-        secure: false, // Set true nếu dùng HTTPS
-        httpOnly: false, // Client-side cookie
+        secure: false,
+        httpOnly: false,
     })
 
-    // Customer lưu trong ref (client-only, tránh SSR hydration issues)
     const customerGlobal = useState<CustomerProfile | null>('customerGlobal', () => null)
-
 
     const router = useRouter()
 
-    // Chỉ cần có token là đã login, customer sẽ được fetch từ API
     const isLoggedIn = computed(() => !!token.value || !!customerGlobal.value)
-
     const getCustomer = computed(() => customerGlobal.value)
 
-    // Set auth sau khi OTP thành công
     function setAuth(newToken: string, customer: CustomerProfile) {
         token.value = newToken
         customerGlobal.value = customer
     }
 
-    // Logout
     function logOut() {
         customerGlobal.value = null
         token.value = null
         router.push('/')
     }
 
-    // Sync user từ API khi có token (dùng trong plugin)
     async function syncMe() {
         if (!token.value) return
         try {
@@ -46,12 +39,48 @@ export const useAuth = () => {
         }
     }
 
+    // ===== ADMIN =====
+    const adminToken = useCookie<string | null>('ht_admin_token', {
+        maxAge: 60 * 60 * 24 * 365,
+        path: '/',
+        secure: false,
+        httpOnly: false,
+    })
+
+    const adminUser = useCookie<AdminProfile | null>('ht_admin_user', {
+        maxAge: 60 * 60 * 24 * 365,
+        path: '/',
+        secure: false,
+        httpOnly: false,
+    })
+
+    const isAdmin = computed(() => !!adminToken.value)
+    const getAdmin = computed(() => adminUser.value)
+
+    function setAdminAuth(newToken: string, admin: AdminProfile) {
+        adminToken.value = newToken
+        adminUser.value = admin
+    }
+
+    function logOutAdmin() {
+        adminToken.value = null
+        adminUser.value = null
+        router.push('/admin/login')
+    }
+
     return {
+        // customer
         token,
         getCustomer,
         isLoggedIn,
         setAuth,
         logOut,
         syncMe,
+        // admin
+        adminToken,
+        getAdmin,
+        isAdmin,
+        setAdminAuth,
+        logOutAdmin,
     }
 }

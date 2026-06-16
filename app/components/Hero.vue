@@ -1,10 +1,10 @@
 <template>
   <section class="bg-gray-300 bg-image-hero bg-linear-to-b to-slate-50 from-primary/30">
     <UContainer class="min-h-screen overflow-hidden flex flex-col md:flex-row md:items-center gap-5 py-4">
-      <div class="md:w-1/2 w-full text-center">
+      <div v-if="!isAdmin" class="md:w-1/2 w-full text-center">
         <UiCreateOrder />
       </div>
-      <div class="md:w-1/2 w-full flex flex-col md:gap-5 gap-3">
+      <div :class="['w-full flex flex-col md:gap-5 gap-3', isAdmin ? '' : 'md:w-1/2']">
         <div class="text-center md:text-left">
           <div
             class="border inline-flex items-center gap-3 py-1 rounded-2xl px-4 text-[13px] backdrop-blur-sm text-dark md:text-white border-white bg-primary/10">
@@ -27,15 +27,22 @@
           nơi với dịch vụ chuyên nghiệp chuẩn 5 sao trên mọi nẻo đường Hồ Chí
           Minh và các tỉnh lân cận.
         </p>
+        <div v-if="isAdmin" class="mt-4 text-center md:text-left">
+          <UButton
+            to="/admin/quan-ly/blog"
+            color="primary"
+            size="lg"
+            icon="i-lucide-file-text"
+            label="Vào trang quản lý bài viết"
+          />
+        </div>
       </div>
     </UContainer>
   </section>
 </template>
 
 <script lang="ts" setup>
-onMounted(() => {
-  // console.log("Hero mounted");
-});
+const { isAdmin } = useAuth()
 </script>
 
 <style scoped>

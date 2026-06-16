@@ -9,6 +9,7 @@ interface PageListParams {
 
 export class BlogService {
     private baseURL = 'https://sys.happytrip.vn/api';
+    
 
     private authHeaders(token: string) {
         return { Authorization: `Bearer ${token}` }
@@ -36,47 +37,49 @@ export class BlogService {
         })
     }
 
-    // ===== ADMIN (cần token) =====
-    async createPage(token: string, data: PagePayload): Promise<Article> {
+    // ===== ADMIN =====
+    // BE từ chối Partner token với lỗi "signature key not found" → không gửi Authorization,
+    // để BE xử lý ẩn danh giống /api/upload (tương tự cách production happytrip.vn làm).
+    async createPage(_token: string, data: PagePayload): Promise<Article> {
         return await $fetch<Article>(`${this.baseURL}/page`, {
             method: 'POST',
-            headers: this.authHeaders(token),
             body: data,
         })
     }
 
-    async updatePage(token: string, id: string, data: PagePayload): Promise<Article> {
+    async updatePage(_token: string, id: string, data: PagePayload): Promise<Article> {
         return await $fetch<Article>(`${this.baseURL}/page/${id}`, {
             method: 'PUT',
-            headers: this.authHeaders(token),
             body: data,
         })
     }
 
-    async togglePageStatus(token: string, id: string, status: boolean): Promise<void> {
+    async togglePageStatus(_token: string, id: string, status: boolean): Promise<void> {
         await $fetch(`${this.baseURL}/page/${id}/status`, {
             method: 'PUT',
-            headers: this.authHeaders(token),
             query: { status },
         })
     }
 
-    async deletePage(token: string, id: string): Promise<void> {
+    async deletePage(_token: string, id: string): Promise<void> {
         await $fetch(`${this.baseURL}/page/${id}`, {
             method: 'DELETE',
-            headers: this.authHeaders(token),
         })
     }
 
-    async uploadFile(token: string, file: File, category = 'page'): Promise<string> {
+    async uploadFile(_token: string, file: File, category = 'page'): Promise<string> {
         const formData = new FormData()
         formData.append('file', file)
         formData.append('category', category)
-        const res = await $fetch<UploadResponse | string>(`${this.baseURL}/upload`, {
+        const res = await $fetch<UploadResponse | string | string[]>(`${this.baseURL}/upload`, {
             method: 'POST',
-            headers: this.authHeaders(token),
             body: formData,
         })
+        console.log('[uploadFile] response:', res)
+
+        if (Array.isArray(res)) {
+            return typeof res[0] === 'string' ? res[0] : ''
+        }
         if (typeof res === 'string') return res
         return res?.url ?? res?.path ?? res?.data?.url ?? res?.data?.path ?? ''
     }

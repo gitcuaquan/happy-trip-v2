@@ -69,13 +69,23 @@
 
     <!-- ─── FOOTER ─── -->
     <template #footer>
-      <div v-if="order.status_type < 3" class="flex gap-2">
+      <!-- Đang chờ / đang thực hiện: liên hệ + hủy -->
+      <div v-if="order.status_type === 0 || order.status_type === 1" class="flex gap-2">
         <UButton color="success" variant="soft" icon="i-lucide-phone" label="Liên hệ"
           class="flex-1 justify-center rounded-xl" to="/contact" />
         <UButton color="error" variant="soft" icon="i-lucide-x" label="Hủy chuyến"
           class="flex-1 justify-center rounded-xl" @click.stop="emit('cancel', order.id)" />
       </div>
 
+      <!-- Đã hoàn thành: đặt chiều về + đặt lại -->
+      <div v-else-if="order.status_type === 2" class="flex gap-2">
+        <UButton color="primary" variant="soft" icon="i-lucide-arrow-left-right" label="Đặt chiều về"
+          class="flex-1 justify-center rounded-xl" @click.stop="emit('return-trip')" />
+        <UButton color="neutral" variant="soft" icon="i-lucide-refresh-cw" label="Đặt lại chuyến"
+          class="flex-1 justify-center rounded-xl" @click.stop="emit('rebook')" />
+      </div>
+
+      <!-- Đã hủy / khác: đặt lại -->
       <div v-else class="flex justify-center">
         <UButton color="neutral" variant="soft" icon="i-lucide-refresh-cw" label="Đặt lại chuyến"
           class="justify-center rounded-xl" @click.stop="emit('rebook')" />
@@ -97,6 +107,7 @@ const emit = defineEmits<{
   (e: 'cancel', orderId: string): void
   (e: 'navigate', orderId: string): void
   (e: 'rebook'): void
+  (e: 'return-trip'): void
 }>()
 
 const { token } = useAuth()

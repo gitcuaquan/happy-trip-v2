@@ -26,14 +26,22 @@
     </template>
     <template #right>
       <ClientOnly>
-        <!-- Chưa login -->
-        <template v-if="!isLoggedIn">
-          <UButton to="/login" label="Đăng nhập" icon="i-lucide-user" color="primary" variant="solid" size="xs"
-            class="rounded-full uppercase font-bold text-xs tracking-wide py-2.5 lg:px-5" />
+        <!-- Admin đã login -->
+        <template v-if="isAdmin">
+          <UDropdownMenu :items="adminMenuItems">
+            <UButton variant="ghost"
+              class="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-primary/10 transition-colors">
+              <UBadge label="Admin" color="primary" variant="subtle" size="md" />
+              <span class="text-sm font-semibold text-gray-800 dark:text-white max-w-28 truncate">
+                {{ getAdmin?.full_name || getAdmin?.phone }}
+              </span>
+              <UIcon name="i-lucide-chevron-down" class="size-3.5 text-muted shrink-0" />
+            </UButton>
+          </UDropdownMenu>
         </template>
 
-        <!-- Đã login -->
-        <template v-else>
+        <!-- Customer đã login -->
+        <template v-else-if="isLoggedIn">
           <UDropdownMenu :items="menuItems">
             <UButton variant="ghost"
               class="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-primary/10 transition-colors">
@@ -49,6 +57,12 @@
             </UButton>
           </UDropdownMenu>
         </template>
+
+        <!-- Chưa login -->
+        <template v-else>
+          <UButton to="/login" label="Đăng nhập" icon="i-lucide-user" color="primary" variant="solid" size="xs"
+            class="rounded-full uppercase font-bold text-xs tracking-wide py-2.5 lg:px-5" />
+        </template>
       </ClientOnly>
     </template>
   </UHeader>
@@ -57,7 +71,7 @@
 <script lang="ts" setup>
 import type { NavigationMenuItem } from "@nuxt/ui";
 
-const { isLoggedIn, getCustomer, logOut } = useAuth()
+const { isLoggedIn, isAdmin, getCustomer, getAdmin, logOut, logOutAdmin } = useAuth()
 
 const menuItems = computed(() => [
   [
@@ -77,36 +91,53 @@ const menuItems = computed(() => [
   ]
 ])
 
-const isMounted = ref(false);
-onMounted(() => {
-  isMounted.value = true;
+const adminMenuItems = computed(() => [
+  [
+    {
+      label: 'Quản lý bài viết',
+      icon: 'i-lucide-file-text',
+      onSelect: () => navigateTo('/admin/quan-ly/blog')
+    }
+  ],
+  [
+    {
+      label: 'Đăng xuất',
+      icon: 'i-lucide-log-out',
+      color: 'error' as const,
+      onSelect: logOutAdmin
+    }
+  ]
+])
+
+const items = computed<NavigationMenuItem[]>(() => {
+  const all: NavigationMenuItem[] = [
+    {
+      label: "Đặt xe",
+      to: "/",
+    },
+    {
+      label: "Tài xế",
+      to: '/driver',
+    },
+    {
+      label: "Chính sách",
+      to: "/policy",
+    },
+    {
+      label: "Dịch vụ",
+      to: "/service",
+    },
+    {
+      label: "Về chúng tôi",
+      to: "/introduce",
+    },
+    {
+      label: "Liên hệ",
+      to: "/contact",
+    },
+  ]
+  return isAdmin.value ? all.filter(i => i.label !== 'Đặt xe') : all
 });
-const items = computed<NavigationMenuItem[]>(() => [
-  {
-    label: "Đặt xe",
-    to: "/",
-  },
-  {
-    label: "Tài xế",
-    to: '/driver',
-  },
-  {
-    label: "Chính sách",
-    to: "/policy",
-  },
-  {
-    label: "Dịch vụ",
-    to: "/service",
-  },
-  {
-    label: "Về chúng tôi",
-    to: "/introduce",
-  },
-  {
-    label: "Liên hệ",
-    to: "/contact",
-  },
-]);
 </script>
 
 <style></style>

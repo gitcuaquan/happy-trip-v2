@@ -31,6 +31,22 @@ export const useOrderForm = () => {
   }
 
   /**
+   * Lấy dữ liệu từ order cũ, hoán đổi điểm đón ↔ điểm đến để đặt chiều về
+   */
+  const setOrderFormAsReturnTrip = (order: Order) => {
+    orderFormData.value = {
+      // Điểm đến cũ → điểm đón mới
+      departure_city: order.destination?.city || '',
+      departure_dictrict: order.destination?.district || '',
+      departure_address_1: order.destination?.address_1 || '',
+      // Điểm đón cũ → điểm đến mới
+      destination_city: order.departure?.city || '',
+      destination_dictrict: order.departure?.district || '',
+      destination_address_1: order.departure?.address_1 || '',
+    }
+  }
+
+  /**
    * Lấy dữ liệu đã lưu
    */
   const getOrderFormData = () => {
@@ -47,6 +63,7 @@ export const useOrderForm = () => {
   return {
     orderFormData,
     setOrderFormFromPreviousOrder,
+    setOrderFormAsReturnTrip,
     getOrderFormData,
     clearOrderFormData,
   }

@@ -36,7 +36,8 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div v-for="order in realOrders" :key="order.id" class="block">
               <HistoryCardItem :order="order" @refreshList="fetchOrders" @cancel="openCancelModal"
-                @navigate="navigateTo(`/history/${order.id}`)" @rebook="handleRebookOrder(order)" />
+                @navigate="navigateTo(`/history/${order.id}`)" @rebook="handleRebookOrder(order)"
+                @return-trip="handleReturnTripOrder(order)" />
             </div>
           </div>
 
@@ -167,6 +168,13 @@ const handleCancelOrder = async () => {
 const handleRebookOrder = (order: Order) => {
   const { setOrderFormFromPreviousOrder } = useOrderForm()
   setOrderFormFromPreviousOrder(order)
+  navigateTo('/')
+}
+
+// Xử lý "Đặt chiều về" - hoán đổi điểm đón/đến rồi chuyển về home
+const handleReturnTripOrder = (order: Order) => {
+  const { setOrderFormAsReturnTrip } = useOrderForm()
+  setOrderFormAsReturnTrip(order)
   navigateTo('/')
 }
 
