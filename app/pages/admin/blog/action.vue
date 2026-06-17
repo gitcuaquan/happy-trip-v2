@@ -7,7 +7,7 @@
           icon="i-lucide-arrow-left"
           color="neutral"
           variant="ghost"
-          @click="navigateTo('/admin/quan-ly/blog')"
+          @click="navigateTo('/admin/blog')"
         />
         <div>
           <h1 class="text-2xl font-extrabold text-slate-800">
@@ -331,7 +331,7 @@ async function loadDetail() {
       color: 'error',
       icon: 'i-lucide-circle-x',
     })
-    navigateTo('/admin/quan-ly/blog')
+    navigateTo('/admin/blog')
   } finally {
     detailLoading.value = false
   }
@@ -383,7 +383,7 @@ async function onSubmit(_e: FormSubmitEvent<{ title: string; slug: string }>) {
         icon: 'i-lucide-check-circle',
       })
     }
-    navigateTo('/admin/quan-ly/blog')
+    navigateTo('/admin/blog')
   } catch (err) {
     const e = err as { data?: { message?: string }; message?: string }
     submitError.value =
