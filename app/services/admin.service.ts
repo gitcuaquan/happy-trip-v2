@@ -3,6 +3,7 @@ import type { AdminProfile, AdminLoginResponse } from '~/type'
 export class AdminService {
     private baseURL = 'https://sys.happytrip.vn/api'
 
+
     // POST /api/partner/login — body { phone, password }
     // Swagger không document response shape → handle linh hoạt nhiều kiểu trả về
     async login(phone: string, password: string): Promise<{ token: string; admin: AdminProfile }> {

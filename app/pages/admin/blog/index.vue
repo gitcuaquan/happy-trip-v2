@@ -13,7 +13,7 @@
         size="md"
         icon="i-lucide-plus"
         label="Tạo Mới"
-        @click="navigateTo('/admin/quan-ly/blog/action')"
+        @click="navigateTo('/admin/blog/action')"
       />
     </div>
 
@@ -48,7 +48,7 @@
         class="mt-4"
         icon="i-lucide-plus"
         label="Tạo bài đầu tiên"
-        @click="navigateTo('/admin/quan-ly/blog/action')"
+        @click="navigateTo('/admin/blog/action')"
       />
     </div>
 
@@ -248,7 +248,7 @@ async function toggleStatus(article: Article) {
 }
 
 function goEdit(article: Article) {
-  navigateTo(`/admin/quan-ly/blog/action?id=${article.id}`)
+  navigateTo(`/admin/blog/action?id=${article.id}`)
 }
 
 // ===== Delete =====

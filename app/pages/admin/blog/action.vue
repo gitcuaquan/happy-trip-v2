@@ -171,7 +171,7 @@
             variant="ghost"
             color="neutral"
             label="Hủy"
-            @click="navigateTo('/admin/quan-ly/blog')"
+            @click="navigateTo('/admin/blog')"
           />
         </div>
 
@@ -242,6 +242,10 @@ function pickThumbnail() {
 
 async function onThumbnailSelected(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) {
+    console.warn('[onThumbnailSelected] no file selected')
+    return
+  }
   uploadingThumb.value = true
   try {
     const url = await blogService.uploadFile(adminToken.value || '', file, 'page')

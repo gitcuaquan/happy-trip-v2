@@ -9,7 +9,7 @@ interface PageListParams {
 
 export class BlogService {
     private baseURL = 'https://sys.happytrip.vn/api';
-    
+
 
     private authHeaders(token: string) {
         return { Authorization: `Bearer ${token}` }
@@ -31,6 +31,7 @@ export class BlogService {
         return response as PageListResponse
     }
 
+    // Lấy chi tiết page để hiển thị ở client (không cần token)
     async getPageDetail(idOrSlug: string): Promise<Article> {
         return await $fetch<Article>(`${this.baseURL}/page/${idOrSlug}`, {
             method: 'GET',
@@ -38,6 +39,7 @@ export class BlogService {
     }
 
     // ===== ADMIN (cần token) =====
+    // Tạo mới 
     async createPage(token: string, data: PagePayload): Promise<Article> {
         return await $fetch<Article>(`${this.baseURL}/page`, {
             method: 'POST',
@@ -46,6 +48,7 @@ export class BlogService {
         })
     }
 
+    // Cập nhật
     async updatePage(token: string, id: string, data: PagePayload): Promise<Article> {
         return await $fetch<Article>(`${this.baseURL}/page/${id}`, {
             method: 'PUT',
@@ -54,6 +57,7 @@ export class BlogService {
         })
     }
 
+    // Thay đổi trạng thái (public/private)
     async togglePageStatus(token: string, id: string, status: boolean): Promise<void> {
         await $fetch(`${this.baseURL}/page/${id}/status`, {
             method: 'PUT',
@@ -62,6 +66,7 @@ export class BlogService {
         })
     }
 
+    // Xóa
     async deletePage(token: string, id: string): Promise<void> {
         await $fetch(`${this.baseURL}/page/${id}`, {
             method: 'DELETE',
@@ -69,22 +74,20 @@ export class BlogService {
         })
     }
 
-    async uploadFile(_token: string, file: File, category = 'page'): Promise<string> {
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('category', category)
-        const res = await $fetch<UploadResponse | string | string[]>(`${this.baseURL}/upload`, {
-            method: 'POST',
-            body: formData,
-        })
-        console.log('[uploadFile] response:', res)
-
-        if (Array.isArray(res)) {
-            return typeof res[0] === 'string' ? res[0] : ''
-        }
-        if (typeof res === 'string') return res
-        return res?.url ?? res?.path ?? res?.data?.url ?? res?.data?.path ?? ''
-    }
+    // Upload file (ảnh)
+    async uploadFile(token: string, file: File, category = 'page'): Promise<string> {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('category', category)
+    
+    const res = await $fetch<any>(`${this.baseURL}/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+    })
+    
+    return res?.url ?? res?.path ?? res?.data?.url ?? res?.data?.path ?? res?.[0] ?? ''
+}
 }
 
 export const blogService = new BlogService()

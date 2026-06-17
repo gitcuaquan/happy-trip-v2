@@ -128,7 +128,7 @@ async function onSubmit(_e: FormSubmitEvent<Schema>) {
   try {
     const { token, admin } = await adminService.login(form.phone, form.password)
     setAdminAuth(token, admin)
-    await navigateTo('/admin/quan-ly/blog')
+    await navigateTo('/admin/blog')
   } catch (err) {
     const e = err as { data?: { message?: string }; message?: string }
     errorMsg.value =

@@ -40,7 +40,7 @@ const menuItems = computed(() => [
     {
       label: 'Quản lý bài viết',
       icon: 'i-lucide-file-text',
-      onSelect: () => navigateTo('/admin/quan-ly/blog'),
+      onSelect: () => navigateTo('/admin/blog'),
     },
   ],
   [

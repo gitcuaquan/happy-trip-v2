@@ -29,7 +29,7 @@
         </p>
         <div v-if="isAdmin" class="mt-4 text-center md:text-left">
           <UButton
-            to="/admin/quan-ly/blog"
+            to="/admin/blog"
             color="primary"
             size="lg"
             icon="i-lucide-file-text"
