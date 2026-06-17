@@ -208,13 +208,14 @@ export interface CustomerProfile {
   full_name: string
   phone: string
   created_at: string
-} 
+  has_password?: boolean
+}
 
 export interface ConfirmOtpResponse {
   token: string
   customer: CustomerProfile
-  order?: unknown 
-} 
+  order?: unknown
+}
 
 
 export interface LoginResponse {
@@ -223,6 +224,16 @@ export interface LoginResponse {
   fullName: string
   phone: string
   tokenType: string
+}
+
+export interface CheckPhoneResponse {
+  exists: boolean
+  has_password: boolean
+}
+
+export interface VerifyLoginOtpResponse {
+  token: string
+  customer: CustomerProfile
 }
 
 
