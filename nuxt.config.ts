@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { resolve } from 'pathe'
 export default defineNuxtConfig({
   modules: ["@nuxt/eslint", "@nuxt/ui", "@pinia/nuxt"],
 
@@ -12,8 +13,7 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
 
   routeRules: {
-    "/": { prerender: true },
-    "/admin/**": { robots: false }
+    "/": { prerender: true }
   },
   colorMode: {
     preference: 'light'
@@ -30,5 +30,5 @@ export default defineNuxtConfig({
         braceStyle: "1tbs",
       },
     },
-  },
+  }
 });
