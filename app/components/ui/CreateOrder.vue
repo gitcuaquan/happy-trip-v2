@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full max-w-md mx-auto my-10 p-2">
+  <div class="relative w-full max-w-md mx-auto md:my-10 md:p-2">
     <!-- Main card -->
     <UCard
       :key="formKey"
