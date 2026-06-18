@@ -1,7 +1,7 @@
-export default {
+module.exports = {
   apps: [
     {
-      name: 'HappyTripApp',
+      name: 'htp-app',
       exec_mode: 'cluster',
       instances: '1',
       script: './.output/server/index.mjs', 
