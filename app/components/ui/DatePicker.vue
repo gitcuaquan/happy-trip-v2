@@ -41,7 +41,7 @@ onUnmounted(()=>{
 // Tính toán ngày giờ tối thiểu dựa trên thời gian hiện tại = hiện tại + 1 tiếng 
 const minDateTime = computed(()=> {
   const d = new Date(now.value);
-  d.setHours(d.getHours() + 1);
+  d.setHours(d.getHours() + 2);
   return d;
 })
 
@@ -176,6 +176,6 @@ watch(
       </template>
     </UPopover>
 
-    <UInputTime v-if="!hideTimeInput" :ui="{ leadingIcon: 'text-primary' }" v-model="time" icon="i-lucide-alarm-clock" :is-time-unavailable="isTimeUnavailable" />
+    <UInputTime v-if="!hideTimeInput" :ui="{ leadingIcon: 'text-primary' }" v-model="time" icon="i-lucide-alarm-clock" :is-time-unavailable="(isTimeUnavailable as any)" />
   </div>
 </template>
