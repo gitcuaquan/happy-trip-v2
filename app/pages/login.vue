@@ -5,7 +5,9 @@
         <UColorModeButton variant="outline" />
       </div>
 
-      <div class="w-full h-screen flex flex-col justify-center items-center px-6">
+      <div
+        class="w-full h-screen flex flex-col justify-center items-center px-6"
+      >
         <AppLogo class="h-10 w-auto mb-4" />
         <h1 class="text-xl font-bold">Chào mừng bạn đến HappyTrip</h1>
         <p class="text-muted mt-3 text-sm text-center">
@@ -95,12 +97,22 @@
                 @click="handleLogin"
               />
 
-              <div class="flex items-center justify-center gap-2 text-xs text-muted">
-                <button type="button" class="text-primary font-semibold" @click="useOtpInstead">
+              <div
+                class="flex items-center justify-center gap-2 text-xs text-muted"
+              >
+                <button
+                  type="button"
+                  class="text-primary font-semibold"
+                  @click="useOtpInstead"
+                >
                   Đăng nhập bằng OTP
                 </button>
                 <span>·</span>
-                <button type="button" class="text-muted underline" @click="resetForm">
+                <button
+                  type="button"
+                  class="text-muted underline"
+                  @click="resetForm"
+                >
                   Đổi số
                 </button>
               </div>
@@ -133,17 +145,27 @@
                 @click="handleVerifyOtp"
               />
 
-              <div class="flex items-center justify-center gap-2 text-xs text-muted">
+              <div
+                class="flex items-center justify-center gap-2 text-xs text-muted"
+              >
                 <button
                   type="button"
                   class="text-primary font-semibold disabled:opacity-40"
                   :disabled="resendCooldown > 0"
                   @click="handleResend"
                 >
-                  {{ resendCooldown > 0 ? `Gửi lại (${resendCooldown}s)` : 'Gửi lại' }}
+                  {{
+                    resendCooldown > 0
+                      ? `Gửi lại (${resendCooldown}s)`
+                      : "Gửi lại"
+                  }}
                 </button>
                 <span>·</span>
-                <button type="button" class="text-muted underline" @click="resetForm">
+                <button
+                  type="button"
+                  class="text-muted underline"
+                  @click="resetForm"
+                >
                   Đổi số
                 </button>
               </div>
@@ -152,11 +174,13 @@
 
           <p class="text-center text-sm text-muted mt-6">
             Cần hỗ trợ?
-            <a href="tel:0972970000" class="text-primary font-semibold">Liên hệ 0972 97 0000</a>
+            <a href="tel:0972970000" class="text-primary font-semibold"
+              >Liên hệ 0972 97 0000</a
+            >
           </p>
-          <div class="text-center mt-4 text-xs text-muted">
-            <UIcon name="i-lucide-shield-check" class="inline w-3.5 h-3.5 mr-1" />
-            Bảo mật & Tin cậy — HappyTrip v2
+          <div class="text-center text-sm text-muted mt-2">
+            Bạn chưa muốn đăng nhập?
+            <NuxtLink to="/" class="text-primary font-semibold">Quay lại trang chủ</NuxtLink>
           </div>
         </div>
       </div>
@@ -185,162 +209,172 @@
 </template>
 
 <script lang="ts" setup>
-definePageMeta({ layout: false })
+definePageMeta({ layout: false });
 
-import { customerService } from '~/services/customer.service'
+import { customerService } from "~/services/customer.service";
 
-const { setAuth } = useAuth()
+const { setAuth } = useAuth();
 
-type Step = 'phone' | 'password' | 'otp'
+type Step = "phone" | "password" | "otp";
 
-const step = ref<Step>('phone')
-const form = reactive({ phone: '', password: '' })
-const otpCode = ref<string[]>([])
-const showPwd = ref(false)
-const loading = ref(false)
-const errorMsg = ref('')
-const resendCooldown = ref(0)
-const showCreatePwd = ref(false)
-const pendingRedirect = ref(false)
+const step = ref<Step>("phone");
+const form = reactive({ phone: "", password: "" });
+const otpCode = ref<string[]>([]);
+const showPwd = ref(false);
+const loading = ref(false);
+const errorMsg = ref("");
+const resendCooldown = ref(0);
+const showCreatePwd = ref(false);
+const pendingRedirect = ref(false);
 
 const subtitle = computed(() => {
   switch (step.value) {
-    case 'phone':
-      return 'Nhập số điện thoại để tiếp tục'
-    case 'password':
-      return `Đăng nhập với số ${form.phone}`
-    case 'otp':
-      return `Mã đã gửi về ${form.phone}`
+    case "phone":
+      return "Nhập số điện thoại để tiếp tục";
+    case "password":
+      return `Đăng nhập với số ${form.phone}`;
+    case "otp":
+      return `Mã đã gửi về ${form.phone}`;
     default:
-      return ''
+      return "";
   }
-})
+});
 
 async function handleCheckPhone() {
-  if (!form.phone) return
-  loading.value = true
-  errorMsg.value = ''
+  if (!form.phone) return;
+  loading.value = true;
+  errorMsg.value = "";
   try {
-    const res = await customerService.checkPhone(form.phone)
+    const res = await customerService.checkPhone(form.phone);
     if (!res.exists) {
-      errorMsg.value = 'Số điện thoại chưa được đăng ký. Vui lòng đặt xe trước để tạo tài khoản.'
-      return
+      errorMsg.value =
+        "Số điện thoại chưa được đăng ký. Vui lòng đặt xe trước để tạo tài khoản.";
+      return;
     }
     if (res.has_password) {
-      step.value = 'password'
+      step.value = "password";
     } else {
-      await customerService.sendLoginOtp(form.phone)
-      step.value = 'otp'
-      startCooldown()
+      await customerService.sendLoginOtp(form.phone);
+      step.value = "otp";
+      startCooldown();
     }
   } catch (e: any) {
-    errorMsg.value = e?.data?.message || 'Không thể kiểm tra số điện thoại. Thử lại sau.'
+    errorMsg.value =
+      e?.data?.message || "Không thể kiểm tra số điện thoại. Thử lại sau.";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 async function handleLogin() {
-  if (!form.password) return
-  loading.value = true
-  errorMsg.value = ''
+  if (!form.password) return;
+  loading.value = true;
+  errorMsg.value = "";
   try {
-    const res = await customerService.login(form.phone, form.password)
+    const res = await customerService.login(form.phone, form.password);
     // login response trả về accessToken + thông tin user
     const customer = {
       id: res.id,
       full_name: res.fullName,
       phone: res.phone,
-      created_at: '',
+      created_at: "",
       has_password: true,
-    }
-    setAuth(res.accessToken, customer)
-    navigateTo('/')
+    };
+    setAuth(res.accessToken, customer);
+    navigateTo("/");
   } catch (e: any) {
-    errorMsg.value = e?.data?.message || 'Sai mật khẩu hoặc tài khoản không tồn tại.'
+    errorMsg.value =
+      e?.data?.message || "Sai mật khẩu hoặc tài khoản không tồn tại.";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 async function handleVerifyOtp() {
-  if (otpCode.value.length < 6) return
-  loading.value = true
-  errorMsg.value = ''
+  if (otpCode.value.length < 6) return;
+  loading.value = true;
+  errorMsg.value = "";
   try {
-    const res = await customerService.verifyLoginOtp(form.phone, otpCode.value.join(''))
-    setAuth(res.token, res.customer)
+    const res = await customerService.verifyLoginOtp(
+      form.phone,
+      otpCode.value.join(""),
+    );
+    setAuth(res.token, res.customer);
     // Tài khoản chưa có pwd -> mở modal tạo pwd, redirect sau khi đóng
     if (res.customer && res.customer.has_password === false) {
-      pendingRedirect.value = true
-      showCreatePwd.value = true
+      pendingRedirect.value = true;
+      showCreatePwd.value = true;
     } else {
-      navigateTo('/')
+      navigateTo("/");
     }
   } catch (e: any) {
-    errorMsg.value = e?.data?.message || 'Mã OTP không đúng hoặc đã hết hạn.'
+    errorMsg.value = e?.data?.message || "Mã OTP không đúng hoặc đã hết hạn.";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 async function handleResend() {
-  if (resendCooldown.value > 0) return
+  if (resendCooldown.value > 0) return;
   try {
-    await customerService.sendLoginOtp(form.phone)
-    otpCode.value = []
-    startCooldown()
+    await customerService.sendLoginOtp(form.phone);
+    otpCode.value = [];
+    startCooldown();
   } catch {
-    errorMsg.value = 'Không thể gửi lại OTP.'
+    errorMsg.value = "Không thể gửi lại OTP.";
   }
 }
 
 async function useOtpInstead() {
-  loading.value = true
-  errorMsg.value = ''
+  loading.value = true;
+  errorMsg.value = "";
   try {
-    await customerService.sendLoginOtp(form.phone)
-    step.value = 'otp'
-    startCooldown()
+    await customerService.sendLoginOtp(form.phone);
+    step.value = "otp";
+    startCooldown();
   } catch (e: any) {
-    errorMsg.value = e?.data?.message || 'Không thể gửi OTP.'
+    errorMsg.value = e?.data?.message || "Không thể gửi OTP.";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 function resetForm() {
-  step.value = 'phone'
-  otpCode.value = []
-  form.password = ''
-  errorMsg.value = ''
-  resendCooldown.value = 0
-  showPwd.value = false
+  step.value = "phone";
+  otpCode.value = [];
+  form.password = "";
+  errorMsg.value = "";
+  resendCooldown.value = 0;
+  showPwd.value = false;
 }
 
 function startCooldown() {
-  resendCooldown.value = 60
+  resendCooldown.value = 60;
   const interval = setInterval(() => {
-    resendCooldown.value--
-    if (resendCooldown.value <= 0) clearInterval(interval)
-  }, 1000)
+    resendCooldown.value--;
+    if (resendCooldown.value <= 0) clearInterval(interval);
+  }, 1000);
 }
 
 function onCreatedPassword() {
-  navigateTo('/')
+  navigateTo("/");
 }
 
 function onCreatePwdClose(value: boolean) {
   if (!value && pendingRedirect.value) {
-    pendingRedirect.value = false
-    navigateTo('/')
+    pendingRedirect.value = false;
+    navigateTo("/");
   }
 }
 
 const primaryColor = computed(() => {
-  if (import.meta.server) return '#00DC82'
-  return getComputedStyle(document.documentElement).getPropertyValue('--ui-primary').trim() || '#00DC82'
-})
+  if (import.meta.server) return "#00DC82";
+  return (
+    getComputedStyle(document.documentElement)
+      .getPropertyValue("--ui-primary")
+      .trim() || "#00DC82"
+  );
+});
 </script>
 
 <style scoped>
