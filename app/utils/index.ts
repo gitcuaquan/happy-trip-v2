@@ -2,9 +2,6 @@ export function numberToCurrency(value: number, locale: string = 'vi-VN', curren
     return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value);
 }
 
-// Domain ảnh upload của hệ thống — nếu thumbnail là relative thì prepend
-const IMAGE_BASE = 'https://sys.happytrip.vn'
-
 // Trả về URL đầy đủ cho ảnh. Nếu input rỗng → ''.
 // Nếu đã là http(s) hoặc data: → giữ nguyên.
 // Nếu là path tương đối → prepend IMAGE_BASE.
@@ -13,8 +10,7 @@ export function resolveImageUrl(url?: string | null): string {
     const s = url.trim()
     if (!s) return ''
     if (/^(https?:|data:|blob:)/i.test(s)) return s
-    if (s.startsWith('/')) return IMAGE_BASE + s
-    return IMAGE_BASE + '/' + s
+    return url
 }
 
 // Sinh slug từ tiêu đề: bỏ dấu tiếng Việt → kebab-case
