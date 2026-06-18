@@ -1,33 +1,33 @@
 name: Deploy
 
 on:
-push:
-branches:
-- production
+  push:
+    branches:
+      - production
 
 jobs:
-deploy:
-runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
 
-steps:
-  - name: Deploy to VPS
-    uses: appleboy/ssh-action@v1.2.0
-    with:
-      host: ${{ secrets.HOST }}
-      username: ${{ secrets.USERNAME }}
-      key: ${{ secrets.SSH_KEY }}
-      port: ${{ secrets.PORT }}
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
 
-      script: |
-        export NVM_DIR="$HOME/.nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+          script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-        cd /var/www/happytrip
+            cd /var/www/happytrip
 
-        git pull origin production
+            git pull origin production
 
-        npm install
+            npm install
 
-        npm run build
+            npm run build
 
-        pm2 restart htp-app
+            pm2 restart htp-app
