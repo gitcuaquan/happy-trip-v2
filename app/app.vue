@@ -2,26 +2,54 @@
 import { vi } from "@nuxt/ui/locale";
 
 useHead({
-  meta: [{ name: "viewport", content: "width=device-width, initial-scale=1" }],
-  link: [{ rel: "icon", href: "/favicon.ico" }],
+  meta: [
+    {
+      name: "viewport",
+      content: "width=device-width, initial-scale=1,max-scale=1",
+    },
+  ],
+  link: [
+    {
+      rel: "apple-touch-icon",
+      sizes: "180x180",
+      href: "/favicon/apple-touch-icon.png",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "32x32",
+      href: "/favicon/favicon-32x32.png",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "16x16",
+      href: "/favicon/favicon-16x16.png",
+    },
+    {
+      rel: "icon",
+      type: "image/favicon",
+      sizes: "16x16",
+      href: "/favicon/favicon.ico",
+    },
+  ],
   htmlAttrs: {
-    lang: "en",
+    lang: "vi",
     class: "light",
   },
 });
 
-const title =
-  "Happy Trip - Dịch vụ xe tiện chuyến hàng đầu tại Việt Nam";
+const { origin } = useRequestURL()
+const title = "Happy Trip - Dịch vụ xe tiện chuyến hàng đầu tại Việt Nam";
 const description =
-  "A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours.";
-
+  "Happy Trip – Dịch vụ xe tiện chuyến hàng đầu tại Việt Nam, kết nối hành khách với các chuyến xe chất lượng cao trên toàn quốc. Đặt vé nhanh chóng, giá minh bạch, nhiều lựa chọn tuyến đường, hỗ trợ 24/7 và mang đến trải nghiệm di chuyển an toàn, tiện lợi cho mọi hành trình.";
 useSeoMeta({
   title,
   description,
   ogTitle: title,
   ogDescription: description,
-  ogImage: "https://ui.nuxt.com/assets/templates/nuxt/starter-light.png",
-  twitterImage: "https://ui.nuxt.com/assets/templates/nuxt/starter-light.png",
+  ogImage: `${origin}/images/banner.png`,
+  twitterImage: `${origin}/images/banner.png`,
   twitterCard: "summary_large_image",
 });
 
@@ -38,6 +66,4 @@ onMounted(() => {
     </NuxtLayout>
   </UApp>
 </template>
-<style scoped>
-
-</style>
+<style scoped></style>
