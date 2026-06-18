@@ -3,7 +3,7 @@
   <UMain>
     <slot />
   </UMain>
-  <Footer />
+<Footer />
 </template>
 
 <script lang="ts" setup></script>
