@@ -216,6 +216,7 @@
             type="submit"
             color="primary"
             size="lg"
+            :disabled="!canSubmit"
             class="font-black text-sm shadow-xl transition-all duration-300 w-full block"
           >
             <span class="flex items-center justify-center gap-2 py-1 w-full">
@@ -521,14 +522,10 @@
 import type { FormSubmitEvent } from "@nuxt/ui";
 import z from "zod";
 import type { OrderDetail, OrderPreview } from "~/type";
-import { orderService } from "../../services/order.service";
+import { orderService } from "~/services/order.service";
 import { useOrderForm } from "~/composables/useOrderForm";
 
-const BASE = "https://sysdev.happytrip.vn";
-const { token } = useAuth();
-const SECRET = "123";
-import type { CustomerProfile } from "~/type";
-const { setAuth } = useAuth();
+const { token, setAuth } = useAuth();
 // ─── Order state ──────────────────────────────────────────
 const order = ref<OrderPreview>({
   id_service: "",
@@ -642,12 +639,11 @@ const addressReady = computed(() => {
 });
 
 const hasRouteData = computed(() => previews.value.length > 0);
-const hasValidPrice = computed(() =>
-  previews.value.some((p) => p.price_guest_after > 0),
-);
 const getPreview = (id: string) =>
   previews.value.find((p) => p.id_service === id && p.price_guest_after > 0);
-const canSubmit = computed(() => hasValidPrice.value && order.value.id_service);
+const canSubmit = computed(
+  () => previews.value.some((p) => p.price_guest_after > 0) && !!order.value.id_service,
+);
 
 // ─── Schemas ──────────────────────────────────────────────
 const schema = z.object({
@@ -706,35 +702,7 @@ function handleBackToInfo() {
 
 async function handleResend() {
   if (resendCooldown.value > 0 || hookLoading.value) return;
-
-  hookLoading.value = true;
-  hookError.value = "";
-  const preview = getPreview(order.value.id_service);
-  savedPrice.value = preview?.price_guest_after || 0;
-
-  try {
-    await $fetch(`${BASE}/api/order/hook`, {
-      method: "POST",
-      params: { secret: SECRET },
-      headers: { "Content-Type": "application/json" },
-      body: {
-        ...order.value,
-        full_name: contact.name,
-        phone: contact.phone,
-        price_guest_after: preview?.price_guest_after ?? 0,
-        price_guest: preview?.price_guest ?? 0,
-        price: preview?.price_original ?? 0,
-        note: order.value.note?.trim() || "",
-      },
-    });
-    otpValue.value = [];
-    otpError.value = "";
-    startResendCooldown();
-  } catch {
-    otpError.value = "Không thể gửi lại OTP. Vui lòng thử lại.";
-  } finally {
-    hookLoading.value = false;
-  }
+  await submitOrderHook({ isResend: true });
 }
 
 function startResendCooldown() {
@@ -764,17 +732,7 @@ watch(addressReady, async (val) => {
 // ─── API ──────────────────────────────────────────────────
 async function calcPreviews() {
   const results = await Promise.allSettled(
-    services.value.map((s) =>
-      $fetch<OrderDetail>(`${BASE}/api/order/preview`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          origin: "https://happytrip.vn",
-          referer: "https://happytrip.vn/",
-        },
-        body: { ...order.value, id_service: s.id },
-      }),
-    ),
+    services.value.map((s) => orderService.previewOrder(order.value, s.id)),
   );
   previews.value = results
     .filter(
@@ -783,48 +741,49 @@ async function calcPreviews() {
     .map((r) => r.value);
 }
 
-async function sendOTP() {
+// Dùng chung cho cả sendOTP lần đầu và resend OTP
+async function submitOrderHook({ isResend = false } = {}) {
   hookLoading.value = true;
   hookError.value = "";
+  otpError.value = "";
   const preview = getPreview(order.value.id_service);
   savedPrice.value = preview?.price_guest_after || 0;
 
   try {
-    await $fetch(`${BASE}/api/order/hook`, {
-      method: "POST",
-      params: { secret: SECRET },
-      headers: { "Content-Type": "application/json" },
-      body: {
-        ...order.value,
-        full_name: contact.name,
-        phone: contact.phone,
-        price_guest_after: preview?.price_guest_after ?? 0,
-        price_guest: preview?.price_guest ?? 0,
-        price: preview?.price_original ?? 0,
-        note: order.value.note?.trim() || "",
-      },
+    await orderService.createOrderHook({
+      ...order.value,
+      full_name: contact.name,
+      phone: contact.phone,
+      price_guest_after: preview?.price_guest_after ?? 0,
+      price_guest: preview?.price_guest ?? 0,
+      price: preview?.price_original ?? 0,
+      note: order.value.note?.trim() || "",
     });
-    showOtpModal.value = true;
+    if (isResend) {
+      otpValue.value = [];
+    } else {
+      showOtpModal.value = true;
+    }
     startResendCooldown();
   } catch {
-    hookError.value = "Không thể gửi OTP. Vui lòng thử lại.";
+    const msg = isResend
+      ? "Không thể gửi lại OTP. Vui lòng thử lại."
+      : "Không thể gửi OTP. Vui lòng thử lại.";
+    if (isResend) otpError.value = msg;
+    else hookError.value = msg;
   } finally {
     hookLoading.value = false;
   }
 }
+
+const sendOTP = () => submitOrderHook();
 
 const formKey = ref(0);
 async function confirmOTP() {
   otpLoading.value = true;
   otpError.value = "";
   try {
-    const res = await $fetch<{ token: string; customer: CustomerProfile }>( // ← typed
-      `${BASE}/api/order/confirm-otp/${SECRET}`,
-      {
-        method: "POST",
-        params: { otp: otpValue.value.join("") },
-      },
-    );
+    const res = await orderService.confirmOrderOtp(otpValue.value.join(""));
 
     if (res.token && res.customer) {
       setAuth(res.token, res.customer);
@@ -864,16 +823,6 @@ async function confirmOTP() {
     otpLoading.value = false;
   }
 }
-
-// Nếu người dùng click outside modal ở bước nhập OTP, sẽ không đóng modal mà quay lại bước nhập thông tin liên hệ
-watch(isModalOpen, (val) => {
-  if (!val && showOtpModal.value) {
-    nextTick(() => {
-      isModalOpen.value = true;
-      showOtpModal.value = false;
-    });
-  }
-});
 </script>
 
 <style scoped>
