@@ -126,7 +126,7 @@
               />
             </UFormField>
             <div class="text-xs text-slate-500 mt-1">
-              Nếu đặt xe hôm nay vui lòng đặt trước 2h để tài xế có thời gian
+              Nếu đặt xe hôm nay vui lòng đặt trước 30 phút để tài xế có thời gian
               chuẩn bị và di chuyển đến điểm đón.
             </div>
           </div>

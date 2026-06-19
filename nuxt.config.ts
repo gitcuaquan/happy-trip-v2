@@ -8,12 +8,15 @@ export default defineNuxtConfig({
   devServer: {
     port: 2711,
   },
+  runtimeConfig: {
+    mongoUri: "",
+  },
 
   css: ["~/assets/css/main.css"],
 
   routeRules: {
     "/": { prerender: true },
-    "/admin/**": { robots: false }
+    "/admin/**": { ssr: false }
   },
   colorMode: {
     preference: 'light'
