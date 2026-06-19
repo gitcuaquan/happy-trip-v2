@@ -1,13 +1,25 @@
-import type { 
-  OrderListQueryParams, 
-  OrderListBodyFilter, 
-  OrderListResponse, 
-  Order, 
-  ActionResponse 
-} from '@/type'; 
+import type {
+  OrderListQueryParams,
+  OrderListBodyFilter,
+  OrderListResponse,
+  Order,
+  ActionResponse,
+  OrderDetail,
+  OrderPreview,
+  CustomerProfile,
+} from '@/type';
+
+interface CreateOrderHookPayload extends OrderPreview {
+  full_name: string;
+  phone: string;
+  price_guest_after?: number;
+  price_guest?: number;
+  price?: number;
+}
 
 export class OrderService {
   private baseURL = 'https://sysdev.happytrip.vn/api';
+  private hookSecret = '123';
 
  
   async getActiveRide(token: string): Promise<Order | null> {
@@ -72,6 +84,46 @@ export class OrderService {
       console.error('Error cancelling order:', error);
       throw error;
     }
+  }
+
+  /**
+   * 5. Lấy báo giá preview cho 1 dịch vụ
+   */
+  async previewOrder(order: OrderPreview, idService: string): Promise<OrderDetail> {
+    return await $fetch<OrderDetail>(`${this.baseURL}/order/preview`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        origin: 'https://happytrip.vn',
+        referer: 'https://happytrip.vn/',
+      },
+      body: { ...order, id_service: idService },
+    });
+  }
+
+  /**
+   * 6. Gửi hook tạo đơn + gửi OTP (dùng cho cả send lần đầu + resend)
+   */
+  async createOrderHook(payload: CreateOrderHookPayload): Promise<void> {
+    await $fetch(`${this.baseURL}/order/hook`, {
+      method: 'POST',
+      params: { secret: this.hookSecret },
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+    });
+  }
+
+  /**
+   * 7. Xác nhận OTP đặt xe → trả token + customer (login luôn)
+   */
+  async confirmOrderOtp(otp: string): Promise<{ token: string; customer: CustomerProfile }> {
+    return await $fetch<{ token: string; customer: CustomerProfile }>(
+      `${this.baseURL}/order/confirm-otp/${this.hookSecret}`,
+      {
+        method: 'POST',
+        params: { otp },
+      }
+    );
   }
 }
 

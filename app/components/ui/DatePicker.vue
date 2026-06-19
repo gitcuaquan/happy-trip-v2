@@ -38,10 +38,10 @@ onUnmounted(()=>{
   if(timer) clearInterval(timer);
 })
 
-// Tính toán ngày giờ tối thiểu dựa trên thời gian hiện tại = hiện tại + 1 tiếng 
+// Tính toán ngày giờ tối thiểu dựa trên thời gian hiện tại = hiện tại + 30p
 const minDateTime = computed(()=> {
   const d = new Date(now.value);
-  d.setHours(d.getHours() + 2);
+  d.setMinutes(d.getMinutes() + 30); 
   return d;
 })
 

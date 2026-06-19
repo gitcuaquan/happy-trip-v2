@@ -1,7 +1,7 @@
 <template>
   <section class="bg-gray-300 bg-image-hero bg-linear-to-b to-slate-50 from-primary/30">
     <UContainer class="min-h-screen overflow-hidden flex flex-col md:flex-row md:items-center gap-5 py-4">
-      <div v-if="!isAdmin" class="md:w-1/2 w-full text-center">
+      <div v-if="!isAdmin" class="md:w-1/2 w-full">
         <UiCreateOrder />
       </div>
       <div :class="['w-full flex flex-col md:gap-5 gap-3', isAdmin ? '' : 'md:w-1/2']">

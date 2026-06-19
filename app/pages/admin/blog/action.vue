@@ -112,7 +112,7 @@
               variant="solid"
               size="xs"
               class="absolute top-2 right-2"
-              @click="form.thumbnail = ''"
+              @click="removeThumbnail"
             />
           </div>
 
@@ -191,6 +191,7 @@
 import type { FormSubmitEvent } from '@nuxt/ui'
 import z from 'zod'
 import { blogService } from '~/services/blog.service'
+import { uploadService } from '~/services/upload.service'
 import { resolveImageUrl } from '~/utils'
 import type { PagePayload } from '~/type'
 
@@ -248,16 +249,19 @@ async function onThumbnailSelected(e: Event) {
   }
   uploadingThumb.value = true
   try {
-    const url = await blogService.uploadFile(adminToken.value || '', file, 'page')
-    if (url) {
-      form.thumbnail = url
+    // Sử dụng service mới
+    const result = await uploadService.upload(file)
+    
+    // Kiểm tra success và gán url 
+    if(result.success && result.url){
+      form.thumbnail = result.url
       toast.add({
-        title: 'Tải ảnh thành công',
+        title: 'Đã tải ảnh đại diện',
         color: 'success',
         icon: 'i-lucide-check-circle',
       })
-    } else {
-      throw new Error('No URL returned')
+    }else{
+      throw new Error('Lỗi từ server: Không trả về URL')
     }
   } catch (err) {
     console.error(err)
@@ -272,11 +276,26 @@ async function onThumbnailSelected(e: Event) {
   }
 }
 
-// === Inline image upload trong RichEditor ===
+async function removeThumbnail() {
+  if (!form.thumbnail) return
+  
+  try {
+    await uploadService.remove(form.thumbnail)
+    toast.add({ title: 'Đã xóa ảnh', color: 'success', icon: 'i-lucide-check-circle' })
+  } catch (error) {
+    console.error('Lỗi khi xóa ảnh:', error)
+  } finally {
+    form.thumbnail = ''
+  }
+}
+
+
 async function onUploadImage(file: File, cb: (url: string) => void) {
   try {
-    const url = await blogService.uploadFile(adminToken.value || '', file, 'page')
-    if (url) cb(resolveImageUrl(url))  // resolve URL đầy đủ để ảnh hiển thị được ở mọi domain
+    const result = await uploadService.upload(file)
+    if (result.success && result.url) {
+      cb(resolveImageUrl(result.url)) 
+    }
   } catch (err) {
     console.error(err)
     toast.add({
