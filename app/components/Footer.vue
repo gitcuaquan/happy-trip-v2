@@ -94,7 +94,25 @@
       </UContainer>
     </div>
 
-    </footer>
+    <!-- Floating contact buttons -->
+    <div class="fixed bottom-6 right-4 md:right-6 z-40 flex flex-col gap-3">
+      <a
+        v-for="f in floats"
+        :key="f.label"
+        :href="f.href"
+        :aria-label="f.label"
+        target="_blank"
+        rel="noopener"
+        :class="[
+          'group w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110',
+          f.bg,
+        ]"
+      >
+        <UIcon :name="f.icon" class="size-6 text-white" />
+        <span class="sr-only">{{ f.label }}</span>
+      </a>
+    </div>
+  </footer>
 </template>
 
 <script lang="ts" setup>
@@ -122,7 +140,7 @@ const floats = [
   {
     label: 'Chat Messenger',
     icon: 'i-simple-icons-messenger',
-    href: 'https://www.facebook.com/share/1JXBotWN8m/?mibextid=wwXIfr',
+    href: 'https://www.facebook.com/share/17kFPUGXDn/',
     bg: 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400',
   },
   {

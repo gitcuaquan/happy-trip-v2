@@ -12,6 +12,16 @@ export interface OrderPreview {
     note?: string
 }
 
+export interface OrderPartner {
+    id: string
+    full_name: string
+    phone: string
+    status_type?: number
+    status_name?: string
+    transport?: Transport
+    bank_info?: BankInfo
+}
+
 export class OrderDetail {
     short_id: string = '';
     id_service: string = '';
@@ -19,6 +29,8 @@ export class OrderDetail {
     departure: Address = new Address();
     destination: Address = new Address();
     date_of_destination: string = '';
+    partner?: OrderPartner;
+    accepted_at?: string;
     quantity: number = 0;
     price_original: number = 0;
     price_after: number = 0;

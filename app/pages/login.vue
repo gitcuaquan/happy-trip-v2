@@ -1,10 +1,6 @@
 <template>
   <ClientOnly>
     <div class="w-screen h-screen grid grid-cols-1 md:grid-cols-2">
-      <div class="fixed top-0 flex gap-3 left-0 p-2 z-10">
-        <UColorModeButton variant="outline" />
-      </div>
-
       <div
         class="w-full h-screen flex flex-col justify-center items-center px-6"
       >

@@ -53,10 +53,7 @@ useSeoMeta({
   twitterCard: "summary_large_image",
 });
 
-const colorMode = useColorMode();
-onMounted(() => {
-  colorMode.preference = "light";
-});
+// Force light theme — đã xử lý ở plugins/force-light-theme.client.ts
 </script>
 
 <template>

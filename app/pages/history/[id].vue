@@ -104,6 +104,74 @@
                     </template>
                 </UCard>
 
+                <!-- Driver Card - hiện khi đã có partner (Tài xế nhận đơn trở đi) -->
+                <UCard v-if="orderDetail.partner">
+                    <template #header>
+                        <div class="flex items-center justify-between">
+                            <p class="text-xs font-bold text-muted uppercase tracking-wider">Tài xế</p>
+                            <UBadge v-if="orderDetail.accepted_at" color="success" variant="soft" size="sm" class="rounded-full">
+                                <UIcon name="i-lucide-check-circle" class="size-3 mr-1" />
+                                Đã nhận lúc {{ formatTime(orderDetail.accepted_at) }}
+                            </UBadge>
+                        </div>
+                    </template>
+
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border-2 border-primary/20">
+                            <span class="text-base font-bold text-primary">
+                                {{ initials(orderDetail.partner.full_name) }}
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-sm truncate">{{ orderDetail.partner.full_name }}</p>
+                            <p class="text-xs text-muted mt-0.5 flex items-center gap-1">
+                                <UIcon name="i-lucide-phone" class="size-3" />
+                                {{ orderDetail.partner.phone }}
+                            </p>
+                        </div>
+                        <UButton
+                            :to="`tel:${orderDetail.partner.phone}`"
+                            icon="i-lucide-phone-call"
+                            size="sm"
+                            color="primary"
+                            variant="solid"
+                            class="rounded-xl"
+                            label="Gọi"
+                        />
+                    </div>
+
+                    <!-- Vehicle info -->
+                    <template v-if="orderDetail.partner.transport" #footer>
+                        <div class="-mx-4 -my-3 px-4 py-3 bg-gradient-to-br from-slate-50 to-orange-50/30 rounded-b-md">
+                            <div class="flex items-start gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center shrink-0 border border-default shadow-sm">
+                                    <UIcon name="i-lucide-car-front" class="size-5 text-primary" />
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="text-sm font-bold">
+                                            {{ orderDetail.partner.transport.hang_xe }}
+                                            {{ orderDetail.partner.transport.ten_xe }}
+                                        </span>
+                                        <UBadge color="neutral" variant="subtle" size="xs">
+                                            {{ orderDetail.partner.transport.type_name }}
+                                        </UBadge>
+                                        <UBadge v-if="orderDetail.partner.transport.created_year" color="neutral" variant="outline" size="xs">
+                                            {{ orderDetail.partner.transport.created_year }}
+                                        </UBadge>
+                                    </div>
+                                    <div class="mt-1.5 inline-flex items-center gap-1.5 px-2 py-1 rounded bg-white border border-default">
+                                        <UIcon name="i-lucide-hash" class="size-3 text-muted" />
+                                        <span class="text-xs font-bold font-mono tracking-wider">
+                                            {{ orderDetail.partner.transport.license_plate }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </UCard>
+
                 <!-- Customer Card -->
                 <UCard>
                     <template #header>
@@ -239,8 +307,6 @@ const orderId = route.params.id as string
 
 const isLoading = ref(true)
 const orderDetail = ref<OrderDetail | null>(null)
-const showCancelModal = ref(false)
-const isCanceling = ref(false)
 
 const fetchDetail = async () => {
     if (!token.value) {

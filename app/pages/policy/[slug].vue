@@ -16,7 +16,7 @@
 
     <template v-else>
       <div class="relative min-h-56 lg:min-h-72 overflow-hidden bg-slate-800 flex flex-col justify-end">
-        <img v-if="article?.thumbnail" :src="`https://happytrip.vn${article.thumbnail}`"
+        <img v-if="article?.thumbnail" :src="resolveImageUrl(article.thumbnail)"
           :alt="article.title || article.name" class="absolute inset-0 w-full h-full object-cover opacity-60">
 
         <div
@@ -51,6 +51,7 @@
 
 <script lang="ts" setup>
 import { BlogService } from '~/services/blog.service';
+import { resolveImageUrl } from '~/utils';
 
 const route = useRoute()
 const slug = route.params.slug as string

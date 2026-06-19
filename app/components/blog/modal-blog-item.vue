@@ -3,7 +3,7 @@
    @click="emit('click', article)">
     <!-- Thumbnail -->
     <div class="relative h-52 overflow-hidden bg-gray-50">
-      <img v-if="article.thumbnail" :src="`https://happytrip.vn${article.thumbnail}`"
+      <img v-if="article.thumbnail" :src="resolveImageUrl(article.thumbnail)"
         :alt="article.title || article.name"
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
       <div v-else class="w-full h-full flex items-center justify-center bg-linear-to-br from-orange-50 to-orange-100">
@@ -40,6 +40,7 @@
 
 <script lang="ts" setup>
 import type { Article } from '~/type'
+import { resolveImageUrl } from '~/utils'
 
 
 const props = defineProps<{

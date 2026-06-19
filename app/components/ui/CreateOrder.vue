@@ -15,49 +15,13 @@
         <div
           class="flex items-center uppercase justify-center gap-2 relative z-10"
         >
-          <span
-            v-if="hasActiveRide"
-            class="text-white font-black text-lg tracking-tight"
-          >
-            Chuyến xe của bạn.
-          </span>
-          <span v-else class="text-white font-black text-lg tracking-tight"
+          <span class="text-white font-black text-lg tracking-tight"
             >Bạn Muốn Đi Đâu</span
           >
         </div>
       </template>
 
-      <div
-        v-if="hasActiveRide"
-        class="py-8 px-4 flex flex-col items-center justify-center text-center space-y-4"
-      >
-        <div
-          class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center animate-pulse"
-        >
-          <UIcon name="i-lucide-car-front" class="size-10 text-primary mb-4" />
-        </div>
-        <div>
-          <h3 class="text-lg font-black text-slate-800 mb-1">
-            Chuyến xe đang diễn ra
-          </h3>
-          <p class="text-sm text-slate-500 font-medium">
-            Bạn đang có một chuyến xe chưa hoàn thành. Vui lòng kết thúc chuyến
-            hiện tại trước khi đặt chuyến mới.
-          </p>
-        </div>
-        <UButton
-          to="/history"
-          color="primary"
-          variant="soft"
-          size="lg"
-          class="rounded-xl font-bold w-full mt-2 flex justify-center"
-        >
-          <UIcon name="i-lucide-history" class="size-5 mr-1" />
-          Xem hành trình hiện tại
-        </UButton>
-      </div>
-
-      <div v-else>
+      <div>
         <UForm
           :schema="schema"
           :state="order"
@@ -525,7 +489,7 @@ import type { OrderDetail, OrderPreview } from "~/type";
 import { orderService } from "~/services/order.service";
 import { useOrderForm } from "~/composables/useOrderForm";
 
-const { token, setAuth } = useAuth();
+const { setAuth } = useAuth();
 // ─── Order state ──────────────────────────────────────────
 const order = ref<OrderPreview>({
   id_service: "",
@@ -567,33 +531,7 @@ const otpLoading = ref(false);
 const hookError = ref("");
 const otpError = ref("");
 
-// kiểm tra cuốc đang chạy
-const hasActiveRide = ref<boolean>(false);
-const isLoadingActiveRide = ref<boolean>(true);
-
-async function checkActiveRide() {
-  isLoadingActiveRide.value = true;
-  try {
-    const res = await orderService.getActiveRide(token.value!);
-
-    if (!res) {
-      hasActiveRide.value = false;
-    } else if (Array.isArray(res)) {
-      hasActiveRide.value = res.length > 0;
-    } else {
-      hasActiveRide.value = Object.keys(res).length > 0;
-    }
-  } catch (error) {
-    console.error("Lỗi khi kiểm tra cuốc xe đang chạy:", error);
-    hasActiveRide.value = false;
-  } finally {
-    isLoadingActiveRide.value = false;
-  }
-}
-
 onMounted(() => {
-  checkActiveRide();
-
   // Kiểm tra xem có dữ liệu từ "Đặt lại chuyến" không
   const { getOrderFormData, clearOrderFormData } = useOrderForm();
   const savedOrderData = getOrderFormData();
