@@ -4,25 +4,7 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true,
   },
-  app: {
-    head: {
-    link: [
-        { 
-          rel: "preload", 
-          href: "/images/hero-bg.webp", 
-          as: "image",
-          media: "(min-width: 768px)" // Chỉ preload nếu màn hình từ 768px trở lên
-        },
-        { 
-          rel: "preload", 
-          href: "/images/about.webp", 
-          as: "image", 
-          fetchpriority: "high",
-          media: "(min-width: 768px)" // Chỉ preload nếu màn hình từ 768px trở lên
-        },
-      ],
-    },
-  },
+
 
   css: ["~/assets/css/main.css"],
   site: {
