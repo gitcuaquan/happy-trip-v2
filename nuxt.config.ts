@@ -1,59 +1,60 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  site: {
-    url: "https://happytrip.vn",
-    name: "Happy Trip",
-    description:
-      "Happy Trip – Dịch vụ xe tiện chuyến hàng đầu tại Việt Nam, kết nối hành khách với các chuyến xe chất lượng cao trên toàn quốc. Đặt vé nhanh chóng, giá minh bạch, nhiều lựa chọn tuyến đường, hỗ trợ 24/7 và mang đến trải nghiệm di chuyển an toàn, tiện lợi cho mọi hành trình.",
-  },
-  modules: ["@nuxt/eslint", "@nuxt/ui", "@pinia/nuxt", "@nuxtjs/seo"],
-  sitemap: {
-    sources: [
-      '/api/__sitemap__/routes'
-    ]
-  },
+
+  modules: ['@nuxt/eslint', '@nuxt/ui', '@pinia/nuxt', '@nuxtjs/seo'],
   devtools: {
-    enabled: true,
+    enabled: true
   },
-  devServer: {
-    port: 2711,
-  },
-  runtimeConfig: {
-    mongoUri: "",
+  app: {
+    head: {
+      link: [
+        { rel: 'preload', href: '/images/hero-bg.jpg', as: 'image' },
+        { rel: 'preload', href: '/images/about.png', as: 'image', fetchpriority: 'high' }
+      ]
+    }
   },
 
-  css: ["~/assets/css/main.css"],
-
-  routeRules: {
-    "/": { prerender: true },
-    "/admin/**": { ssr: false },
+  css: ['~/assets/css/main.css'], site: {
+    url: 'https://happytrip.vn',
+    name: 'Happy Trip',
+    description:
+      'Happy Trip – Dịch vụ xe tiện chuyến hàng đầu tại Việt Nam, kết nối hành khách với các chuyến xe chất lượng cao trên toàn quốc. Đặt vé nhanh chóng, giá minh bạch, nhiều lựa chọn tuyến đường, hỗ trợ 24/7 và mang đến trải nghiệm di chuyển an toàn, tiện lợi cho mọi hành trình.'
   },
   colorMode: {
     preference: 'light',
     fallback: 'light'
   },
-  app: {
-    head: {
-      script: [
-        {
-          // Chạy trước mọi plugin để ép color-mode = light, kể cả khi localStorage cũ là dark
-          innerHTML: 'try{localStorage.setItem("nuxt-color-mode","light");document.documentElement.classList.remove("dark");document.documentElement.classList.add("light");}catch(e){}',
-          tagPosition: 'head'
-        }
-      ]
-    }
+  runtimeConfig: {
+    mongoUri: ''
+  },
+
+  routeRules: {
+    '/': { prerender: true },
+    '/admin/**': { ssr: false },
+    '/images/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/favicon/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+    '/uploads/**': { headers: { 'cache-control': 'public, max-age=86400, stale-while-revalidate=604800' } }
+  },
+  devServer: {
+    port: 2711
   },
   experimental: {
     viewTransition: true,
+    inlineSSRStyles: true
   },
-  compatibilityDate: "2025-01-15",
+  compatibilityDate: '2025-01-15',
 
   eslint: {
     config: {
       stylistic: {
-        commaDangle: "never",
-        braceStyle: "1tbs",
-      },
-    },
+        commaDangle: 'never',
+        braceStyle: '1tbs'
+      }
+    }
   },
-});
+  sitemap: {
+    sources: [
+      '/api/__sitemap__/routes'
+    ]
+  }
+})

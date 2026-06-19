@@ -50,7 +50,7 @@ const { isAdmin } = useAuth()
   .bg-image-hero {
     background:
       linear-gradient(rgba(15, 23, 42, 0.4), rgba(33, 31, 12, 0.8)),
-      url("/images/hero-bg.jpg");
+      url("/images/hero-bg.webp");
     background-size: cover;
     background-position: center 60%;
   }

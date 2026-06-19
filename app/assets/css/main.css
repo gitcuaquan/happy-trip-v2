@@ -17,4 +17,14 @@
   --color-green-800: #016538;
   --color-green-900: #0A5331;
   --color-green-950: #052E16;
+
+  --color-orange-400: #fb923c;
+  --color-orange-500: #ea580c;
+  --color-orange-600: #c2410c;
+}
+
+@layer base {
+  input::placeholder, textarea::placeholder {
+    color: #6b7b93;
+  }
 }

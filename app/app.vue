@@ -48,8 +48,8 @@ useSeoMeta({
   description,
   ogTitle: title,
   ogDescription: description,
-  ogImage: `${origin}/images/banner.png`,
-  twitterImage: `${origin}/images/banner.png`,
+  ogImage: `${origin}/images/banner.webp`,
+  twitterImage: `${origin}/images/banner.webp`,
   twitterCard: "summary_large_image",
 });
 
