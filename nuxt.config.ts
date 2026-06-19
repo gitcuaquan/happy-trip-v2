@@ -22,7 +22,6 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    "/": { prerender: true },
     "/admin/**": { ssr: false },
     "/images/**": {
       headers: { "cache-control": "public, max-age=31536000, immutable" },
@@ -55,11 +54,5 @@ export default defineNuxtConfig({
   },
   sitemap: {
     sources: ["/api/__sitemap__/routes"],
-  },
-  nitro: {
-    prerender: {
-      crawlLinks: true,
-      routes: ["/sitemap.xml", "/robots.txt"],
-    },
-  },
+  }
 });
