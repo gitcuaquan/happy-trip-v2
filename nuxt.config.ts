@@ -5,7 +5,10 @@ export default defineNuxtConfig({
     enabled: true,
   },
 
-
+  sourcemap: {
+    server: false,
+    client: false,
+  },
   css: ["~/assets/css/main.css"],
   site: {
     url: "https://happytrip.vn",
@@ -16,9 +19,6 @@ export default defineNuxtConfig({
   colorMode: {
     preference: "light",
     fallback: "light",
-  },
-  runtimeConfig: {
-    mongoUri: "",
   },
 
   routeRules: {
