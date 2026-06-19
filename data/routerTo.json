@@ -16,5 +16,64 @@
     "slug": "long-hai",
     "parentId": "69d85c7e0d4befc8e55b1ead",
     "data": "Xã Long Hải"
+  },
+  {
+    "name": "Phường Cam Ly - Đà Lạt",
+    "slug": "phuong-cam-ly-da-lat",
+    "parentId": "69d9b2a508540946eb18983d",
+    "data": "Phường Cam Ly - Đà Lạt"
+  },
+  {
+    "name": "Phường Lâm Viên - Đà Lạt",
+    "slug": "phuong-lam-vien-da-lat",
+    "parentId": "69d9b2a508540946eb18983d",
+    "data": "Phường Lâm Viên - Đà Lạt"
+  },
+  {
+    "name": "Phường Langbiang - Đà Lạt",
+    "slug": "phuong-langbiang-da-lat",
+    "parentId": "69d9b2a508540946eb18983d",
+    "data": "Phường Langbiang - Đà Lạt"
+  },
+  {
+    "name": "Phường Xuân Hương - Đà Lạt",
+    "slug": "phuong-xuan-huong-da-lat",
+    "parentId": "69d9b2a508540946eb18983d",
+    "data": "Phường Xuân Hương - Đà Lạt"
+  },
+  {
+    "name": "Phường Xuân Trường - Đà Lạt",
+    "slug": "phuong-xuan-truong-da-lat",
+    "parentId": "69d9b2a508540946eb18983d",
+    "data": "Phường Xuân Trường - Đà Lạt"
+  },
+  {
+    "name": "Phường Bắc Nha Trang",
+    "slug": "phuong-bac-nha-trang",
+    "parentId": "69d85c550d4befc8e55b1ea8",
+    "data": "Phường Bắc Nha Trang"
+  },
+  {
+    "name": "Phường Nam Nha Trang",
+    "slug": "phuong-nam-nha-trang",
+    "parentId": "69d85c550d4befc8e55b1ea8",
+    "data": "Phường Nam Nha Trang"
+  },
+  {
+    "name": "Phường Nha Trang",
+    "slug": "phuong-nha-trang",
+    "parentId": "69d85c550d4befc8e55b1ea8",
+    "data": "Phường Nha Trang"
+  },
+  {
+    "name": "Phường Tây Nha Trang",
+    "slug": "phuong-tay-nha-trang",
+    "parentId": "69d85c550d4befc8e55b1ea8",
+    "data": "Phường Tây Nha Trang"
+  },
+  {
+    "name": "Thành Phố Cần Thơ",
+    "slug": "can-tho",
+    "id": "69d85c550d4befc8e55b1ea8"
   }
 ]

@@ -7,7 +7,11 @@ export default defineNuxtConfig({
       "Happy Trip – Dịch vụ xe tiện chuyến hàng đầu tại Việt Nam, kết nối hành khách với các chuyến xe chất lượng cao trên toàn quốc. Đặt vé nhanh chóng, giá minh bạch, nhiều lựa chọn tuyến đường, hỗ trợ 24/7 và mang đến trải nghiệm di chuyển an toàn, tiện lợi cho mọi hành trình.",
   },
   modules: ["@nuxt/eslint", "@nuxt/ui", "@pinia/nuxt", "@nuxtjs/seo"],
-
+  sitemap: {
+    sources: [
+      '/api/__sitemap__/routes'
+    ]
+  },
   devtools: {
     enabled: true,
   },
