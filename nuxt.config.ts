@@ -8,8 +8,8 @@ export default defineNuxtConfig({
   app: {
     head: {
       link: [
-        { rel: 'preload', href: '/images/hero-bg.jpg', as: 'image' },
-        { rel: 'preload', href: '/images/about.png', as: 'image', fetchpriority: 'high' }
+        { rel: 'preload', href: '/images/hero-bg.webp', as: 'image' },
+        { rel: 'preload', href: '/images/about.webp', as: 'image', fetchpriority: 'high' }
       ]
     }
   },
