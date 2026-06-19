@@ -25,7 +25,19 @@ export default defineNuxtConfig({
     "/admin/**": { ssr: false },
   },
   colorMode: {
-    preference: "light",
+    preference: 'light',
+    fallback: 'light'
+  },
+  app: {
+    head: {
+      script: [
+        {
+          // Chạy trước mọi plugin để ép color-mode = light, kể cả khi localStorage cũ là dark
+          innerHTML: 'try{localStorage.setItem("nuxt-color-mode","light");document.documentElement.classList.remove("dark");document.documentElement.classList.add("light");}catch(e){}',
+          tagPosition: 'head'
+        }
+      ]
+    }
   },
   experimental: {
     viewTransition: true,
