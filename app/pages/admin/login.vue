@@ -58,6 +58,7 @@
                   size="xs"
                   :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
                   @click="showPassword = !showPassword"
+                  :aria-label="showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'"
                 />
               </template>
             </UInput>

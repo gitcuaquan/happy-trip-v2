@@ -5,7 +5,7 @@
             <UContainer>
                 <div class="flex items-center gap-3 py-3">
                     <UButton icon="i-lucide-arrow-left" color="neutral" variant="ghost" size="sm"
-                        @click="$router.back()" />
+                        @click="$router.back()" aria-label="Quay lại" />
                     <div class="flex-1 min-w-0">
                         <p class="font-bold text-base leading-tight">Chi tiết chuyến đi</p>
                         <p v-if="orderDetail" class="text-xs text-muted font-mono">#{{ orderDetail.short_id }}</p>
@@ -187,7 +187,7 @@
                             <p class="text-xs text-muted mt-0.5">{{ orderDetail.customer.phone }}</p>
                         </div>
                         <UButton :to="`tel:${orderDetail.customer.phone}`" icon="i-lucide-phone" size="xs"
-                            color="primary" variant="soft" class="rounded-xl" />
+                            color="primary" variant="soft" class="rounded-xl" aria-label="Gọi khách hàng" />
                     </div>
                 </UCard>
 

@@ -124,6 +124,7 @@
                   variant="ghost"
                   size="sm"
                   @click="askDelete(article)"
+                  aria-label="Xóa bài viết"
                 />
                 <UButton
                   icon="i-lucide-square-pen"
@@ -131,6 +132,7 @@
                   variant="ghost"
                   size="sm"
                   @click="goEdit(article)"
+                  aria-label="Chỉnh sửa bài viết"
                 />
               </div>
             </td>

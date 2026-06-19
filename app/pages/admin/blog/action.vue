@@ -8,6 +8,7 @@
           color="neutral"
           variant="ghost"
           @click="navigateTo('/admin/blog')"
+          aria-label="Quay lại danh sách bài viết"
         />
         <div>
           <h1 class="text-2xl font-extrabold text-slate-800">
@@ -113,6 +114,7 @@
               size="xs"
               class="absolute top-2 right-2"
               @click="removeThumbnail"
+              aria-label="Xóa ảnh đại diện"
             />
           </div>
 

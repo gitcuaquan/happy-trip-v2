@@ -14,7 +14,8 @@
               class="flex-1" />
             <DatePicker v-model="searchDate" hide-time-input no-default allow-past>
               <UButton icon="i-lucide-calendar" color="primary" variant="soft"
-                class="rounded-xl px-3 py-2.5 bg-orange-50 hover:bg-orange-100 text-orange-500" />
+                class="rounded-xl px-3 py-2.5 bg-orange-50 hover:bg-orange-100 text-orange-500"
+                aria-label="Chọn ngày" />
             </DatePicker>
           </div>
         </div>

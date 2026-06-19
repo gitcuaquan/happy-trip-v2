@@ -6,69 +6,82 @@
         size="xs" variant="ghost" color="neutral" icon="i-lucide-bold"
         :class="{ 'bg-primary/10 text-primary': editor.isActive('bold') }"
         @click="editor.chain().focus().toggleBold().run()"
+        aria-label="In đậm"
       />
       <UButton
         size="xs" variant="ghost" color="neutral" icon="i-lucide-italic"
         :class="{ 'bg-primary/10 text-primary': editor.isActive('italic') }"
         @click="editor.chain().focus().toggleItalic().run()"
+        aria-label="In nghiêng"
       />
       <UButton
         size="xs" variant="ghost" color="neutral" icon="i-lucide-strikethrough"
         :class="{ 'bg-primary/10 text-primary': editor.isActive('strike') }"
         @click="editor.chain().focus().toggleStrike().run()"
+        aria-label="Gạch ngang"
       />
       <div class="w-px bg-default mx-1" />
       <UButton
         size="xs" variant="ghost" color="neutral" icon="i-lucide-heading-1"
         :class="{ 'bg-primary/10 text-primary': editor.isActive('heading', { level: 1 }) }"
         @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
+        aria-label="Tiêu đề 1"
       />
       <UButton
         size="xs" variant="ghost" color="neutral" icon="i-lucide-heading-2"
         :class="{ 'bg-primary/10 text-primary': editor.isActive('heading', { level: 2 }) }"
         @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
+        aria-label="Tiêu đề 2"
       />
       <UButton
         size="xs" variant="ghost" color="neutral" icon="i-lucide-heading-3"
         :class="{ 'bg-primary/10 text-primary': editor.isActive('heading', { level: 3 }) }"
         @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
+        aria-label="Tiêu đề 3"
       />
       <div class="w-px bg-default mx-1" />
       <UButton
         size="xs" variant="ghost" color="neutral" icon="i-lucide-list"
         :class="{ 'bg-primary/10 text-primary': editor.isActive('bulletList') }"
         @click="editor.chain().focus().toggleBulletList().run()"
+        aria-label="Danh sách không thứ tự"
       />
       <UButton
         size="xs" variant="ghost" color="neutral" icon="i-lucide-list-ordered"
         :class="{ 'bg-primary/10 text-primary': editor.isActive('orderedList') }"
         @click="editor.chain().focus().toggleOrderedList().run()"
+        aria-label="Danh sách có thứ tự"
       />
       <UButton
         size="xs" variant="ghost" color="neutral" icon="i-lucide-quote"
         :class="{ 'bg-primary/10 text-primary': editor.isActive('blockquote') }"
         @click="editor.chain().focus().toggleBlockquote().run()"
+        aria-label="Trích dẫn"
       />
       <div class="w-px bg-default mx-1" />
       <UButton
         size="xs" variant="ghost" color="neutral" icon="i-lucide-link"
         :class="{ 'bg-primary/10 text-primary': editor.isActive('link') }"
         @click="setLink"
+        aria-label="Chèn liên kết"
       />
       <UButton
         size="xs" variant="ghost" color="neutral" icon="i-lucide-image"
         @click="addImage"
+        aria-label="Chèn ảnh"
       />
       <div class="w-px bg-default mx-1" />
       <UButton
         size="xs" variant="ghost" color="neutral" icon="i-lucide-undo"
         :disabled="!editor.can().undo()"
         @click="editor.chain().focus().undo().run()"
+        aria-label="Hoàn tác"
       />
       <UButton
         size="xs" variant="ghost" color="neutral" icon="i-lucide-redo"
         :disabled="!editor.can().redo()"
         @click="editor.chain().focus().redo().run()"
+        aria-label="Làm lại"
       />
     </div>
     <!-- Editor -->

@@ -127,7 +127,7 @@
                     }" />
                 </UFormField>
 
-                <UFormField name="agree" class="col-span-2">
+                <!-- <UFormField name="agree" class="col-span-2">
                   <div class="flex items-start gap-2.5">
                     <UCheckbox v-model="form.agree" id="agree" :ui="{
                       base: 'mt-0.5'
@@ -142,7 +142,7 @@
                       của Happy Trip.
                     </label>
                   </div>
-                </UFormField>
+                </UFormField> -->
 
                 <UButton type="submit" color="primary" size="lg" block :loading="isLoading" :disabled="isLoading"
                   trailing class="col-span-2 mt-1 font-semibold tracking-wide" :ui="{
