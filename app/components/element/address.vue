@@ -1,6 +1,6 @@
 <template>
   <div class="grid grid-cols-2 gap-2 text-left">
-    <UFormField :name="namePrefix ? `${namePrefix}_city` : undefined" class="col-span-1 w-full"
+    <UFormField size="sm" :name="namePrefix ? `${namePrefix}_city` : undefined" class="col-span-1 w-full"
       :ui="{ error: 'text-xs text-left' }">
       <USelectMenu v-model="selectedCityId" :ui="{ leadingIcon: 'text-primary' }" :items="filteredCities"
         label-key="name" value-key="id" :leading-icon="props.icon" placeholder="Tỉnh / TP"
@@ -8,7 +8,7 @@
         @update:model-value="onCityChange" />
     </UFormField>
 
-    <UFormField :name="namePrefix ? `${namePrefix}_dictrict` : undefined" class="col-span-1 w-full"
+    <UFormField size="sm" :name="namePrefix ? `${namePrefix}_dictrict` : undefined" class="col-span-1 w-full"
       :ui="{ error: 'text-xs text-left' }">
       <USelectMenu v-model="selectedDistrictName" :items="availableDistrictNames" :ui="{ leadingIcon: 'text-primary' }"
         leading-icon="i-lucide-map" placeholder="Phường / Xã" :search-input="{ placeholder: 'Tìm kiếm...' }"
@@ -16,7 +16,7 @@
         @update:model-value="onDistrictChange" />
     </UFormField>
 
-    <UFormField :name="namePrefix ? `${namePrefix}_address_1` : undefined" class="col-span-2 w-full"
+    <UFormField size="sm" :name="namePrefix ? `${namePrefix}_address_1` : undefined" class="col-span-2 w-full"
       :ui="{ error: 'text-xs text-left' }">
       <UInput v-model="detailAddress" leading-icon="i-lucide-house" :ui="{ leadingIcon: 'text-primary' }"
         placeholder="Số nhà, tên đường..." :disabled="!selectedDistrictName" color="neutral" variant="outline"

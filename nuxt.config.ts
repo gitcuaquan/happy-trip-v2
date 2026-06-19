@@ -1,7 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { resolve } from 'pathe'
 export default defineNuxtConfig({
-  modules: ["@nuxt/eslint", "@nuxt/ui", "@pinia/nuxt"],
+  site: {
+    url: "https://happytrip.vn",
+    name: "Happy Trip",
+    description:
+      "Happy Trip – Dịch vụ xe tiện chuyến hàng đầu tại Việt Nam, kết nối hành khách với các chuyến xe chất lượng cao trên toàn quốc. Đặt vé nhanh chóng, giá minh bạch, nhiều lựa chọn tuyến đường, hỗ trợ 24/7 và mang đến trải nghiệm di chuyển an toàn, tiện lợi cho mọi hành trình.",
+  },
+  modules: ["@nuxt/eslint", "@nuxt/ui", "@pinia/nuxt", "@nuxtjs/seo"],
 
   devtools: {
     enabled: true,
@@ -17,13 +22,13 @@ export default defineNuxtConfig({
 
   routeRules: {
     "/": { prerender: true },
-    "/admin/**": { ssr: false }
+    "/admin/**": { ssr: false },
   },
   colorMode: {
-    preference: 'light'
+    preference: "light",
   },
   experimental: {
-    viewTransition: true
+    viewTransition: true,
   },
   compatibilityDate: "2025-01-15",
 
@@ -34,5 +39,5 @@ export default defineNuxtConfig({
         braceStyle: "1tbs",
       },
     },
-  }
+  },
 });

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Vũng Tàu",
+    "slug": "vung-tau",
+    "parentId": "69d85c7e0d4befc8e55b1ead",
+    "data": "Phường Vũng Tàu"
+  },
+  {
+    "name": "Hồ Tràm",
+    "slug": "ho-tram",
+    "parentId": "69d85c7e0d4befc8e55b1ead",
+    "data": "Xã Hồ Tràm"
+  },
+  {
+    "name": "Long Hải",
+    "slug": "long-hai",
+    "parentId": "69d85c7e0d4befc8e55b1ead",
+    "data": "Xã Long Hải"
+  }
+]

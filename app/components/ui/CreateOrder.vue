@@ -7,7 +7,7 @@
       :ui="{
         root: 'w-full overflow-hidden shadow-2xl',
         header: 'overflow-hidden  bg-primary',
-        body: 'p-3 space-y-6',
+        body: 'sm:p-3 space-y-6',
         footer: 'px-1 pb-1 pt-0 border-t-0',
       }"
     >
@@ -113,21 +113,23 @@
 
           <!-- Thời gian -->
           <div>
-            <UFormField :ui="{ error: 'text-xs text-left' }">
+            <UFormField size="sm" :ui="{ error: 'text-xs text-left' }">
               <template #label>
                 <span
                   class="text-xs font-bold text-slate-500 uppercase tracking-widest"
                   >Thời gian khởi hành</span
                 >
               </template>
+
               <UiDatePicker
+              
                 v-model="order.date_of_destination"
                 class="flex-1 text-sm font-medium"
               />
             </UFormField>
             <div class="text-xs text-slate-500 mt-1">
-              Nếu đặt xe hôm nay vui lòng đặt trước 30 phút để tài xế có thời gian
-              chuẩn bị và di chuyển đến điểm đón.
+              Nếu đặt xe hôm nay vui lòng đặt trước 30 phút để tài xế có thời
+              gian chuẩn bị và di chuyển đến điểm đón.
             </div>
           </div>
 
@@ -227,10 +229,13 @@
           <div class="text-center text-xs text-slate-500 mt-2">
             Bằng việc đặt chuyến, chúng tôi hiểu rằng bạn đồng ý với
             <SharedPolicy>
-              <div class="text-primary uppercase inline cursor-pointer font-semibold">
+              <div
+                class="text-primary uppercase inline cursor-pointer font-semibold"
+              >
                 Điều khoản và lưu ý khi đặt xe
               </div>
-            </SharedPolicy> của Happy Trip.
+            </SharedPolicy>
+            của Happy Trip.
           </div>
         </UForm>
       </div>
@@ -642,7 +647,9 @@ const hasRouteData = computed(() => previews.value.length > 0);
 const getPreview = (id: string) =>
   previews.value.find((p) => p.id_service === id && p.price_guest_after > 0);
 const canSubmit = computed(
-  () => previews.value.some((p) => p.price_guest_after > 0) && !!order.value.id_service,
+  () =>
+    previews.value.some((p) => p.price_guest_after > 0) &&
+    !!order.value.id_service,
 );
 
 // ─── Schemas ──────────────────────────────────────────────

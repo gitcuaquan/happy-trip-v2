@@ -1,0 +1,13 @@
+[
+  {
+    "name": "Thành phố Hồ Chí Minh",
+    "slug": "tphcm",
+    "id": "69d85c7e0d4befc8e55b1ead"
+  },
+  {
+    "name": "Sài Gòn",
+    "slug": "sai-gon",
+    "id": "69d85c7e0d4befc8e55b1ead",
+    "canonical": "tphcm"
+  }
+]

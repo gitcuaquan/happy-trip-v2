@@ -8,7 +8,7 @@ import {
 } from "@internationalized/date";
 
 const dateFormatter = new DateFormatter("vi-VN", {
-  dateStyle: "medium",
+  dateStyle: "full",
 });
 
 
@@ -153,7 +153,7 @@ watch(
       <slot>
         <UButton
           color="neutral"
-          size="md"
+          size="sm"
           variant="outline"
           :ui="{ leadingIcon: 'text-primary' }"
           icon="i-lucide-calendar"
@@ -171,11 +171,12 @@ watch(
         <UCalendar
           :is-date-unavailable="isDateUnavailable"
           v-model="modelValue"
+          size="sm"
           class="p-4"
         />
       </template>
     </UPopover>
 
-    <UInputTime v-if="!hideTimeInput" :ui="{ leadingIcon: 'text-primary' }" v-model="time" icon="i-lucide-alarm-clock" :is-time-unavailable="(isTimeUnavailable as any)" />
+    <UInputTime size="sm" v-if="!hideTimeInput" :ui="{ leadingIcon: 'text-primary' }" v-model="time" icon="i-lucide-alarm-clock" :is-time-unavailable="(isTimeUnavailable as any)" />
   </div>
 </template>
