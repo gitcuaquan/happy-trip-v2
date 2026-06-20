@@ -15,17 +15,12 @@ export const getToRoute = (slug: string) =>{
   if(data) return data
   data = routerFrom.find(item => item.slug === slug)
   return data
-
 }
 
 export const generateAllRoutes = (): CustomRoute[] => {
   const routes: CustomRoute[] = [];
-
   routerFrom.forEach(fromItem => {
-    // Tìm tất cả các điểm đến có parentId trùng với id của điểm đi
-    const matchingDestinations = routerTo.filter(toItem => toItem.parentId === fromItem.id);
-
-    matchingDestinations.forEach(toItem => {
+    routerTo.forEach(toItem => {
       // 1. Chiều đi: từ A đến B
       routes.push({
         name: `Xe riêng ${fromItem.name} đi ${toItem.name}`,
@@ -39,6 +34,5 @@ export const generateAllRoutes = (): CustomRoute[] => {
       });
     });
   });
-
   return routes;
 };

@@ -154,7 +154,7 @@ useSchemaOrg([
 ]);
 
 const fromData = getFromRoute(String(route.params.from).toLowerCase());
-const toData = getToRoute(String(route.params.to).toLowerCase());
+const toData = getToRoute(String(route.params.to).toLowerCase()) ?? undefined;
 </script>
 
 <template>
