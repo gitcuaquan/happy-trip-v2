@@ -148,10 +148,6 @@ const items = computed<NavigationMenuItem[]>(() => {
       to: "/policy",
     },
     {
-      label: "Dịch vụ",
-      to: "/service",
-    },
-    {
       label: "Về chúng tôi",
       to: "/introduce",
     },
