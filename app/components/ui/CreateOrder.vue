@@ -6,21 +6,11 @@
       class="relative z-10 backdrop-blur-md bg-white/95 border-2 border-white"
       :ui="{
         root: 'w-full overflow-hidden shadow-2xl',
-        header: 'overflow-hidden  bg-primary',
+
         body: 'sm:p-3 space-y-6',
         footer: 'px-1 pb-1 pt-0 border-t-0',
       }"
     >
-      <template #header>
-        <div
-          class="flex items-center uppercase justify-center gap-2 relative z-10"
-        >
-          <span class="text-white font-black text-lg tracking-tight"
-            >Bạn Muốn Đi Đâu</span
-          >
-        </div>
-      </template>
-
       <div>
         <UForm
           :schema="schema"
