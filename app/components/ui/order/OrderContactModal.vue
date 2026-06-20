@@ -149,7 +149,11 @@ import { orderService } from "~/services/order.service"
 
 interface SuccessData {
   departure_city: string
+  departure_district: string
+  departure_address_1: string
   destination_city: string
+  destination_district: string
+  destination_address_1: string
   service_name: string
   price: number
 }
@@ -271,7 +275,11 @@ async function confirmOTP() {
 
     emit("confirmed", {
       departure_city: props.order.departure_city,
+      departure_district: props.order.departure_dictrict,
+      departure_address_1: props.order.departure_address_1,
       destination_city: props.order.destination_city,
+      destination_district: props.order.destination_dictrict,
+      destination_address_1: props.order.destination_address_1,
       service_name: props.serviceName,
       price: savedPrice.value,
     })

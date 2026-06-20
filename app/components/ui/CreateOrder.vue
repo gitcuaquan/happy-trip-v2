@@ -211,7 +211,11 @@ const openDepositModal = ref(false);
 // ─── Success state ────────────────────────────────────────
 const successData = ref({
   departure_city: "",
+  departure_district: "",
+  departure_address_1: "",
   destination_city: "",
+  destination_district: "",
+  destination_address_1: "",
   service_name: "",
   price: 0,
 });
@@ -332,7 +336,11 @@ function selectService(item: { id: string }) {
 
 function onOrderConfirmed(data: {
   departure_city: string;
+  departure_district: string;
+  departure_address_1: string;
   destination_city: string;
+  destination_district: string;
+  destination_address_1: string;
   service_name: string;
   price: number;
 }) {
