@@ -13,7 +13,7 @@ const dateFormatter = new DateFormatter("vi-VN", {
 
 
 const props = defineProps<{
-  modelValue?: Date | null;
+  modelValue?: Date | string | null;
   hideTimeInput?: boolean;
   noDefault?: boolean;
   allowPast?: boolean; 
@@ -24,14 +24,23 @@ const emit = defineEmits<{
 }>();
 
 // Cập nhật thời gian hiện tại mỗi giây để đảm bảo rằng minDate và minTimeOfMinDate luôn chính xác
-const now  = shallowRef(new Date());
+// Khởi tạo null để tránh hydration mismatch (server vs client time khác nhau)
+const now = shallowRef<Date | null>(null);
 
 let timer: ReturnType<typeof setInterval> | null = null;
 
-onMounted(()=>{
-  timer = setInterval(() => {
+// currentNow(): giá trị "now" an toàn — null khi SSR, Date khi client đã sẵn sàng
+const currentNow = computed(() => now.value ?? new Date());
+
+onMounted(() => {
+  if (!import.meta.client) return;
+  // Delay timer đến sau hydration để tránh mismatch
+  onNuxtReady(() => {
     now.value = new Date();
-  }, 1000);
+    timer = setInterval(() => {
+      now.value = new Date();
+    }, 1000);
+  });
 })
 
 onUnmounted(()=>{
@@ -40,7 +49,7 @@ onUnmounted(()=>{
 
 // Tính toán ngày giờ tối thiểu dựa trên thời gian hiện tại = hiện tại + 30p
 const minDateTime = computed(()=> {
-  const d = new Date(now.value);
+  const d = new Date(currentNow.value);
   d.setMinutes(d.getMinutes() + 30); 
   return d;
 })
@@ -65,29 +74,51 @@ const minTimeOfMinDate = computed(
     )
 )
 
-const modelValue = shallowRef(
-  props.modelValue
+const propValue = computed(() =>
+  props.modelValue ? new Date(props.modelValue) : null
+)
+
+const modelValue = shallowRef<CalendarDate | null>(
+  propValue.value
     ? new CalendarDate(
-        props.modelValue.getFullYear(),
-        props.modelValue.getMonth() + 1,
-        props.modelValue.getDate(),
+        propValue.value.getFullYear(),
+        propValue.value.getMonth() + 1,
+        propValue.value.getDate(),
       )
-    : props.noDefault ? null : minDate.value // mặc định: ngày của mốc tối thiểu (hiện tại + 1h)
+    : null,
 );
+
+onMounted(() => {
+  if (!import.meta.client) return;
+  onNuxtReady(() => {
+    if (!modelValue.value && !props.noDefault && minDate.value) {
+      modelValue.value = minDate.value;
+    }
+  });
+});
 // Chặn các ngày trước minDate (trừ khi allowPast) 
 const isDateUnavailable = (date: DateValue) => {
   if(props.allowPast) return false;
   return date.compare(minDate.value) < 0;
 };
-const time = shallowRef(
-  props.modelValue
+const time = shallowRef<Time | null>(
+  propValue.value
     ? new Time(
-        props.modelValue.getHours(), // nếu đã có ngày giờ được chọn thì giờ sẽ là giờ của ngày đó
-        props.modelValue.getMinutes(), // nếu đã có ngày giờ được chọn thì phút sẽ là phút của ngày đó
-        props.modelValue.getSeconds(), // nếu đã có ngày giờ được chọn thì giây sẽ là giây của ngày đó
+        propValue.value.getHours(),
+        propValue.value.getMinutes(),
+        propValue.value.getSeconds(),
       )
-    :  minTimeOfMinDate.value, // mặc định: giờ của mốc tối thiểu
+    : null,
 );
+
+onMounted(() => {
+  if (!import.meta.client) return;
+  onNuxtReady(() => {
+    if (!time.value && minTimeOfMinDate.value) {
+      time.value = minTimeOfMinDate.value;
+    }
+  });
+});
 
 // Chặn giờ < minTime, chỉ khi ngày đang chọn đúng bằng minDate.
 // Nếu chọn ngày sau minDate thì không giới hạn giờ.

@@ -149,7 +149,7 @@
           </Transition>
 
           <!-- Ghi chú -->
-          <UFormField name="note" :ui="{ error: 'text-xs text-left' }">
+          <UFormField name="note" size="sm" :ui="{ error: 'text-xs text-left' }">
             <template #label>
               <span
                 class="text-xs font-bold text-slate-500 uppercase tracking-widest"
@@ -177,7 +177,7 @@
           >
             <span class="flex items-center justify-center gap-2 py-1 w-full">
               <UIcon name="i-lucide-rocket" class="size-5" />
-              ĐẶT CHUYẾN NGAY
+              {{hasRouteData ? 'ĐẶT CHUYẾN NGAY' : 'NHẬP THÔNG TIN ĐỂ XEM GIÁ'}}
             </span>
           </UButton>
           <div class="text-center text-xs text-slate-500 mt-2">

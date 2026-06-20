@@ -133,6 +133,10 @@ useSchemaOrg([
     })),
   },
 ]);
+const fromData = getFromRoute(String(route.params.from).toLowerCase());
+console.log("🚀 ~ fromData=>", fromData)
+const toData = getToRoute(String(route.params.to).toLowerCase());
+console.log("🚀 ~ toData=>", toData)
 </script>
 
 <template>
