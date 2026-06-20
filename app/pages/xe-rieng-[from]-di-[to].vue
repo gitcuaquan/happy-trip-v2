@@ -52,7 +52,6 @@ useSeoMeta({
   twitterCard: "summary_large_image",
   twitterTitle: seoTitle,
   twitterDescription: seoDescription,
-
 });
 
 useHead({
@@ -67,21 +66,21 @@ useHead({
 const faqItems = [
   {
     question: `Xe riêng ${from.name} đi ${to.name} giá bao nhiêu?`,
-    answer: `Giá xe riêng ${from.name} đi ${to.name} phụ thuộc vào loại xe và thời điểm đặt xe. Vui lòng liên hệ Happy Trip để nhận báo giá chính xác nhất.`
+    answer: `Giá xe riêng ${from.name} đi ${to.name} phụ thuộc vào loại xe và thời điểm đặt xe. Vui lòng liên hệ Happy Trip để nhận báo giá chính xác nhất.`,
   },
   {
     question: `Thời gian di chuyển từ ${from.name} đến ${to.name} bao lâu?`,
-    answer: `Thời gian di chuyển từ ${from.name} đến ${to.name} phụ thuộc vào tình hình giao thông và điểm đón trả thực tế.`
+    answer: `Thời gian di chuyển từ ${from.name} đến ${to.name} phụ thuộc vào tình hình giao thông và điểm đón trả thực tế.`,
   },
   {
     question: `Happy Trip có đón tận nơi không?`,
-    answer: `Happy Trip hỗ trợ đón tận nơi và trả tận nơi theo yêu cầu của khách hàng.`
+    answer: `Happy Trip hỗ trợ đón tận nơi và trả tận nơi theo yêu cầu của khách hàng.`,
   },
   {
     question: `Có xe 4 chỗ và 7 chỗ không?`,
-    answer: `Happy Trip cung cấp nhiều loại xe từ 4 chỗ, 7 chỗ đến 16 chỗ phù hợp với nhu cầu của khách hàng.`
-  }
-]
+    answer: `Happy Trip cung cấp nhiều loại xe từ 4 chỗ, 7 chỗ đến 16 chỗ phù hợp với nhu cầu của khách hàng.`,
+  },
+];
 
 useSchemaOrg([
   defineWebPage({
@@ -122,44 +121,20 @@ useSchemaOrg([
       },
     ],
   },
-   {
-    '@type': 'FAQPage',
-    mainEntity: faqItems.map(item => ({
-      '@type': 'Question',
+  {
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
       name: item.question,
       acceptedAnswer: {
-        '@type': 'Answer',
-        text: item.answer
-      }
-    }))
-  }
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  },
 ]);
 </script>
 
 <template>
-  <main class="container py-5">
-    <h1>Xe riêng {{ from.name }} đi {{ to.name }}</h1>
-
-    <p>
-      Dịch vụ xe riêng từ
-      <strong>{{ from.name }}</strong>
-      đến
-      <strong>{{ to.name }}</strong
-      >.
-    </p>
-
-    <div class="mt-4">
-      <h2>Thông tin tuyến</h2>
-
-      <ul>
-        <li>Điểm đón: {{ from.name }}</li>
-        <li>Điểm trả: {{ to.name }}</li>
-      </ul>
-    </div>
-
-    <div class="mt-4">
-      <h2>Liên hệ đặt xe</h2>
-      <a href="tel:0972970000" class="btn btn-primary"> 097 297 0000 </a>
-    </div>
-  </main>
+  <UiCreateOrder />
 </template>

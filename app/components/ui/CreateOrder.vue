@@ -215,286 +215,29 @@
       </template>
     </UCard>
 
-    <!-- Modal: Thông tin liên hệ & OTP -->
-    <UModal
+    <LazyUiOrderContactModal
       v-model:open="isModalOpen"
-      title="Thông tin liên hệ"
-      description="Thông tin để tài xế liên hệ và xác nhận chuyến đi của bạn"
-      @update:open="handleModalClose"
-      :ui="{ content: 'sm:w-120 overflow-hidden', body: 'p-5 sm:p-6' }"
-    >
-      <template #body>
-        <!-- Bước 1: Nhập thông tin liên hệ -->
-        <template v-if="!showOtpModal">
-          <UAlert
-            title="Xin chú ý"
-            color="success"
-            class="mb-5"
-            variant="subtle"
-            description="Thông tin này để gửi mã OTP xác nhận chuyến đi của bạn. Vui lòng đảm bảo
-            số điện thoại chính xác và ưu tiên số điện thoại đăng ký Zalo để nhận OTP nhanh chóng."
-          />
-          <div class="flex flex-col gap-3.5">
-            <UForm
-              :schema="contactSchema"
-              :state="contact"
-              class="flex flex-col gap-3.5"
-              @submit="onSubmitContact"
-            >
-              <UFormField name="name" label="Họ và tên" required size="lg">
-                <UInput
-                  v-model="contact.name"
-                  placeholder="Nguyễn Văn A"
-                  leading-icon="i-lucide-user"
-                  class="w-full"
-                  size="lg"
-                />
-              </UFormField>
-              <UFormField
-                name="phone"
-                label="Số điện thoại"
-                description="Ưu tiên số có đăng ký Zalo"
-                required
-                size="lg"
-              >
-                <UInput
-                  v-model="contact.phone"
-                  placeholder="0901 234 567"
-                  type="tel"
-                  leading-icon="i-lucide-phone"
-                  class="w-full"
-                  size="lg"
-                />
-              </UFormField>
-              <UAlert
-                v-if="hookError"
-                color="error"
-                variant="soft"
-                :description="hookError"
-                icon="i-lucide-circle-alert"
-              />
-              <UButton
-                type="submit"
-                block
-                color="primary"
-                icon="i-lucide-send"
-                label="Gửi mã OTP"
-                :loading="hookLoading"
-                class="mt-1"
-              />
-            </UForm>
+      :order="order"
+      :id-service="order.id_service"
+      :previews="previews"
+      :service-name="selectedServiceName"
+      @confirmed="onOrderConfirmed"
+    />
 
-            <div class="flex items-center gap-2">
-              <div class="flex-1 h-px bg-slate-100" />
-              <span class="text-[10px] text-slate-400">bảo mật & an toàn</span>
-              <div class="flex-1 h-px bg-slate-100" />
-            </div>
-          </div>
-        </template>
-
-        <!-- Bước 2: Nhập OTP -->
-        <template v-else>
-          <p class="text-sm text-left font-medium mb-6">
-            Mã OTP đã gửi về số điện thoại {{ contact.phone }} vui lòng kiểm tra
-            Zalo hoặc SMS của bạn.
-          </p>
-
-          <div class="sm:py-6 flex flex-col gap-3.5">
-            <div class="flex justify-center">
-              <UPinInput v-model="otpValue" otp :length="6" size="xl" />
-            </div>
-            <UAlert
-              v-if="otpError"
-              color="error"
-              variant="soft"
-              :description="otpError"
-              icon="i-lucide-circle-x"
-            />
-            <UButton
-              block
-              color="primary"
-              size="lg"
-              icon="i-lucide-check-circle"
-              label="Xác nhận OTP"
-              :loading="otpLoading"
-              :disabled="otpValue.length < 6"
-              @click="confirmOTP"
-            />
-
-            <!-- Gửi lại OTP -->
-            <p class="text-center text-xs text-slate-500">
-              Không nhận được mã?
-              <button
-                type="button"
-                class="text-primary font-semibold disabled:opacity-40"
-                :disabled="resendCooldown > 0 || otpLoading"
-                @click="handleResend"
-              >
-                {{
-                  resendCooldown > 0
-                    ? `Gửi lại (${resendCooldown}s)`
-                    : "Gửi lại"
-                }}
-              </button>
-            </p>
-
-            <UButton
-              block
-              size="sm"
-              color="neutral"
-              variant="ghost"
-              icon="i-lucide-arrow-left"
-              label="Đổi số điện thoại"
-              @click="handleBackToInfo"
-            />
-
-            <div class="flex items-center gap-2">
-              <div class="flex-1 h-px bg-slate-100" />
-              <span class="text-[10px] text-slate-400">bảo mật & an toàn</span>
-              <div class="flex-1 h-px bg-slate-100" />
-            </div>
-          </div>
-        </template>
-      </template>
-    </UModal>
-
-    <!-- Modal: Đặt xe thành công -->
-    <UModal
+    <LazyUiOrderSuccessModal
       v-model:open="openDepositModal"
-      prevent-close
-      :ui="{
-        content:
-          'bg-transparent shadow-none sm:max-w-sm md:max-w-lg overflow-hidden p-0',
-        overlay: 'bg-black/40 backdrop-blur-sm',
-      }"
-    >
-      <template #content>
-        <div
-          class="bg-white shadow-2xl p-8 text-center relative overflow-hidden"
-        >
-          <div class="mb-6 relative z-10 flex justify-center">
-            <svg
-              class="checkmark"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 52 52"
-            >
-              <circle
-                class="checkmark__circle"
-                cx="26"
-                cy="26"
-                r="25"
-                fill="none"
-              />
-              <path
-                class="checkmark__check"
-                fill="none"
-                d="M14.1 27.2l7.1 7.2 16.7-16.8"
-              />
-            </svg>
-          </div>
-
-          <div class="relative z-10">
-            <h3
-              class="text-2xl font-black text-slate-800 mb-2 uppercase tracking-wide"
-            >
-              Đặt xe thành công!
-            </h3>
-            <p class="text-slate-500 text-left text-sm mb-6 leading-relaxed">
-              Hệ thống đã ghi nhận chuyến đi của bạn. Vui lòng kiểm tra lại
-              thông tin chuyến đi được gửi qua Zalo hoặc SMS. Tài xế sẽ liên hệ
-              bạn sớm nhất để xác nhận và hỗ trợ trong quá trình di chuyển.
-            </p>
-
-            <div
-              class="bg-slate-50 rounded-xl mb-6 text-left border border-slate-100 shadow-sm flex flex-col"
-            >
-              <div class="p-4 space-y-3">
-                <div class="flex justify-between items-start gap-4">
-                  <span
-                    class="text-xs text-slate-500 font-medium whitespace-nowrap"
-                    >Điểm đón:</span
-                  >
-                  <span class="text-sm font-bold text-slate-800 text-right">{{
-                    successData.departure_city
-                  }}</span>
-                </div>
-                <div class="flex justify-between items-start gap-4">
-                  <span
-                    class="text-xs text-slate-500 font-medium whitespace-nowrap"
-                    >Điểm đến:</span
-                  >
-                  <span class="text-sm font-bold text-slate-800 text-right">{{
-                    successData.destination_city
-                  }}</span>
-                </div>
-                <div class="flex justify-between items-center gap-4">
-                  <span class="text-xs text-slate-500 font-medium"
-                    >Loại xe:</span
-                  >
-                  <span class="text-sm font-bold text-slate-800">{{
-                    successData.service_name
-                  }}</span>
-                </div>
-              </div>
-              <div
-                class="bg-orange-50 p-4 rounded-b-xl border-t border-orange-100 flex justify-between items-center"
-              >
-                <span
-                  class="text-xs text-primary font-bold uppercase tracking-wide"
-                  >Tổng tiền:</span
-                >
-                <span class="text-lg font-black text-primary">{{
-                  numberToCurrency(successData.price)
-                }}</span>
-              </div>
-            </div>
-
-            <div class="mb-6">
-              <SharedSafetyNotice />
-            </div>
-
-            <div class="grid-cols-2 grid gap-3.5">
-              <UButton
-                color="primary"
-                block
-                variant="outline"
-                size="lg"
-                label="Về trang chủ"
-                @click="resetAll"
-              />
-              <UButton
-                to="/history"
-                color="neutral"
-                block
-                size="lg"
-                variant="outline"
-                icon="i-lucide-history"
-                label="Xem lịch sử chuyến đi"
-              />
-            </div>
-          </div>
-
-          <div
-            class="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl"
-          />
-          <div
-            class="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"
-          />
-        </div>
-      </template>
-    </UModal>
-    <!-- Modal lưu ý -->
+      :success-data="successData"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import type { FormSubmitEvent } from "@nuxt/ui";
-import z from "zod";
-import type { OrderDetail, OrderPreview } from "~/type";
-import { orderService } from "~/services/order.service";
-import { useOrderForm } from "~/composables/useOrderForm";
+import type { FormSubmitEvent } from "@nuxt/ui"
+import z from "zod"
+import type { OrderDetail, OrderPreview } from "~/type"
+import { orderService } from "~/services/order.service"
+import { useOrderForm } from "~/composables/useOrderForm"
 
-const { setAuth } = useAuth();
 // ─── Order state ──────────────────────────────────────────
 const order = ref<OrderPreview>({
   id_service: "",
@@ -506,91 +249,72 @@ const order = ref<OrderPreview>({
   destination_dictrict: "",
   destination_address_1: "",
   note: "",
-});
+})
 
 const services = ref([
   {
     id: "66947d0917482239472b9807",
     name: "Bao chuyến 5 chỗ",
-    description:
-      "Tối đa 4 hành khách ( trẻ sơ sinh cũng được coi là 1 hành khách)",
+    description: "Tối đa 4 hành khách ( trẻ sơ sinh cũng được coi là 1 hành khách)",
   },
   {
     id: "66947cea17482239472b88e8",
     name: "Bao chuyến 7 chỗ",
-    description:
-      "Tối đa 6 hành khách ( trẻ sơ sinh cũng được coi là 1 hành khách)",
+    description: "Tối đa 6 hành khách ( trẻ sơ sinh cũng được coi là 1 hành khách)",
   },
-]);
+])
 
-const previews = ref<OrderDetail[]>([]);
+const previews = ref<OrderDetail[]>([])
+const formKey = ref(0)
 
-// ─── Contact & OTP state ──────────────────────────────────
-const contact = reactive({ name: "", phone: "" });
-const isModalOpen = ref(false);
-const showOtpModal = ref(false);
-const otpValue = ref<string[]>([]);
-const resendCooldown = ref(0);
-const hookLoading = ref(false);
-const otpLoading = ref(false);
-const hookError = ref("");
-const otpError = ref("");
-
-onMounted(() => {
-  // Kiểm tra xem có dữ liệu từ "Đặt lại chuyến" không
-  const { getOrderFormData, clearOrderFormData } = useOrderForm();
-  const savedOrderData = getOrderFormData();
-
-  if (savedOrderData) {
-    // Fill dữ liệu vào form
-    order.value.departure_city = savedOrderData.departure_city;
-    order.value.departure_dictrict = savedOrderData.departure_dictrict;
-    order.value.departure_address_1 = savedOrderData.departure_address_1;
-    order.value.destination_city = savedOrderData.destination_city;
-    order.value.destination_dictrict = savedOrderData.destination_dictrict;
-    order.value.destination_address_1 = savedOrderData.destination_address_1;
-
-    // Xóa dữ liệu đã lưu để không fill lại lần tới
-    clearOrderFormData();
-
-    // Tự động gọi API lấy giá
-    calcPreviews();
-  }
-});
+// ─── Modal visibility ─────────────────────────────────────
+const isModalOpen = ref(false)
+const openDepositModal = ref(false)
 
 // ─── Success state ────────────────────────────────────────
-const openDepositModal = ref(false);
-const savedPrice = ref(0);
 const successData = ref({
   departure_city: "",
   destination_city: "",
   service_name: "",
   price: 0,
-});
+})
+
+onMounted(() => {
+  const { getOrderFormData, clearOrderFormData } = useOrderForm()
+  const savedOrderData = getOrderFormData()
+
+  if (savedOrderData) {
+    order.value.departure_city = savedOrderData.departure_city
+    order.value.departure_dictrict = savedOrderData.departure_dictrict
+    order.value.departure_address_1 = savedOrderData.departure_address_1
+    order.value.destination_city = savedOrderData.destination_city
+    order.value.destination_dictrict = savedOrderData.destination_dictrict
+    order.value.destination_address_1 = savedOrderData.destination_address_1
+    clearOrderFormData()
+    calcPreviews()
+  }
+})
 
 // ─── Computed ─────────────────────────────────────────────
 const addressReady = computed(() => {
-  const o = order.value;
-  return !!(
-    o.departure_city &&
-    o.departure_dictrict &&
-    o.departure_address_1 &&
-    o.destination_city &&
-    o.destination_dictrict &&
-    o.destination_address_1
-  );
-});
+  const o = order.value
+  return !!(o.departure_city && o.departure_dictrict && o.departure_address_1 && o.destination_city && o.destination_dictrict && o.destination_address_1)
+})
 
-const hasRouteData = computed(() => previews.value.length > 0);
+const hasRouteData = computed(() => previews.value.length > 0)
+
 const getPreview = (id: string) =>
-  previews.value.find((p) => p.id_service === id && p.price_guest_after > 0);
-const canSubmit = computed(
-  () =>
-    previews.value.some((p) => p.price_guest_after > 0) &&
-    !!order.value.id_service,
-);
+  previews.value.find((p) => p.id_service === id && p.price_guest_after > 0)
 
-// ─── Schemas ──────────────────────────────────────────────
+const selectedServiceName = computed(() =>
+  services.value.find((s) => s.id === order.value.id_service)?.name || ""
+)
+
+const canSubmit = computed(
+  () => previews.value.some((p) => p.price_guest_after > 0) && !!order.value.id_service,
+)
+
+// ─── Schema ───────────────────────────────────────────────
 const schema = z.object({
   departure_city: z.string().min(1, "Vui lòng chọn Tỉnh/TP"),
   departure_dictrict: z.string().min(1, "Vui lòng chọn Phường/Xã"),
@@ -598,175 +322,58 @@ const schema = z.object({
   destination_city: z.string().min(1, "Vui lòng chọn Tỉnh/TP"),
   destination_dictrict: z.string().min(1, "Vui lòng chọn Phường/Xã"),
   destination_address_1: z.string().min(1, "Vui lòng nhập địa chỉ"),
-});
+})
 
-const contactSchema = z.object({
-  name: z.string().min(1, "Vui lòng nhập họ và tên"),
-  phone: z
-    .string()
-    .min(1, "Vui lòng nhập số điện thoại")
-    .regex(/^0\d{9}$/, "Số điện thoại không hợp lệ"),
-});
-
-type Schema = z.infer<typeof schema>;
-type ContactSchema = z.infer<typeof contactSchema>;
+type Schema = z.infer<typeof schema>
 
 // ─── Handlers ─────────────────────────────────────────────
 function onSubmit(_e: FormSubmitEvent<Schema>) {
-  if (!canSubmit.value) return;
-
-  isModalOpen.value = true;
-  hookError.value = "";
-  otpError.value = "";
-}
-
-function onSubmitContact(_e: FormSubmitEvent<ContactSchema>) {
-  sendOTP();
+  if (!canSubmit.value) return
+  isModalOpen.value = true
 }
 
 function selectService(item: { id: string }) {
-  if (!getPreview(item.id)) return;
-  order.value.id_service = item.id;
+  if (!getPreview(item.id)) return
+  order.value.id_service = item.id
 }
 
-function handleModalClose(value: boolean) {
-  // Nếu click outside ở bước OTP (showOtpModal = true) → quay lại bước info (không đóng modal)
-  if (value === false && showOtpModal.value) {
-    showOtpModal.value = false;
-  } else {
-    // Nếu ở bước info → cho phép đóng modal
-    isModalOpen.value = value;
+function onOrderConfirmed(data: { departure_city: string; destination_city: string; service_name: string; price: number }) {
+  order.value = {
+    id_service: "",
+    date_of_destination: null,
+    departure_city: "",
+    departure_dictrict: "",
+    departure_address_1: "",
+    destination_city: "",
+    destination_dictrict: "",
+    destination_address_1: "",
+    note: "",
   }
-}
-
-function handleBackToInfo() {
-  showOtpModal.value = false;
-  otpValue.value = [];
-  otpError.value = "";
-}
-
-async function handleResend() {
-  if (resendCooldown.value > 0 || hookLoading.value) return;
-  await submitOrderHook({ isResend: true });
-}
-
-function startResendCooldown() {
-  resendCooldown.value = 60;
-  const interval = setInterval(() => {
-    resendCooldown.value--;
-    if (resendCooldown.value <= 0) clearInterval(interval);
-  }, 1000);
-}
-
-function resetAll() {
-  openDepositModal.value = false;
-  navigateTo("/");
+  previews.value = []
+  formKey.value++
+  successData.value = data
+  openDepositModal.value = true
 }
 
 // ─── Watch ────────────────────────────────────────────────
 watch(addressReady, async (val) => {
   if (!val) {
-    previews.value = [];
-    order.value.id_service = "";
-    return;
+    previews.value = []
+    order.value.id_service = ""
+    return
   }
-  await calcPreviews();
-  order.value.id_service = services.value[0]?.id || "";
-});
+  await calcPreviews()
+  order.value.id_service = services.value[0]?.id || ""
+})
 
 // ─── API ──────────────────────────────────────────────────
 async function calcPreviews() {
   const results = await Promise.allSettled(
     services.value.map((s) => orderService.previewOrder(order.value, s.id)),
-  );
+  )
   previews.value = results
-    .filter(
-      (r): r is PromiseFulfilledResult<OrderDetail> => r.status === "fulfilled",
-    )
-    .map((r) => r.value);
-}
-
-// Dùng chung cho cả sendOTP lần đầu và resend OTP
-async function submitOrderHook({ isResend = false } = {}) {
-  hookLoading.value = true;
-  hookError.value = "";
-  otpError.value = "";
-  const preview = getPreview(order.value.id_service);
-  savedPrice.value = preview?.price_guest_after || 0;
-
-  try {
-    await orderService.createOrderHook({
-      ...order.value,
-      full_name: contact.name,
-      phone: contact.phone,
-      price_guest_after: preview?.price_guest_after ?? 0,
-      price_guest: preview?.price_guest ?? 0,
-      price: preview?.price_original ?? 0,
-      note: order.value.note?.trim() || "",
-    });
-    if (isResend) {
-      otpValue.value = [];
-    } else {
-      showOtpModal.value = true;
-    }
-    startResendCooldown();
-  } catch {
-    const msg = isResend
-      ? "Không thể gửi lại OTP. Vui lòng thử lại."
-      : "Không thể gửi OTP. Vui lòng thử lại.";
-    if (isResend) otpError.value = msg;
-    else hookError.value = msg;
-  } finally {
-    hookLoading.value = false;
-  }
-}
-
-const sendOTP = () => submitOrderHook();
-
-const formKey = ref(0);
-async function confirmOTP() {
-  otpLoading.value = true;
-  otpError.value = "";
-  try {
-    const res = await orderService.confirmOrderOtp(otpValue.value.join(""));
-
-    if (res.token && res.customer) {
-      setAuth(res.token, res.customer);
-    }
-    isModalOpen.value = false;
-    showOtpModal.value = false;
-    otpValue.value = [];
-    successData.value = {
-      departure_city: order.value.departure_city,
-      destination_city: order.value.destination_city,
-      service_name:
-        services.value.find((s) => s.id === order.value.id_service)?.name || "",
-      price: savedPrice.value,
-    };
-
-    // Reset toàn bộ state
-    order.value = {
-      id_service: "",
-      date_of_destination: null,
-      departure_city: "",
-      departure_dictrict: "",
-      departure_address_1: "",
-      destination_city: "",
-      destination_dictrict: "",
-      destination_address_1: "",
-      note: "",
-    };
-    previews.value = [];
-    contact.name = "";
-    contact.phone = "";
-    resendCooldown.value = 0;
-    formKey.value++;
-    openDepositModal.value = true;
-  } catch {
-    otpError.value = "Mã OTP không đúng hoặc đã hết hạn.";
-  } finally {
-    otpLoading.value = false;
-  }
+    .filter((r): r is PromiseFulfilledResult<OrderDetail> => r.status === "fulfilled")
+    .map((r) => r.value)
 }
 </script>
 
@@ -782,60 +389,5 @@ async function confirmOTP() {
 .fade-leave-to {
   opacity: 0;
   transform: translateY(-6px);
-}
-
-.checkmark {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  display: block;
-  stroke-width: 3;
-  stroke: #fff;
-  stroke-miterlimit: 10;
-  margin: 0 auto;
-  box-shadow: inset 0px 0px 0px #f97316;
-  animation:
-    fill 0.4s ease-in-out 0.4s forwards,
-    scale 0.3s ease-in-out 0.9s both;
-}
-
-.checkmark__circle {
-  stroke-dasharray: 166;
-  stroke-dashoffset: 166;
-  stroke-width: 2;
-  stroke-miterlimit: 10;
-  stroke: #f97316;
-  fill: none;
-  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
-}
-
-.checkmark__check {
-  transform-origin: 50% 50%;
-  stroke-dasharray: 48;
-  stroke-dashoffset: 48;
-  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
-}
-
-@keyframes stroke {
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes scale {
-  0%,
-  100% {
-    transform: none;
-  }
-
-  50% {
-    transform: scale3d(1.1, 1.1, 1);
-  }
-}
-
-@keyframes fill {
-  100% {
-    box-shadow: inset 0px 0px 0px 50px #f97316;
-  }
 }
 </style>
