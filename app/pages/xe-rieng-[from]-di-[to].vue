@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getFromRoute, getToRoute } from "~/utils/routes";
+import { getFromRoute, getToRoute, generateAllRoutes } from "~/utils/routes";
 
 const route = useRoute();
 
@@ -83,62 +83,80 @@ const faqItems = [
 ];
 
 useSchemaOrg([
+  {
+    "@type": "WebSite",
+    "@id": "https://happytrip.vn/#website",
+    "url": "https://happytrip.vn/",
+    "name": "Happy Trip",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://happytrip.vn/tim-kiem?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  },
+  {
+    "@type": "ItemList",
+    "@id": "https://happytrip.vn/#sitenavigation",
+    "name": "Danh mục chính",
+    "itemListElement": generateAllRoutes().map((route, index) => ({
+      "@type": "SiteNavigationElement",
+      "position": index + 1,
+      "name": route.name,
+      "url": `https://happytrip.vn/${route.slug}`
+    }))
+  },
   defineWebPage({
-    name: seoTitle,
-    description: seoDescription,
+    "@id": `${canonicalUrl}#webpage`,
+    "url": canonicalUrl,
+    "name": seoTitle,
+    "description": seoDescription,
   }),
-
   {
     "@type": "Service",
-    name: seoTitle,
-    description: seoDescription,
-    provider: {
+    "name": seoTitle,
+    "description": seoDescription,
+    "provider": {
       "@type": "Organization",
-      name: "Happy Trip",
-    },
+      "name": "Happy Trip",
+      "url": "https://happytrip.vn"
+    }
   },
-
-  {
-    "@type": "BreadcrumbList",
-    itemListElement: [
+  defineBreadcrumb({
+    "itemListElement": [
       {
-        "@type": "ListItem",
-        position: 1,
-        name: "Trang chủ",
-        item: "https://happytrip.vn",
+        "name": "Trang chủ",
+        "item": "https://happytrip.vn"
       },
       {
-        "@type": "ListItem",
-        position: 2,
-        name: from.name,
-        item: "https://happytrip.vn",
+        "name": from.name,
+        "item": "https://happytrip.vn"
       },
       {
-        "@type": "ListItem",
-        position: 3,
-        name: to.name,
-        item: canonicalUrl,
-      },
-    ],
-  },
+        "name": to.name,
+        "item": canonicalUrl
+      }
+    ]
+  }),
   {
     "@type": "FAQPage",
-    mainEntity: faqItems.map((item) => ({
+    "mainEntity": faqItems.map((item) => ({
       "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
+      "name": item.question,
+      "acceptedAnswer": {
         "@type": "Answer",
-        text: item.answer,
-      },
-    })),
-  },
+        "text": item.answer
+      }
+    }))
+  }
 ]);
+
 const fromData = getFromRoute(String(route.params.from).toLowerCase());
-console.log("🚀 ~ fromData=>", fromData)
 const toData = getToRoute(String(route.params.to).toLowerCase());
-console.log("🚀 ~ toData=>", toData)
 </script>
 
 <template>
-  <UiCreateOrder />
+  <UiCreateOrder :from-data="fromData" :to-data="toData" />
 </template>

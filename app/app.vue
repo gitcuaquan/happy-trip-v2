@@ -63,4 +63,3 @@ useSeoMeta({
     </NuxtLayout>
   </UApp>
 </template>
-<style scoped></style>

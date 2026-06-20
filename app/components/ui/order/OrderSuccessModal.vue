@@ -13,14 +13,6 @@
       <div
         class="bg-white shadow-2xl p-8 text-center relative overflow-hidden"
       >
-    <UButton
-      icon="i-lucide-x"
-      color="neutral"
-      variant="ghost"
-      size="xl"
-      class="absolute top-3 right-3 z-20"
-      @click="$emit('update:open', false)"
-    />
         <div class="mb-6 relative z-10 flex justify-center">
           <svg
             class="checkmark"
@@ -63,7 +55,8 @@
                   class="text-xs text-slate-500 font-medium whitespace-nowrap"
                   >Điểm đón:</span
                 >
-                <span class="text-sm font-bold text-slate-800 text-right">{{
+                <span class="text-sm font-bold text-slate-800 text-right">
+                  {{
                   successData.departure_city
                 }}</span>
               </div>
@@ -108,12 +101,11 @@
               block
               variant="outline"
               size="lg"
-              label="Về trang chủ"
+              label="Đã hiểu"
               @click="goHome"
             />
             <UButton
               to="/history"
-              color="neutral"
               block
               size="lg"
               variant="outline"
