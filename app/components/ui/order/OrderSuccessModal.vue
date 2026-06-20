@@ -13,6 +13,14 @@
       <div
         class="bg-white shadow-2xl p-8 text-center relative overflow-hidden"
       >
+    <UButton
+      icon="i-lucide-x"
+      color="neutral"
+      variant="ghost"
+      size="xl"
+      class="absolute top-3 right-3 z-20"
+      @click="$emit('update:open', false)"
+    />
         <div class="mb-6 relative z-10 flex justify-center">
           <svg
             class="checkmark"
