@@ -1,16 +1,16 @@
 <template>
-  <section class="py-16 bg-white">
+  <section class="py-24">
     <UContainer>
       <!-- Section Header -->
       <div class="text-center mb-12">
         <p class="text-sm font-semibold text-primary uppercase tracking-widest mb-2">
           Blog
         </p>
-        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+        <h2 class="text-3xl md:text-4xl font-bold">
           Tin Tức & Kinh Nghiệm
         </h2>
-        <div class="mx-auto w-16 h-1 rounded-full bg-primary" />
-        <p class="mt-4 text-gray-500 max-w-xl mx-auto text-base">
+        <div class="mx-auto w-16 h-1 rounded-full bg-primary mt-4" />
+        <p class="mt-4 text-muted max-w-xl mx-auto">
           Cập nhật những thông tin hữu ích và kinh nghiệm du lịch từ HappyTrip
         </p>
       </div>
@@ -76,14 +76,14 @@ const { data, pending, error, refresh } = await useLazyAsyncData<PageListRespons
   'articles',
   () => blogService.getPageList({
     page: 1,
-    limit: 3,
+    limit: 6,
     sort_by: 'created_at',
     field: 'id,slug,name,thumbnail,title,created_at'
   }),
 )
 
 const displayedArticles = computed(() => {
-  return (data.value?.data ?? []).filter(article => article.title).slice(0, 3)
+  return (data.value?.data ?? []).filter(article => article.title).slice(0, 6)
 })
 
 

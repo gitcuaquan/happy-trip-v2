@@ -86,13 +86,18 @@ useSchemaOrg([
   <Hero />
 
   <TrustMetrics />
-  <Testimonials />
   <About />
-  <section class="py-12">
+  <section class="py-24">
     <UContainer>
-      <h2 class="text-center uppercase text-2xl font-bold mb-8">
-        Các hãng xe chúng tôi phục vụ
-      </h2>
+      <div class="text-center mb-12">
+        <p class="text-sm font-semibold text-primary uppercase tracking-widest mb-2">
+          Đối tác
+        </p>
+        <h2 class="text-3xl md:text-4xl font-bold">
+          Các hãng xe chúng tôi phục vụ
+        </h2>
+        <div class="mx-auto w-16 h-1 rounded-full bg-primary mt-4" />
+      </div>
       <UMarquee :repeat="4">
         <img
           v-for="logo in carLogos"
@@ -105,5 +110,6 @@ useSchemaOrg([
       </UMarquee>
     </UContainer>
   </section>
-  <Articles class="mt-10" />
+  <Testimonials />
+  <Articles />
 </template>

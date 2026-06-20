@@ -1,6 +1,6 @@
 <template>
   <section
-    class="py-12 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800"
+    class="py-20"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div
@@ -35,6 +35,3 @@
   </section>
 </template>
 
-<script lang="ts" setup></script>
-
-<style></style>
