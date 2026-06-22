@@ -46,7 +46,7 @@
             />
           </div>
 
-          <!-- STEP 2A: Nhập mật khẩu (has_password = true) -->
+          <!-- Nhập mật khẩu -->
           <Transition name="slide-down">
             <div v-if="step === 'password'" class="flex flex-col gap-6 pt-6">
               <UFormField label="Mật khẩu" name="password" class="w-full">
@@ -115,7 +115,7 @@
             </div>
           </Transition>
 
-          <!-- STEP 2B: Nhập OTP (has_password = false hoặc fallback) -->
+          <!--  Nhập OTP  -->
           <Transition name="slide-down">
             <div v-if="step === 'otp'" class="flex flex-col gap-6 pt-6">
               <div class="flex justify-center">
@@ -277,7 +277,7 @@ async function handleLogin() {
       has_password: true,
     };
     setAuth(res.accessToken, customer);
-    navigateTo("/");
+    navigateTo("/history");
   } catch (e: any) {
     errorMsg.value =
       e?.data?.message || "Sai mật khẩu hoặc tài khoản không tồn tại.";

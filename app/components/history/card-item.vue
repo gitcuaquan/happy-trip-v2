@@ -1,28 +1,32 @@
 <template>
   <UCard variant="outline" :ui="{
-    root: 'rounded-2xl',
+    root: 'rounded-2xl hover:border-primary/30 transition-colors cursor-pointer',
     header: 'px-4 py-3 sm:px-4',
     body: 'px-4 py-3 sm:px-4 sm:py-3',
     footer: 'px-4 py-3 sm:px-4'
-  }">
+  }" @click="emit('navigate', order.short_id)">
 
-    <!-- ─── HEADER ─── -->
     <template #header>
-      <div class="flex items-center justify-between" @click="emit('navigate', order.id)">
+      <div class="flex items-center justify-between">
         <UBadge :color="statusColor" variant="subtle" size="sm" :icon="statusIcon" :label="statusLabel"
           class="rounded-full" />
-        <div class="flex items-center gap-1 text-xs text-muted">
-          <UIcon name="i-lucide-clock" class="size-3 shrink-0" />
-          {{ formattedDate }}
-        </div>
+
+        <UBadge color="primary" variant="soft" size="sm" icon="i-lucide-arrow-right"
+          class="hover:bg-primary-100 transition-colors rounded-full" @click.stop="emit('navigate', order.short_id)">
+          Chi tiết
+        </UBadge>
       </div>
     </template>
 
-    <!-- ─── BODY ─── -->
     <template #default>
-      <div class="space-y-3" @click="emit('navigate', order.id)">
+      <div class="space-y-3">
 
-        <!-- Route -->
+        <div
+          class="flex items-center gap-1.5 text-xs font-medium text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded-lg w-max border border-slate-100">
+          <UIcon name="i-lucide-calendar-clock" class="size-3.5 shrink-0 text-primary" />
+          {{ formattedDate }}
+        </div>
+
         <div class="flex gap-3">
           <div class="flex flex-col items-center shrink-0 pt-0.5">
             <div class="w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-primary/20" />
@@ -43,7 +47,6 @@
 
         <USeparator dashed />
 
-        <!-- Giá -->
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-1.5 text-muted">
             <UIcon name="i-lucide-wallet" class="size-3.5 shrink-0" />
@@ -55,7 +58,6 @@
           </span>
         </div>
 
-        <!-- Meta chips -->
         <div class="flex flex-wrap gap-1.5">
           <UBadge color="neutral" variant="outline" size="sm" :icon="'i-lucide-car'" :label="order.name_service" />
           <UBadge v-if="order.distance" color="neutral" variant="outline" size="sm" icon="i-lucide-route"
@@ -67,17 +69,16 @@
       </div>
     </template>
 
-    <!-- ─── FOOTER ─── -->
     <template #footer>
-      <!-- Đang chờ / đang thực hiện: liên hệ + hủy -->
       <div v-if="order.status_type === 0 || order.status_type === 1" class="flex gap-2">
-        <UButton color="success" variant="soft" icon="i-lucide-phone" label="Liên hệ"
-          class="flex-1 justify-center rounded-xl" to="/contact" />
+        <UButton color="success" variant="soft" icon="i-lucide-phone"
+          :label="order.status_type === 1 ? 'Liên hệ tài xế' : 'Liên hệ Admin'" class="flex-1 justify-center rounded-xl"
+          :to="order.status_type === 1 && order.partner?.phone ? `tel:${order.partner.phone}` : 'tel:0972970000'"
+          @click.stop />
         <UButton color="error" variant="soft" icon="i-lucide-x" label="Hủy chuyến"
-          class="flex-1 justify-center rounded-xl" @click.stop="emit('cancel', order.id)" />
+          class="flex-1 justify-center rounded-xl" @click.stop="emit('cancel', order.short_id)" />
       </div>
 
-      <!-- Đã hoàn thành: đặt chiều về + đặt lại -->
       <div v-else-if="order.status_type === 2" class="flex gap-2">
         <UButton color="primary" variant="soft" icon="i-lucide-arrow-left-right" label="Đặt chiều về"
           class="flex-1 justify-center rounded-xl" @click.stop="emit('return-trip')" />
@@ -85,23 +86,21 @@
           class="flex-1 justify-center rounded-xl" @click.stop="emit('rebook')" />
       </div>
 
-      <!-- Đã hủy / khác: đặt lại -->
-      <div v-else class="flex justify-center">
+      <div v-else class="flex gap-2">
+        <UButton color="primary" variant="soft" icon="i-lucide-arrow-left-right" label="Đặt chiều về"
+          class="flex-1 justify-center rounded-xl" @click.stop="emit('return-trip')" />
         <UButton color="neutral" variant="soft" icon="i-lucide-refresh-cw" label="Đặt lại chuyến"
-          class="justify-center rounded-xl" @click.stop="emit('rebook')" />
+          class="flex-1 justify-center rounded-xl" @click.stop="emit('rebook')" />
       </div>
     </template>
 
   </UCard>
-
 </template>
-
 <script lang="ts" setup>
-import type { Order } from '~/type'
+import type { Order, OrderDetail } from '~/type'
 import { formatAddress } from '~/type'
 import { useAuth } from '~/composables/useAuth'
-
-const props = defineProps<{ order: Order }>()
+const props = defineProps<{ order: OrderDetail }>()
 const emit = defineEmits<{
   (e: 'refreshList'): void
   (e: 'cancel', orderId: string): void
@@ -141,7 +140,7 @@ const statusColor = computed(() => ({
   1: 'info',     // 1: Đang thực hiện (Màu xanh dương)
   2: 'success',  // 2: Hoàn thành (Màu xanh lá)
   3: 'error',    // 3: Đã hủy (Màu đỏ)
-}as const)[props.order.status_type] || 'neutral')
+} as const)[props.order.status_type] || 'neutral')
 
 // Icon map theo 4 trạng thái
 const statusIcon = computed(() => ({

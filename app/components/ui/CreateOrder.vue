@@ -101,8 +101,7 @@
                 </div>
               </div>
               <div class="text-xs">
-                Không có xe phù hợp với tuyến đường hoặc số lượng khách lớn hơn 6? 
-                Vui lòng liên hệ tổng đài <a href="tel:0972970000" class="text-primary font -bold underline">0972970000</a> để được hỗ
+                Các dịch vụ 2 chiều dài ngày, cần xe ở lại phục vụ, số lượng khách lớn hơn 6, đón trả nhiều điểm hoặc các trường hợp khác vui lòng liên hệ: <a href="tel:0972970000" class="text-primary font -bold underline">0972970000</a> để được hỗ trợ.
               </div>
             </div>
           </Transition>
