@@ -70,37 +70,38 @@
     </template>
 
     <template #footer>
-      <div v-if="order.status_type === 0 || order.status_type === 1" class="flex gap-2">
-        <UButton color="success" variant="soft" icon="i-lucide-phone"
-          :label="order.status_type === 1 ? 'Liên hệ tài xế' : 'Liên hệ Admin'" class="flex-1 justify-center rounded-xl"
+      <div v-if="order.status_type === 0 || order.status_type === 1" class="flex gap-1.5 sm:gap-2">
+        <UButton size="sm" color="success" variant="soft" icon="i-lucide-phone"
+          :label="order.status_type === 1 ? 'Gọi tài xế' : 'Hỗ trợ'"
+          class="flex-1 justify-center rounded-xl px-1 text-[11px] sm:text-xs font-bold truncate"
           :to="order.status_type === 1 && order.partner?.phone ? `tel:${order.partner.phone}` : 'tel:0972970000'"
           @click.stop />
-        <UButton color="error" variant="soft" icon="i-lucide-x" label="Hủy chuyến"
-          class="flex-1 justify-center rounded-xl" @click.stop="emit('cancel', order.short_id)" />
-      </div>
 
-      <div v-else-if="order.status_type === 2" class="flex gap-2">
-        <UButton color="primary" variant="soft" icon="i-lucide-arrow-left-right" label="Đặt chiều về"
-          class="flex-1 justify-center rounded-xl" @click.stop="emit('return-trip')" />
-        <UButton color="neutral" variant="soft" icon="i-lucide-refresh-cw" label="Đặt lại chuyến"
-          class="flex-1 justify-center rounded-xl" @click.stop="emit('rebook')" />
+        <UButton size="sm" color="primary" variant="soft" icon="i-lucide-arrow-left-right" label="Đặt Chiều về"
+          class="flex-1 justify-center rounded-xl px-1 text-[11px] sm:text-xs font-bold truncate"
+          @click.stop="emit('return-trip')" />
+
+        <UButton size="sm" color="error" variant="soft" icon="i-lucide-x" label="Hủy Chuyến"
+          class="flex-1 justify-center rounded-xl px-1 text-[11px] sm:text-xs font-bold truncate"
+          @click.stop="emit('cancel', order.id)" />
       </div>
 
       <div v-else class="flex gap-2">
-        <UButton color="primary" variant="soft" icon="i-lucide-arrow-left-right" label="Đặt chiều về"
-          class="flex-1 justify-center rounded-xl" @click.stop="emit('return-trip')" />
-        <UButton color="neutral" variant="soft" icon="i-lucide-refresh-cw" label="Đặt lại chuyến"
-          class="flex-1 justify-center rounded-xl" @click.stop="emit('rebook')" />
+        <UButton size="sm" color="primary" variant="soft" icon="i-lucide-arrow-left-right" label="Đặt chiều về"
+          class="flex-1 justify-center rounded-xl font-bold" @click.stop="emit('return-trip')" />
+
+        <UButton size="sm" color="neutral" variant="soft" icon="i-lucide-refresh-cw" label="Đặt lại chuyến"
+          class="flex-1 justify-center rounded-xl font-bold" @click.stop="emit('rebook')" />
       </div>
     </template>
 
   </UCard>
 </template>
 <script lang="ts" setup>
-import type { Order, OrderDetail } from '~/type'
+import type { Order } from '~/type'
 import { formatAddress } from '~/type'
 import { useAuth } from '~/composables/useAuth'
-const props = defineProps<{ order: OrderDetail }>()
+const props = defineProps<{ order: Order }>()
 const emit = defineEmits<{
   (e: 'refreshList'): void
   (e: 'cancel', orderId: string): void

@@ -36,7 +36,8 @@
         <div v-else-if="realOrders.length > 0">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div v-for="order in realOrders" :key="order.id" class="block">
-              <HistoryCardItem :order="order" @refreshList="fetchOrders" @cancel="openCancelModal"
+
+              <HistoryCardItem :order="order" @refreshList="fetchOrders" @cancel="() => openCancelModal(order.id)"
                 @navigate="navigateTo(`/history/${order.id}`)" @rebook="handleRebookOrder(order)"
                 @return-trip="handleReturnTripOrder(order)" />
             </div>

@@ -327,6 +327,7 @@ export interface Order {
   created: string; // Ngày giờ tạo chuyến xe
   distance: number; // Quãng đường dự kiến của chuyến xe (tính bằng km)
   note?: string; // Ghi chú của khách (vd: có trẻ em, thú cưng, yêu cầu loại xe...)
+  partner?: OrderPartner;
 }
 
 // Danh sách chuyến xe 
