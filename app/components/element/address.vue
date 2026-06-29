@@ -158,8 +158,25 @@ watch(() => cities.value, (newCities) => {
 
 const filteredCities = computed(() => {
   if (!cities.value) return []
-  return [...cities.value]
-    .sort((a, b) => a.name.localeCompare(b.name))
+  return [...cities.value].sort((a, b) => {
+    const nameA = a.name.trim().toLowerCase()
+    const nameB = b.name.trim().toLowerCase()
+
+    // 1. Đưa Thành phố Hồ Chí Minh lên vị trí đầu tiên
+    const isHcmA = nameA.includes('hồ chí minh') || nameA.includes('sai gon') || nameA.includes('sài gòn')
+    const isHcmB = nameB.includes('hồ chí minh') || nameB.includes('sai gon') || nameB.includes('sài gòn')
+    if (isHcmA && !isHcmB) return -1
+    if (!isHcmA && isHcmB) return 1
+
+    // 2. Đưa Thành phố Cần Thơ lên vị trí thứ hai
+    const isCanThoA = nameA.includes('cần thơ') || nameA.includes('can tho')
+    const isCanThoB = nameB.includes('cần thơ') || nameB.includes('can tho')
+    if (isCanThoA && !isCanThoB) return -1
+    if (!isCanThoA && isCanThoB) return 1
+
+    // 3. Các tỉnh/thành phố khác sắp xếp theo bảng chữ cái Tiếng Việt
+    return a.name.localeCompare(b.name, 'vi')
+  })
 })
 
 const availableDistrictNames = computed(() => {
