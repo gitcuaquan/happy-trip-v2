@@ -45,25 +45,6 @@
             </NuxtLink>
           </div>
         </UCard>
-        <!-- Map -->
-        <div class="overflow-hidden rounded-xl border border-primary-100 shadow-sm">
-          <div class="relative">
-            <iframe :src="contact.map.embed" :title="contact.map.title" width="100%" height="280"
-              style="border: 0; display: block; filter: saturate(0.85) contrast(0.95);" allowfullscreen loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"></iframe>
-            <div
-              class="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-white/60 to-transparent">
-            </div>
-            <NuxtLink :to="contact.map.url" external target="_blank"
-              class="absolute bottom-3 left-1/2 -translate-x-1/2">
-              <UButton color="neutral" size="xs" class="shadow-md shadow-black/10" icon="i-lucide-external-link">
-                Xem trên Google Maps
-              </UButton>
-            </NuxtLink>
-
-          </div>
-        </div>
-
       </div>
 
       <!-- RIGHT ────────────────────────────────────────────────────── -->
