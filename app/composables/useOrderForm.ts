@@ -18,9 +18,25 @@ export const useOrderForm = () => {
   const orderFormData = useState<OrderFormData | null>('orderFormData', () => null)
 
   /**
-   * Lấy dữ liệu từ order cũ để fill vào form mới
+   * Lấy dữ liệu từ order cũ để fill vào form mới (Đặt lại chuyến)
+   * Tự động khởi tạo thời gian mới nếu thời gian cũ đã qua
    */
   const setOrderFormFromPreviousOrder = (order: Order) => {
+    const rawDate = order.date_of_destination || order.created
+    let targetDate: Date
+    if (rawDate) {
+      const parsed = new Date(rawDate)
+      if (!isNaN(parsed.getTime()) && parsed > new Date()) {
+        targetDate = parsed
+      } else {
+        targetDate = new Date()
+        targetDate.setHours(targetDate.getHours() + 1)
+      }
+    } else {
+      targetDate = new Date()
+      targetDate.setHours(targetDate.getHours() + 1)
+    }
+
     orderFormData.value = {
       departure_city: order.departure?.city || '',
       departure_dictrict: order.departure?.district || '',
@@ -28,6 +44,7 @@ export const useOrderForm = () => {
       destination_city: order.destination?.city || '',
       destination_dictrict: order.destination?.district || '',
       destination_address_1: order.destination?.address_1 || '',
+      date_of_destination: targetDate,
     }
   }
 

@@ -373,15 +373,20 @@ function onOrderConfirmed(data: {
 }
 
 // ─── Watch ────────────────────────────────────────────────
-watch(addressReady, async (val) => {
-  if (!val) {
-    previews.value = [];
-    order.value.id_service = "";
-    return;
+watch(
+  [addressReady, () => order.value.date_of_destination],
+  async ([isReady]) => {
+    if (!isReady) {
+      previews.value = [];
+      order.value.id_service = "";
+      return;
+    }
+    await calcPreviews();
+    if (!order.value.id_service) {
+      order.value.id_service = services.value[0]?.id || "";
+    }
   }
-  await calcPreviews();
-  order.value.id_service = services.value[0]?.id || "";
-});
+);
 
 // ─── API ──────────────────────────────────────────────────
 async function calcPreviews() {
