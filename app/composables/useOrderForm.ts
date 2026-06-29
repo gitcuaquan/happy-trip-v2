@@ -7,6 +7,7 @@ export interface OrderFormData {
   destination_city: string
   destination_dictrict: string
   destination_address_1: string
+  date_of_destination?: Date | null
 }
 
 /**
@@ -32,8 +33,22 @@ export const useOrderForm = () => {
 
   /**
    * Lấy dữ liệu từ order cũ, hoán đổi điểm đón ↔ điểm đến để đặt chiều về
+   * Đồng thời tự động cộng thêm 1 ngày + 1 giờ từ ngày/giờ của chuyến gốc
    */
   const setOrderFormAsReturnTrip = (order: Order) => {
+    const rawDate = order.date_of_destination || order.created
+    let returnDate: Date
+    if (rawDate) {
+      const parsed = new Date(rawDate)
+      returnDate = !isNaN(parsed.getTime()) ? parsed : new Date()
+    } else {
+      returnDate = new Date()
+    }
+
+    // Cộng 1 ngày + 1 giờ từ ngày gốc
+    returnDate.setDate(returnDate.getDate() + 1)
+    returnDate.setHours(returnDate.getHours() + 1)
+
     orderFormData.value = {
       // Điểm đến cũ → điểm đón mới
       departure_city: order.destination?.city || '',
@@ -43,6 +58,7 @@ export const useOrderForm = () => {
       destination_city: order.departure?.city || '',
       destination_dictrict: order.departure?.district || '',
       destination_address_1: order.departure?.address_1 || '',
+      date_of_destination: returnDate,
     }
   }
 

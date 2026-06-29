@@ -74,11 +74,12 @@ export class OrderService {
   /**
    * 4. Hủy chuyến xe (Khi tài xế chưa đón)
    */
-  async cancelOrder(token: string, orderId: string): Promise<ActionResponse> {
+  async cancelOrder(token: string, orderId: string, note?: string): Promise<ActionResponse> {
     try {
       return await $fetch<ActionResponse>(`${this.baseURL}/order/${orderId}/cancel`, {
         method: 'PUT',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        params: note ? { note } : undefined,
       });
     } catch (error) {
       console.error('Error cancelling order:', error);

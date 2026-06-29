@@ -1,7 +1,7 @@
 <template>
   <div class="relative w-full max-w-md mx-auto md:my-10 md:p-2">
     <!-- Main card -->
-    <UCard :key="formKey" class="relative z-10 backdrop-blur-md bg-white/95 border-2 border-white" :ui="{
+    <UCard :key="formKey" class="relative z-10 backdrop-blur-md bg-white/95 border-2 border-white text-slate-800" :ui="{
       root: 'w-full overflow-hidden shadow-2xl',
 
       body: 'sm:p-3 space-y-6',
@@ -55,14 +55,14 @@
 
           <!-- Chọn loại xe -->
           <Transition name="fade">
-            <div v-if="hasRouteData" class="space-y-2">
-              <p class="text-xs flex items-center gap-2 font-bold text-slate-500 uppercase tracking-widest">
-              <div class="p-1.5 bg-success/10 rounded-lg">
-                <div class="w-2.5 h-2.5 rounded-full bg-success" />
+            <div v-if="hasRouteData" class="space-y-2 text-slate-600">
+              <div class="text-xs flex items-center gap-2 font-bold text-slate-500 uppercase tracking-widest">
+                <div class="p-1.5 bg-success/10 rounded-lg">
+                  <div class="w-2.5 h-2.5 rounded-full bg-success" />
+                </div>
+                Chọn loại xe
               </div>
-              Chọn loại xe
-              </p>
-              <div class="text-xs">
+              <div class="text-xs text-slate-500">
                 Trẻ sơ sinh cũng được coi là 1 hành khách. Vui lòng
                 chọn loại xe phù hợp với số lượng hành khách.
               </div>
@@ -100,8 +100,8 @@
                   </div>
                 </div>
               </div>
-              <div class="text-xs">
-                Các dịch vụ 2 chiều dài ngày, cần xe ở lại phục vụ, số lượng khách lớn hơn 6, đón trả nhiều điểm hoặc các trường hợp khác vui lòng liên hệ: <a href="tel:0972970000" class="text-primary font -bold underline">0972970000</a> để được hỗ trợ.
+              <div class="text-xs text-slate-500">
+                Các dịch vụ 2 chiều dài ngày, cần xe ở lại phục vụ, số lượng khách lớn hơn 6, đón trả nhiều điểm hoặc các trường hợp khác vui lòng liên hệ: <a href="tel:0972970000" class="text-primary font-bold underline">0972970000</a> để được hỗ trợ.
               </div>
             </div>
           </Transition>
@@ -137,8 +137,8 @@
       </div>
 
       <template #footer>
-        <div class="p-5">
-          <ol class="text-xs list-decimal w-full text-left">
+        <div class="p-5 text-slate-600">
+          <ol class="text-xs list-decimal w-full text-left space-y-1">
             <li>Giá xe riêng, đã bao gồm phí và đi cao tốc, không phát sinh</li>
             <li>Đón trả tận nơi theo giờ yêu cầu, <b>không cần cọc</b></li>
             <li>Kết thúc chuyến xe thanh toán cho tài xế, xe bao mới sạch</li>
@@ -190,12 +190,12 @@ const order = ref<OrderPreview>({
 const services = ref([
   {
     id: "66947d0917482239472b9807",
-    name: "Bao chuyến 5 chỗ",
+    name: "Bao chuyến 5 chỗ (1 chiều)",
     description: "Tối đa 4 hành khách",
   },
   {
     id: "66947cea17482239472b88e8",
-    name: "Bao chuyến 7 chỗ",
+    name: "Bao chuyến 7 chỗ (1 chiều)",
     description: "Tối đa 6 hành khách",
   },
 ]);
@@ -230,13 +230,16 @@ onMounted(async () => {
     order.value.destination_city = savedOrderData.destination_city;
     order.value.destination_dictrict = savedOrderData.destination_dictrict;
     order.value.destination_address_1 = savedOrderData.destination_address_1;
+    if (savedOrderData.date_of_destination) {
+      order.value.date_of_destination = new Date(savedOrderData.date_of_destination);
+    }
     clearOrderFormData();
     calcPreviews();
     return;
   }
 
   // Pre-fill from route props (fromData / toData)
-  if (props.fromData?.id || props.toData?.parentId) {
+  if (props.fromData || props.toData) {
     try {
       const cities = await $fetch<{ id: string; name: string }[]>(
         "https://sys.happytrip.vn/api/city/list",
@@ -247,17 +250,26 @@ onMounted(async () => {
         },
       );
 
-      if (props.fromData?.id) {
-        const city = cities.find((c) => c.id === props.fromData!.id);
-        if (city) {
-          order.value.departure_city = city.name;
+      if (props.fromData) {
+        const targetId = props.fromData.id || props.fromData.parentId;
+        if (targetId) {
+          const city = cities.find((c) => c.id === targetId);
+          if (city) {
+            order.value.departure_city = city.name;
+          }
+        }
+        if (props.fromData.data) {
+          order.value.departure_dictrict = props.fromData.data;
         }
       }
 
-      if (props.toData?.parentId) {
-        const city = cities.find((c) => c.id === props.toData!.parentId);
-        if (city) {
-          order.value.destination_city = city.name;
+      if (props.toData) {
+        const targetId = props.toData.id || props.toData.parentId;
+        if (targetId) {
+          const city = cities.find((c) => c.id === targetId);
+          if (city) {
+            order.value.destination_city = city.name;
+          }
         }
         if (props.toData.data) {
           order.value.destination_dictrict = props.toData.data;

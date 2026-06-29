@@ -170,6 +170,19 @@ const availableDistrictNames = computed(() => {
   )
 })
 
+// Tự động chọn phường/xã đầu tiên nếu chưa chọn hoặc không hợp lệ
+watch(availableDistrictNames, (districts) => {
+  if (districts && districts.length > 0) {
+    if (!selectedDistrictName.value || !districts.includes(selectedDistrictName.value)) {
+      const firstDistrict = districts[0]
+      if (firstDistrict) {
+        selectedDistrictName.value = firstDistrict
+        emit('update:province', firstDistrict)
+      }
+    }
+  }
+}, { immediate: true })
+
 async function onCityChange(cityId: string) {
   selectedDistrictName.value = ''
   detailAddress.value = ''
@@ -214,6 +227,13 @@ watch(() => props.city, async (val) => {
 watch(() => props.province, (val) => {
   if (val !== selectedDistrictName.value) {
     selectedDistrictName.value = val
+    if (!val && availableDistrictNames.value.length > 0) {
+      const firstDistrict = availableDistrictNames.value[0]
+      if (firstDistrict) {
+        selectedDistrictName.value = firstDistrict
+        emit('update:province', firstDistrict)
+      }
+    }
   }
 })
 </script>

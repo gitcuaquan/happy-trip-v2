@@ -384,18 +384,34 @@ useSchemaOrg([
       <CollapsibleCard :items="service.faq.items" />
     </div>
   </UContainer>
-  <UContainer class="py-16">
-    <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12"
-    >
-      <NuxtLink
-        v-for="(item, index) in generateAllRoutes()"
-        :key="index"
-        :to="item.slug"
-        class="block"
-      >
-        {{ item.name }}
-      </NuxtLink>
-    </div>
-  </UContainer>
+
+  <!-- ============ POPULAR ROUTES SECTION ============ -->
+  <section class="py-16 bg-slate-100/70 dark:bg-slate-900/50 border-t border-slate-200/80 dark:border-slate-800">
+    <UContainer>
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <p class="text-xs font-bold text-primary uppercase tracking-widest mb-2">
+          Mạng Lưới Phục Vụ
+        </p>
+        <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
+          Các Tuyến Xe Riêng Phổ Biến
+        </h3>
+        <div class="mx-auto w-16 h-1 rounded-full bg-primary mt-4" />
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
+        <NuxtLink
+          v-for="(item, index) in generateAllRoutes()"
+          :key="index"
+          :to="`/${item.slug}`"
+          class="p-3.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:border-primary hover:text-primary hover:shadow-md transition-all duration-200 flex items-center justify-between group shadow-2xs"
+        >
+          <div class="flex items-center gap-2.5 min-w-0">
+            <UIcon name="i-lucide-map-pin" class="size-4 text-primary shrink-0" />
+            <span class="truncate">{{ item.name }}</span>
+          </div>
+          <UIcon name="i-lucide-chevron-right" class="size-4 text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+        </NuxtLink>
+      </div>
+    </UContainer>
+  </section>
 </template>

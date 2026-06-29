@@ -160,8 +160,7 @@ const year = new Date().getFullYear()
 
 const serviceLinks = [
   { label: 'Đặt chuyến', to: '/' },
-  { label: 'Bao xe', to: '/#bao-xe' },
-  { label: 'Ghép xe', to: '/#xe-ghep' }
+  { label: 'Bao xe', to: '/#bao-xe' }
 ]
 
 const infoLinks = [

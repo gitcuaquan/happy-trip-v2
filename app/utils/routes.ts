@@ -1,20 +1,46 @@
 import routerFrom from '~~/data/routerFrom.json'
 import routerTo from '~~/data/routerTo.json'
+
+// Interface chung cho cả routerFrom và routerTo
+export interface RouteEntry {
+  name: string
+  slug: string
+  id?: string
+  parentId?: string
+  data?: string
+  canonical?: string
+}
+
 // Cấu trúc Interface cho một Route kết quả
 export interface CustomRoute {
   name: string;
   slug: string;
 }
 
-export const getFromRoute = (slug: string) =>
-  routerFrom.find(item => item.slug === slug)
+// Gộp tất cả các entry thành một danh sách chung
+const allEntries: RouteEntry[] = [
+  ...(routerFrom as RouteEntry[]),
+  ...(routerTo as RouteEntry[]),
+]
 
-export const getToRoute = (slug: string) =>{
-  if(!slug) return null
-  let data = routerTo.find(item => item.slug === slug)
-  if(data) return data
-  data = routerFrom.find(item => item.slug === slug)
-  return data
+export const getFromRoute = (slug: string): RouteEntry | null => {
+  if (!slug) return null
+  // Ưu tiên tìm trong routerFrom trước
+  const fromEntry = (routerFrom as RouteEntry[]).find(item => item.slug === slug)
+  if (fromEntry) return fromEntry
+  // Fallback: tìm trong routerTo (cho tuyến chiều về)
+  const toEntry = (routerTo as RouteEntry[]).find(item => item.slug === slug)
+  return toEntry ?? null
+}
+
+export const getToRoute = (slug: string): RouteEntry | null => {
+  if (!slug) return null
+  // Ưu tiên tìm trong routerTo trước
+  const toEntry = (routerTo as RouteEntry[]).find(item => item.slug === slug)
+  if (toEntry) return toEntry
+  // Fallback: tìm trong routerFrom (cho tuyến chiều về)
+  const fromEntry = (routerFrom as RouteEntry[]).find(item => item.slug === slug)
+  return fromEntry ?? null
 }
 
 export const generateAllRoutes = (): CustomRoute[] => {

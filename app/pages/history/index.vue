@@ -57,10 +57,8 @@
       </UContainer>
     </div>
   </ClientOnly>
-  <!-- Confirm Cancel Modal -->
-  <ConfirmModal v-model="showCancelModal" title="Xác nhận hủy chuyến"
-    message="Bạn có chắc chắn muốn hủy chuyến này không? Hành động này không thể hoàn tác." confirmLabel="Hủy chuyến"
-    confirmColor="error" icon="i-lucide-alert-triangle" :isLoading="isCanceling" @confirm="handleCancelOrder" />
+  <!-- Cancel Order Modal -->
+  <CancelOrderModal v-model="showCancelModal" :isLoading="isCanceling" @confirm="handleCancelOrder" />
 </template>
 
 <script lang="ts" setup>
@@ -69,7 +67,7 @@ import type { Order, OrderListBodyFilter, OrderListQueryParams } from '~/type'
 import { orderService } from '../../services/order.service'
 import { useAuth } from '~/composables/useAuth'
 import { useOrderForm } from '~/composables/useOrderForm'
-import ConfirmModal from '~/components/shared/confirm-modal.vue'
+import CancelOrderModal from '~/components/shared/cancel-order-modal.vue'
 import DatePicker from '~/components/ui/DatePicker.vue'
 
 const toast = useToast()
@@ -150,12 +148,12 @@ const openCancelModal = (orderId: string) => {
   showCancelModal.value = true
 }
 
-const handleCancelOrder = async () => {
+const handleCancelOrder = async (note: string) => {
   if (!token.value || !cancelTargetId.value) return
   isCanceling.value = true
 
   try {
-    await orderService.cancelOrder(token.value, cancelTargetId.value)
+    await orderService.cancelOrder(token.value, cancelTargetId.value, note)
     toast.add({ title: 'Thành công', description: 'Hủy chuyến thành công!', color: 'success' })
     showCancelModal.value = false
     fetchOrders()

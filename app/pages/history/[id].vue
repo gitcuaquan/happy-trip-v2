@@ -139,42 +139,64 @@
           </div>
 
           <template #footer>
-            <div
-              class="grid grid-cols-3 divide-x divide-default -mx-4 -my-3 border-t-0"
-            >
-              <div class="px-3 py-3 text-center">
-                <p
-                  class="text-[10px] text-muted font-medium uppercase tracking-wide"
-                >
-                  Khoảng cách
-                </p>
-                <p class="text-sm font-bold mt-0.5">
-                  {{ orderDetail.distance }}
-                  <span class="font-normal text-muted text-xs">km</span>
-                </p>
+            <div class="-mx-4 -my-3 divide-y divide-default">
+              <div class="grid grid-cols-2 divide-x divide-default">
+                <div class="px-3 py-2.5 text-center">
+                  <p
+                    class="text-[10px] text-muted font-medium uppercase tracking-wide"
+                  >
+                    Khoảng cách
+                  </p>
+                  <p class="text-sm font-bold mt-0.5">
+                    {{ orderDetail.distance }}
+                    <span class="font-normal text-muted text-xs">km</span>
+                  </p>
+                </div>
+                <div class="px-3 py-2.5 text-center">
+                  <p
+                    class="text-[10px] text-muted font-medium uppercase tracking-wide"
+                  >
+                    Loại xe
+                  </p>
+                  <p class="text-xs sm:text-sm font-bold mt-0.5 px-1 leading-snug">
+                    {{ orderDetail.name_service }}
+                  </p>
+                </div>
               </div>
-              <div class="px-3 py-3 text-center">
-                <p
-                  class="text-[10px] text-muted font-medium uppercase tracking-wide"
+              <div
+                class="px-4 py-3 flex justify-between items-center bg-slate-50/60 rounded-b-md"
+              >
+                <span
+                  class="text-xs font-bold text-muted uppercase tracking-wider"
+                  >Khách phải trả</span
                 >
-                  Loại xe
-                </p>
-                <p class="text-sm font-bold mt-0.5 truncate px-1">
-                  {{ orderDetail.name_service }}
-                </p>
-              </div>
-              <div class="px-3 py-3 text-center">
-                <p
-                  class="text-[10px] text-muted font-medium uppercase tracking-wide"
-                >
-                  Số lượng
-                </p>
-                <p class="text-sm font-bold mt-0.5">
-                  {{ orderDetail.quantity }}
-                </p>
+                <span class="text-lg font-black text-primary">{{
+                  numberToCurrency(orderDetail.price_guest_after)
+                }}</span>
               </div>
             </div>
           </template>
+        </UCard>
+
+        <!-- Note Card - hiển thị nếu có ghi chú -->
+        <UCard v-if="orderDetail.note">
+          <template #header>
+            <p class="text-xs font-bold text-muted uppercase tracking-wider">
+              Ghi chú
+            </p>
+          </template>
+          <div class="flex gap-3 items-start">
+            <div
+              class="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center shrink-0"
+            >
+              <UIcon name="i-lucide-sticky-note" class="size-4 text-primary" />
+            </div>
+            <p
+              class="text-sm leading-relaxed whitespace-pre-line flex-1 text-slate-700"
+            >
+              {{ orderDetail.note }}
+            </p>
+          </div>
         </UCard>
 
         <!-- Driver Card - hiện khi đã có partner (Tài xế nhận đơn trở đi) -->
@@ -271,118 +293,9 @@
           </template>
         </UCard>
 
-        <!-- Customer Card -->
-        <UCard>
-          <template #header>
-            <p class="text-xs font-bold text-muted uppercase tracking-wider">
-              Khách hàng
-            </p>
-          </template>
-          <div class="flex items-center gap-3">
-            <div
-              class="w-11 h-11 rounded-full bg-orange-50 flex items-center justify-center shrink-0"
-            >
-              <span class="text-sm font-bold text-primary">{{
-                initials(orderDetail.customer.full_name)
-              }}</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="font-bold text-sm truncate">
-                {{ orderDetail.customer.full_name }}
-              </p>
-              <p class="text-xs text-muted mt-0.5">
-                {{ orderDetail.customer.phone }}
-              </p>
-            </div>
-            <UButton
-              :to="`tel:${orderDetail.customer.phone}`"
-              icon="i-lucide-phone"
-              size="xs"
-              color="primary"
-              variant="soft"
-              class="rounded-xl"
-              aria-label="Gọi khách hàng"
-            />
-          </div>
-        </UCard>
-
         <!-- Safety Notice - hiện khi Chờ tài xế hoặc Đã nhận -->
         <SharedSafetyNotice v-if="[0, 1].includes(orderDetail.status_type)" />
 
-        <!-- Note Card - chỉ hiện khi đơn đang Chờ tài xế -->
-        <UCard v-if="orderDetail.status_type === 0 && orderDetail.note">
-          <template #header>
-            <p class="text-xs font-bold text-muted uppercase tracking-wider">
-              Ghi chú
-            </p>
-          </template>
-          <div class="flex gap-3 items-start">
-            <div
-              class="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center shrink-0"
-            >
-              <UIcon name="i-lucide-sticky-note" class="size-4 text-primary" />
-            </div>
-            <p
-              class="text-sm leading-relaxed whitespace-pre-line flex-1 text-slate-700"
-            >
-              {{ orderDetail.note }}
-            </p>
-          </div>
-        </UCard>
-
-        <!-- Creator Card -->
-        <UCard v-if="orderDetail.creator?.user_phone">
-          <template #header>
-            <p class="text-xs font-bold text-muted uppercase tracking-wider">
-              Người đặt chuyến
-            </p>
-          </template>
-          <div class="flex items-center gap-3">
-            <div
-              class="w-11 h-11 rounded-full bg-elevated flex items-center justify-center shrink-0"
-            >
-              <UIcon name="i-lucide-user-check" class="size-5 text-muted" />
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="font-bold text-sm truncate">
-                {{ orderDetail.creator.user_phone }}
-              </p>
-              <p class="text-xs text-muted mt-0.5 capitalize">
-                {{ orderDetail.creator.user_type }}
-              </p>
-            </div>
-          </div>
-        </UCard>
-
-        <!-- Payment Card -->
-        <UCard>
-          <template #header>
-            <p class="text-xs font-bold text-muted uppercase tracking-wider">
-              Thanh toán
-            </p>
-          </template>
-          <div class="space-y-3 text-sm">
-            <div
-              v-if="orderDetail.sub_fees?.sub_fee_price > 0"
-              class="flex justify-between items-center"
-            >
-              <span class="text-muted">Phí phụ</span>
-              <span
-                >+
-                {{ numberToCurrency(orderDetail.sub_fees.sub_fee_price) }}</span
-              >
-            </div>
-          </div>
-
-          <template #footer>
-            <div class="flex justify-between items-center w-full">
-              <span class="font-bold">Khách phải trả</span>
-              <span class="text-xl font-black text-primary">{{
-                numberToCurrency(orderDetail.price_guest_after)
-              }}</span>
-            </div>
-          </template>
-        </UCard>
 
         <!-- Timestamps Card -->
         <UCard>
