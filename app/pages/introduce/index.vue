@@ -212,7 +212,6 @@ const introduce = computed(() => ({
     'Hoàn tiền nếu khách hàng không hài lòng'
   ],
   info: [
-    { icon: 'i-lucide-map-pin', label: '47 Nguyễn Tuân, Thanh Xuân, TP.Hà Nội' },
     { icon: 'i-lucide-phone', label: '0972 97 00 00' },
     { icon: 'i-lucide-mail', label: 'happytripexpress@gmail.com' }
   ]

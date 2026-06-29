@@ -215,13 +215,6 @@ const contact = computed(() => ({
       href: 'mailto:happytripexpress@gmail.com',
     },
     {
-      icon: 'i-lucide-map-pin',
-      label: 'VĂN PHÒNG GIAO DỊCH',
-      main: '47 Nguyễn Tuân,Phường Thanh Xuân,TP.Hà Nội',
-      sub: 'Thanh Xuân, Hà Nội, Việt Nam',
-      href: 'https://maps.google.com/?q=47+Nguyen+Tuan+Ha+Noi',
-    },
-    {
       icon: 'i-lucide-clock',
       label: 'GIỜ LÀM VIỆC',
       main: '7:00 - 22:00 hàng ngày',
