@@ -26,3 +26,5 @@ logs
 # Uploaded files
 uploads/*
 public/uploads/*
+
+ecosystem.config.cjs
