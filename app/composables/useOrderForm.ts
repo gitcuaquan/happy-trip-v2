@@ -8,6 +8,8 @@ export interface OrderFormData {
   destination_dictrict: string
   destination_address_1: string
   date_of_destination?: Date | null
+  customer_name?: string
+  customer_phone?: string
 }
 
 /**
@@ -45,6 +47,8 @@ export const useOrderForm = () => {
       destination_dictrict: order.destination?.district || '',
       destination_address_1: order.destination?.address_1 || '',
       date_of_destination: targetDate,
+      customer_name: order.customer?.full_name || '',
+      customer_phone: order.customer?.phone || '',
     }
   }
 
@@ -76,6 +80,8 @@ export const useOrderForm = () => {
       destination_dictrict: order.departure?.district || '',
       destination_address_1: order.departure?.address_1 || '',
       date_of_destination: returnDate,
+      customer_name: order.customer?.full_name || '',
+      customer_phone: order.customer?.phone || '',
     }
   }
 

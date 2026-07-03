@@ -40,7 +40,6 @@ export default defineNuxtConfig({
   },
   experimental: {
     viewTransition: true,
-    inlineSSRStyles: true,
   },
   compatibilityDate: "2025-01-15",
 

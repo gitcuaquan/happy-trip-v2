@@ -164,6 +164,8 @@ const props = defineProps<{
   idService: string
   previews: OrderDetail[]
   serviceName: string
+  initialName?: string
+  initialPhone?: string
 }>()
 
 const emit = defineEmits<{
@@ -192,6 +194,17 @@ const contactSchema = z.object({
 })
 
 type ContactSchema = z.infer<typeof contactSchema>
+
+watch(() => props.open, (isOpen) => {
+  if (isOpen) {
+    if (!contact.name && props.initialName) {
+      contact.name = props.initialName
+    }
+    if (!contact.phone && props.initialPhone) {
+      contact.phone = props.initialPhone
+    }
+  }
+})
 
 const getPreview = (id: string) =>
   props.previews.find((p) => p.id_service === id && p.price_guest_after > 0)

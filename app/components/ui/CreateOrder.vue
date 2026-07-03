@@ -148,7 +148,9 @@
     </UCard>
 
     <LazyUiOrderContactModal v-model:open="isModalOpen" :order="order" :id-service="order.id_service"
-      :previews="previews" :service-name="selectedServiceName" @confirmed="onOrderConfirmed" />
+      :previews="previews" :service-name="selectedServiceName" 
+      :initial-name="initialCustomerName" :initial-phone="initialCustomerPhone"
+      @confirmed="onOrderConfirmed" />
 
     <LazyUiOrderSuccessModal v-model:open="openDepositModal" :success-data="successData" />
   </div>
@@ -207,6 +209,9 @@ const formKey = ref(0);
 const isModalOpen = ref(false);
 const openDepositModal = ref(false);
 
+const initialCustomerName = ref("");
+const initialCustomerPhone = ref("");
+
 // ─── Success state ────────────────────────────────────────
 const successData = ref({
   departure_city: "",
@@ -232,6 +237,12 @@ onMounted(async () => {
     order.value.destination_address_1 = savedOrderData.destination_address_1;
     if (savedOrderData.date_of_destination) {
       order.value.date_of_destination = new Date(savedOrderData.date_of_destination);
+    }
+    if (savedOrderData.customer_name) {
+      initialCustomerName.value = savedOrderData.customer_name;
+    }
+    if (savedOrderData.customer_phone) {
+      initialCustomerPhone.value = savedOrderData.customer_phone;
     }
     clearOrderFormData();
     calcPreviews();
