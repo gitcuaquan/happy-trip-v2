@@ -32,10 +32,14 @@ jobs:
             git checkout test
             git reset --hard origin/test
 
+            set -a
+            [ -f .env ] && source .env
+            set +a
+
             npm install
             npm run build
 
-            pm2 reload ecosystem.config.cjs --update-env
+            pm2 restart htp-app --update-env
 
   deploy-production:
     if: github.ref == 'refs/heads/production'
@@ -62,7 +66,11 @@ jobs:
             git checkout production
             git reset --hard origin/production
 
+            set -a
+            [ -f .env ] && source .env
+            set +a
+
             npm install
             npm run build
 
-            pm2 reload ecosystem.config.cjs --update-env
+            pm2 restart happytrip --update-env
