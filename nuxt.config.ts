@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      apiBase: "https://sysdev.happytrip.vn",
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || "https://sys.happytrip.vn",
     },
   },
 
