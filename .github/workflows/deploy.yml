@@ -3,17 +3,18 @@ name: Deploy
 on:
   push:
     branches:
+      - test
       - production
 
 jobs:
-  deploy:
+  deploy-test:
+    if: github.ref == 'refs/heads/test'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to VPS
+      - name: Deploy Test
         uses: appleboy/ssh-action@v1.2.0
         with:
-        
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
@@ -24,13 +25,44 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
             export NODE_OPTIONS="--max-old-space-size=4096"
-            
+
             cd /var/www/happytrip
 
-            git pull origin production
+            git fetch origin
+            git checkout test
+            git reset --hard origin/test
 
             npm install
-
             npm run build
 
             pm2 restart htp-app
+
+  deploy-production:
+    if: github.ref == 'refs/heads/production'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy Production
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+
+          script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+            export NODE_OPTIONS="--max-old-space-size=4096"
+
+            cd /var/www/htp-main
+
+            git fetch origin
+            git checkout production
+            git reset --hard origin/production
+
+            npm install
+            npm run build
+
+            pm2 restart happytrip
