@@ -35,7 +35,7 @@ jobs:
             npm install
             npm run build
 
-            pm2 restart htp-app
+            pm2 reload ecosystem.config.cjs --update-env
 
   deploy-production:
     if: github.ref == 'refs/heads/production'
@@ -65,4 +65,4 @@ jobs:
             npm install
             npm run build
 
-            pm2 restart happytrip
+            pm2 reload ecosystem.config.cjs --update-env
