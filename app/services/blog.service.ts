@@ -8,7 +8,9 @@ interface PageListParams {
 }
 
 export class BlogService {
-    private baseURL = 'https://sys.happytrip.vn/api';
+    private get baseURL() {
+        return useRuntimeConfig().public.apiBase + '/api'
+    }
 
 
     private authHeaders(token: string) {

@@ -253,7 +253,7 @@ onMounted(async () => {
   if (props.fromData || props.toData) {
     try {
       const cities = await $fetch<{ id: string; name: string }[]>(
-        "https://sys.happytrip.vn/api/city/list",
+        `${useRuntimeConfig().public.apiBase}/api/city/list`,
         {
           method: "POST",
           body: { status: true },

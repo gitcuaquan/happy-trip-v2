@@ -7,7 +7,9 @@ import type {
 } from '~/type'
 
 export class CustomerService {
-    private baseURL = 'https://sysdev.happytrip.vn/api'
+    private get baseURL() {
+        return useRuntimeConfig().public.apiBase + '/api'
+    }
 
 
     // Gửi OTP về SĐT để đăng nhập (luồng cũ - giữ lại cho khả năng tương thích)

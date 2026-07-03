@@ -18,7 +18,9 @@ interface CreateOrderHookPayload extends OrderPreview {
 }
 
 export class OrderService {
-  private baseURL = 'https://sysdev.happytrip.vn/api';
+  private get baseURL() {
+    return useRuntimeConfig().public.apiBase + '/api'
+  }
   private hookSecret = '123';
 
  

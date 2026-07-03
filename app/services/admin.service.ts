@@ -1,7 +1,9 @@
 import type { AdminProfile, AdminLoginResponse } from '~/type'
 
 export class AdminService {
-    private baseURL = 'https://sys.happytrip.vn/api'
+    private get baseURL() {
+        return useRuntimeConfig().public.apiBase + '/api'
+    }
 
 
     // POST /api/partner/login — body { phone, password }

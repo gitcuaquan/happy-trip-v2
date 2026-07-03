@@ -110,7 +110,7 @@ const cityData = ref<CityResponse | null>(null)
 async function fetchCities() {
   try {
     cities.value = await $fetch<City[]>(
-      'https://sys.happytrip.vn/api/city/list',
+      `${useRuntimeConfig().public.apiBase}/api/city/list`,
       {
         method: 'POST',
         body: { status: true },
@@ -130,7 +130,7 @@ async function fetchDistricts() {
 
   try {
     cityData.value = await $fetch<CityResponse>(
-      `https://sys.happytrip.vn/api/city/${selectedCityId.value}`,
+      `${useRuntimeConfig().public.apiBase}/api/city/${selectedCityId.value}`,
       {
         method: 'GET'
       }
