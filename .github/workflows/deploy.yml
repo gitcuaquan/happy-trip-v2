@@ -32,15 +32,10 @@ jobs:
             git checkout test
             git reset --hard origin/test
 
-            set -a
-            [ -f .env ] && source .env
-            set +a
-
             npm install
             npm run build
 
-            pm2 delete test-happytrip-3000 2>/dev/null || true
-            PORT=3000 pm2 start .output/server/index.mjs --name test-happytrip-3000 -i 1
+            pm2 restart test-happytrip-3000
 
   deploy-production:
     if: github.ref == 'refs/heads/production'
@@ -67,12 +62,8 @@ jobs:
             git checkout production
             git reset --hard origin/production
 
-            set -a
-            [ -f .env ] && source .env
-            set +a
-
             npm install
             npm run build
 
-            pm2 delete production-app-8888 2>/dev/null || true
-            PORT=8888 pm2 start .output/server/index.mjs --name production-app-8888 -i 1
+            pm2 restart production-app-8888
+
