@@ -26,7 +26,7 @@ jobs:
 
             export NODE_OPTIONS="--max-old-space-size=4096"
 
-            cd /var/www/happytrip
+            cd /var/www/test
 
             git fetch origin
             git checkout test
@@ -35,7 +35,7 @@ jobs:
             npm install
             npm run build
 
-            pm2 restart htp-app
+            pm2 restart test-happytrip-3000
 
   deploy-production:
     if: github.ref == 'refs/heads/production'
@@ -56,7 +56,7 @@ jobs:
 
             export NODE_OPTIONS="--max-old-space-size=4096"
 
-            cd /var/www/htp-main
+            cd /var/www/product
 
             git fetch origin
             git checkout production
@@ -65,4 +65,4 @@ jobs:
             npm install
             npm run build
 
-            pm2 restart happytrip
+            pm2 restart production-app-8888
