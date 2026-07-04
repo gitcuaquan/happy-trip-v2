@@ -33,7 +33,7 @@
         <p class="font-semibold text-red-500 mb-1">❌ Chưa bao gồm:</p>
         <ul class="list-disc list-inside space-y-1">
           <li>
-            Phí qua phà, bến tàu hoặc các khoản thu hộ tương tự (nếu phát sinh).
+           Phí qua phà, bến tàu hoặc các khu du lịch, thắng cảnh...(nếu có)
           </li>
         </ul>
       </div>
@@ -65,6 +65,12 @@
           <li>Miễn phí 30 phút đầu tiên kể từ giờ đón đã xác nhận.</li>
           <li>
             Từ phút thứ 31 trở đi: phụ thu 100.000đ/giờ (làm tròn theo giờ).
+          </li>
+          <li>
+            Nếu phát sinh quãng đường phụ thu 10k/km
+          </li>
+          <li>
+            Trường hợp ói, làm mất vệ sinh... phương tiện phụ thu phí dọn từ 150k trở lên
           </li>
         </ul>
         <p class="mt-1">
