@@ -54,6 +54,24 @@ useSeoMeta({
 });
 
 // Force light theme — đã xử lý ở plugins/force-light-theme.client.ts
+
+useScriptMetaPixel({
+  id: "2229315357857572",
+});
+
+onMounted(() => {
+  if (typeof document !== 'undefined') {
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a');
+      if (anchor && anchor.href && anchor.href.startsWith('tel:')) {
+        if (typeof window !== 'undefined' && (window as any).fbq) {
+          (window as any).fbq('track', 'Contact');
+        }
+      }
+    });
+  }
+});
 </script>
 
 <template>

@@ -215,6 +215,15 @@ const breadcrumbItems = computed(() => [
 const popularRoutes = computed(() => {
   return generateAllRoutes().slice(0, 12);
 });
+
+onMounted(() => {
+  if (typeof window !== 'undefined' && (window as any).fbq) {
+    (window as any).fbq('track', 'ViewContent', {
+      content_name: `Xe riêng ${from.name} đi ${to.name}`,
+      content_category: 'Route',
+    });
+  }
+});
 </script>
 
 <template>
