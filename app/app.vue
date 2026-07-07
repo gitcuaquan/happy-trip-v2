@@ -40,9 +40,9 @@ useHead({
 });
 
 const origin = "https://v2.happytrip.vn";
-const title = "Happy Trip - Dịch vụ xe tiện chuyến hàng đầu tại Việt Nam";
+const title = "Happy Trip - Dịch vụ bao xe giá tốt hàng đầu tại Việt Nam";
 const description =
-  "Happy Trip – Dịch vụ xe tiện chuyến hàng đầu tại Việt Nam, kết nối hành khách với các chuyến xe chất lượng cao trên toàn quốc. Đặt vé nhanh chóng, giá minh bạch, nhiều lựa chọn tuyến đường, hỗ trợ 24/7 và mang đến trải nghiệm di chuyển an toàn, tiện lợi cho mọi hành trình.";
+  "Happy Trip – Dịch vụ bao xe giá tốt hàng đầu tại Việt Nam, kết nối hành khách với các chuyến xe chất lượng cao trên toàn quốc. Đặt vé nhanh chóng, giá minh bạch, nhiều lựa chọn tuyến đường, hỗ trợ 24/7 và mang đến trải nghiệm di chuyển an toàn, tiện lợi cho mọi hành trình.";
 useSeoMeta({
   title,
   description,
