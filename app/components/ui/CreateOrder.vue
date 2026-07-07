@@ -349,6 +349,11 @@ type Schema = z.infer<typeof schema>;
 function onSubmit(_e: FormSubmitEvent<Schema>) {
   if (!canSubmit.value) return;
   isModalOpen.value = true;
+  
+  // Track Meta Pixel InitiateCheckout event
+  if (typeof window !== 'undefined' && (window as any).fbq) {
+    (window as any).fbq('track', 'InitiateCheckout');
+  }
 }
 
 function selectService(item: { id: string }) {
@@ -381,6 +386,11 @@ function onOrderConfirmed(data: {
   formKey.value++;
   successData.value = data;
   openDepositModal.value = true;
+  
+  // Track Meta Pixel Purchase event
+  if (typeof window !== 'undefined' && (window as any).fbq) {
+    (window as any).fbq('track', 'Purchase', { value: data.price, currency: 'VND' });
+  }
 }
 
 // ─── Watch ────────────────────────────────────────────────

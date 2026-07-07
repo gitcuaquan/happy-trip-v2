@@ -278,6 +278,11 @@ async function onSubmit(_event: FormSubmitEvent<Schema>) {
   try {
     await new Promise(resolve => setTimeout(resolve, 2000))
     isSuccess.value = true
+
+    // Track Meta Pixel Lead event
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'Lead');
+    }
   } catch (error) {
     console.error('Lỗi khi gửi liên hệ:', error)
   } finally {
