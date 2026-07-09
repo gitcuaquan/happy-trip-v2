@@ -27,7 +27,7 @@ const emit = defineEmits<{
 // Khởi tạo null để tránh hydration mismatch (server vs client time khác nhau)
 const now = shallowRef<Date | null>(null);
 
-let timer: ReturnType<typeof setInterval> | null = null;
+// Timer removed
 
 // currentNow(): giá trị "now" an toàn — null khi SSR, Date khi client đã sẵn sàng
 const currentNow = computed(() => now.value ?? new Date());
@@ -37,14 +37,7 @@ onMounted(() => {
   // Delay timer đến sau hydration để tránh mismatch
   onNuxtReady(() => {
     now.value = new Date();
-    timer = setInterval(() => {
-      now.value = new Date();
-    }, 1000);
   });
-})
-
-onUnmounted(()=>{
-  if(timer) clearInterval(timer);
 })
 
 // Tính toán ngày giờ tối thiểu dựa trên thời gian hiện tại = hiện tại + 30p
