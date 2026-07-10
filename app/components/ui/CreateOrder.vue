@@ -404,8 +404,8 @@ function onOrderConfirmed(data: {
 
 // ─── Watch ────────────────────────────────────────────────
 watch(
-  [addressReady, () => order.value.date_of_destination],
-  async ([isReady]) => {
+  addressReady,
+  async (isReady) => {
     if (!isReady) {
       previews.value = [];
       order.value.id_service = "";

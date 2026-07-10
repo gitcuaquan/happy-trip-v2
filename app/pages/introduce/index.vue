@@ -181,8 +181,8 @@ const introduce = computed(() => ({
     }
   ],
   metrics: [
-    { icon: 'i-lucide-users', value: '10,000+', label: 'Khách hàng tin dùng' },
-    { icon: 'i-lucide-car', value: '500+', label: 'Tài xế chuyên nghiệp' },
+    { icon: 'i-lucide-users', value: '60,000+', label: 'Khách hàng tin dùng' },
+    { icon: 'i-lucide-car', value: '8,000+', label: 'Tài xế chuyên nghiệp' },
     { icon: 'i-lucide-clock', value: '24/7', label: 'Phục vụ tận tâm' },
     { icon: 'i-lucide-thumbs-up', value: '99%', label: 'Khách hàng hài lòng' }
   ],

@@ -41,7 +41,7 @@
                   Đã kiểm chứng
                 </p>
                 <p class="text-2xl font-black">
-                  10,000+
+                  60,000+
                 </p>
               </div>
             </div>
