@@ -59,6 +59,15 @@ useScriptMetaPixel({
   id: "2229315357857572",
 });
 
+// Google Analytics — page view tracking on route change
+const { proxy } = useScriptGoogleAnalytics();
+useScriptEventPage(({ title, path }) => {
+  proxy.gtag('event', 'page_view', {
+    page_title: title,
+    page_path: path,
+  });
+});
+
 onMounted(() => {
   if (typeof document !== 'undefined') {
     document.addEventListener('click', (e) => {

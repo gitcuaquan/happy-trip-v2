@@ -163,6 +163,8 @@ import type { OrderDetail, OrderPreview } from "~/type";
 import { orderService } from "~/services/order.service";
 import { useOrderForm } from "~/composables/useOrderForm";
 
+const { trackViewPrice, trackBookingStart } = useGtagEvent();
+
 interface RouteData {
   name: string;
   slug: string;
@@ -350,6 +352,15 @@ function onSubmit(_e: FormSubmitEvent<Schema>) {
   if (!canSubmit.value) return;
   isModalOpen.value = true;
   
+  // Track GA4 booking_start event
+  const preview = getPreview(order.value.id_service);
+  trackBookingStart({
+    route_from: order.value.departure_city,
+    route_to: order.value.destination_city,
+    service_name: selectedServiceName.value,
+    price: preview?.price_guest_after,
+  });
+
   // Track Meta Pixel InitiateCheckout event
   if (typeof window !== 'undefined' && (window as any).fbq) {
     (window as any).fbq('track', 'InitiateCheckout');
@@ -419,6 +430,17 @@ async function calcPreviews() {
       (r): r is PromiseFulfilledResult<OrderDetail> => r.status === "fulfilled",
     )
     .map((r) => r.value);
+
+  // Track GA4 view_price event khi xem được giá
+  if (previews.value.length > 0) {
+    const firstPreview = previews.value.find((p) => p.price_guest_after > 0);
+    trackViewPrice({
+      route_from: order.value.departure_city,
+      route_to: order.value.destination_city,
+      service_name: services.value.find((s) => s.id === firstPreview?.id_service)?.name,
+      price: firstPreview?.price_guest_after,
+    });
+  }
 }
 </script>
 

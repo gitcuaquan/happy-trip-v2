@@ -174,6 +174,7 @@ const emit = defineEmits<{
 }>()
 
 const { setAuth } = useAuth()
+const { trackBookingSubmit, trackBookingSuccess } = useGtagEvent()
 
 const contact = reactive({ name: "", phone: "" })
 const showOtpModal = ref(false)
@@ -242,6 +243,13 @@ async function submitOrderHook({ isResend = false } = {}) {
       otpValue.value = []
     } else {
       showOtpModal.value = true
+      // Track GA4 booking_submit event (lần đầu gửi OTP)
+      trackBookingSubmit({
+        route_from: props.order.departure_city,
+        route_to: props.order.destination_city,
+        service_name: props.serviceName,
+        price: savedPrice.value,
+      })
     }
     startResendCooldown()
   } catch {
@@ -293,6 +301,14 @@ async function confirmOTP() {
       destination_city: props.order.destination_city,
       destination_district: props.order.destination_dictrict,
       destination_address_1: props.order.destination_address_1,
+      service_name: props.serviceName,
+      price: savedPrice.value,
+    })
+
+    // Track GA4 booking_success event (conversion)
+    trackBookingSuccess({
+      route_from: props.order.departure_city,
+      route_to: props.order.destination_city,
       service_name: props.serviceName,
       price: savedPrice.value,
     })

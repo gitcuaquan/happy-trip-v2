@@ -56,6 +56,13 @@ export default defineNuxtConfig({
       },
     },
   },
+  scripts: {
+    registry: {
+      googleAnalytics: {
+        id: 'G-SH28CNXKX9',
+      },
+    },
+  },
   sitemap: {
     sources: ["/api/__sitemap__/routes"],
   }
