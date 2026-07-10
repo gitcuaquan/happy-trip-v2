@@ -164,6 +164,7 @@ import { orderService } from "~/services/order.service";
 import { useOrderForm } from "~/composables/useOrderForm";
 
 const { trackViewPrice, trackBookingStart } = useGtagEvent();
+const { trackPixelViewPrice, trackPixelBookingStart } = useMetaPixelEvent();
 
 interface RouteData {
   name: string;
@@ -352,19 +353,16 @@ function onSubmit(_e: FormSubmitEvent<Schema>) {
   if (!canSubmit.value) return;
   isModalOpen.value = true;
   
-  // Track GA4 booking_start event
+  // Track GA4 & Meta Pixel booking_start event
   const preview = getPreview(order.value.id_service);
-  trackBookingStart({
+  const params = {
     route_from: order.value.departure_city,
     route_to: order.value.destination_city,
     service_name: selectedServiceName.value,
     price: preview?.price_guest_after,
-  });
-
-  // Track Meta Pixel InitiateCheckout event
-  if (typeof window !== 'undefined' && (window as any).fbq) {
-    (window as any).fbq('track', 'InitiateCheckout');
   }
+  trackBookingStart(params);
+  trackPixelBookingStart(params);
 }
 
 function selectService(item: { id: string }) {
@@ -433,14 +431,18 @@ async function calcPreviews() {
 
   // Track GA4 view_price event khi xem được giá
   if (previews.value.length > 0) {
-    const firstPreview = previews.value.find((p) => p.price_guest_after > 0);
-    trackViewPrice({
-      route_from: order.value.departure_city,
-      route_to: order.value.destination_city,
-      service_name: services.value.find((s) => s.id === firstPreview?.id_service)?.name,
-      price: firstPreview?.price_guest_after,
-    });
-  }
+      const firstPreview = previews.value.find((p) => p.price_guest_after > 0);
+      const params = {
+        route_from: order.value.departure_city,
+        route_to: order.value.destination_city,
+        service_name: services.value.find(
+          (s) => s.id === firstPreview?.id_service
+        )?.name,
+        price: firstPreview?.price_guest_after,
+      }
+      trackViewPrice(params);
+      trackPixelViewPrice(params);
+    }
 }
 </script>
 

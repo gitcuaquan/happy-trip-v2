@@ -55,17 +55,19 @@ useSeoMeta({
 
 // Force light theme — đã xử lý ở plugins/force-light-theme.client.ts
 
-useScriptMetaPixel({
-  id: "2229315357857572",
+// Google Analytics & Meta Pixel — page view tracking on route change
+const { proxy: gaProxy } = useScriptGoogleAnalytics();
+const { proxy: fbProxy } = useScriptMetaPixel({ 
+  id: '2229315357857572',
+  trigger: 'client'
 });
 
-// Google Analytics — page view tracking on route change
-const { proxy } = useScriptGoogleAnalytics();
 useScriptEventPage(({ title, path }) => {
-  proxy.gtag('event', 'page_view', {
+  gaProxy.gtag('event', 'page_view', {
     page_title: title,
     page_path: path,
   });
+  fbProxy.fbq('track', 'PageView');
 });
 
 onMounted(() => {

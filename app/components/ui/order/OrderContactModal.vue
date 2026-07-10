@@ -175,6 +175,7 @@ const emit = defineEmits<{
 
 const { setAuth } = useAuth()
 const { trackBookingSubmit, trackBookingSuccess } = useGtagEvent()
+const { trackPixelBookingSubmit, trackPixelBookingSuccess } = useMetaPixelEvent()
 
 const contact = reactive({ name: "", phone: "" })
 const showOtpModal = ref(false)
@@ -243,13 +244,15 @@ async function submitOrderHook({ isResend = false } = {}) {
       otpValue.value = []
     } else {
       showOtpModal.value = true
-      // Track GA4 booking_submit event (lần đầu gửi OTP)
-      trackBookingSubmit({
+      // Track GA4 & Meta Pixel booking_submit event (lần đầu gửi OTP)
+      const params = {
         route_from: props.order.departure_city,
         route_to: props.order.destination_city,
         service_name: props.serviceName,
         price: savedPrice.value,
-      })
+      }
+      trackBookingSubmit(params)
+      trackPixelBookingSubmit(params)
     }
     startResendCooldown()
   } catch {
@@ -305,13 +308,21 @@ async function confirmOTP() {
       price: savedPrice.value,
     })
 
-    // Track GA4 booking_success event (conversion)
-    trackBookingSuccess({
+    // Track GA4 & Meta Pixel booking_success event (conversion)
+    const params = {
       route_from: props.order.departure_city,
       route_to: props.order.destination_city,
       service_name: props.serviceName,
       price: savedPrice.value,
-    })
+    }
+    trackBookingSuccess(params)
+    trackPixelBookingSuccess(params)
+
+    // Lưu log vào cơ sở dữ liệu (fire and forget)
+    $fetch('/api/logs/booking', {
+      method: 'POST',
+      body: params
+    }).catch(console.error)
 
     emit("update:open", false)
     showOtpModal.value = false
