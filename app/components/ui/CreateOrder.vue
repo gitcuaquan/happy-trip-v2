@@ -403,9 +403,16 @@ function onOrderConfirmed(data: {
 }
 
 // ─── Watch ────────────────────────────────────────────────
+// Chỉ lấy phần ngày (YYYY-MM-DD) để đổi giờ không trigger preview
+const dateOnly = computed(() => {
+  const d = order.value.date_of_destination;
+  if (!d) return null;
+  return String(d).slice(0, 10);
+});
+
 watch(
-  addressReady,
-  async (isReady) => {
+  [addressReady, dateOnly],
+  async ([isReady]) => {
     if (!isReady) {
       previews.value = [];
       order.value.id_service = "";
