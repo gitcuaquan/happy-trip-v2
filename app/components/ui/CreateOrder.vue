@@ -410,31 +410,49 @@ const dateOnly = computed(() => {
   return String(d).slice(0, 10);
 });
 
+// Fingerprint chứa nội dung địa chỉ chi tiết, thay đổi bất kỳ field nào cũng trigger
+const addressFingerprint = computed(() => {
+  const o = order.value;
+  return [
+    o.departure_city,
+    o.departure_dictrict,
+    o.departure_address_1,
+    o.destination_city,
+    o.destination_dictrict,
+    o.destination_address_1,
+  ].join('|');
+});
+
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
 watch(
-  [addressReady, dateOnly],
-  async ([isReady]) => {
+  [addressReady, addressFingerprint, dateOnly],
+  ([isReady]) => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+
     if (!isReady) {
       previews.value = [];
       order.value.id_service = "";
       return;
     }
-    await calcPreviews();
-    if (!order.value.id_service) {
-      order.value.id_service = services.value[0]?.id || "";
-    }
+
+    debounceTimer = setTimeout(async () => {
+      await calcPreviews();
+      if (!order.value.id_service) {
+        order.value.id_service = services.value[0]?.id || "";
+      }
+    }, 500);
   }
 );
 
 // ─── API ──────────────────────────────────────────────────
 async function calcPreviews() {
-  const results = await Promise.allSettled(
-    services.value.map((s) => orderService.previewOrder(order.value, s.id)),
-  );
-  previews.value = results
-    .filter(
-      (r): r is PromiseFulfilledResult<OrderDetail> => r.status === "fulfilled",
-    )
-    .map((r) => r.value);
+  try {
+    const results = await orderService.previewOrderV2(order.value);
+    previews.value = Array.isArray(results) ? results : [];
+  } catch {
+    previews.value = [];
+  }
 
   // Track GA4 view_price event khi xem được giá
   if (previews.value.length > 0) {

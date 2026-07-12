@@ -67,21 +67,6 @@
 </template>
 
 <script lang="ts" setup>
-interface City {
-  id: string
-  name: string
-}
-
-interface District {
-  status: boolean
-  name: string
-}
-
-interface CityResponse {
-  id: string
-  districts: District[]
-}
-
 const props = defineProps<{
   icon: string
   label: string
@@ -99,50 +84,21 @@ const emit = defineEmits<{
   (e: 'update:address', value: string): void
 }>()
 
+// ─── dùng composable để cache city data ───
+const { cities, fetchCities, fetchCityDetail, getCachedCityDetail } = useCityData()
+
 // ─── dùng id để USelectMenu khớp kiểu giá trị emit ra ───
 const selectedCityId = ref<string>('')
 const selectedDistrictName = ref<string>('')
 const detailAddress = ref('')
 
-const cities = ref<City[]>([])
-const cityData = ref<CityResponse | null>(null)
-
-async function fetchCities() {
-  try {
-    cities.value = await $fetch<City[]>(
-      `${useRuntimeConfig().public.apiBase}/api/city/list`,
-      {
-        method: 'POST',
-        body: { status: true },
-        params: { fields: 'id,name' }
-      }
-    )
-  } catch {
-    cities.value = []
-  }
-}
-
-async function fetchDistricts() {
-  if (!selectedCityId.value) {
-    cityData.value = null
-    return
-  }
-
-  try {
-    cityData.value = await $fetch<CityResponse>(
-      `${useRuntimeConfig().public.apiBase}/api/city/${selectedCityId.value}`,
-      {
-        method: 'GET'
-      }
-    )
-  } catch {
-    cityData.value = null
-  }
-}
+const cityData = computed(() => {
+  if (!selectedCityId.value) return null
+  return getCachedCityDetail(selectedCityId.value)
+})
 
 onMounted(() => {
   fetchCities()
-  console.log('Address component mounted, fetching cities...')
 })
 
 watch(() => cities.value, (newCities) => {
@@ -151,7 +107,7 @@ watch(() => cities.value, (newCities) => {
     const city = newCities.find(c => c.name === props.city)
     if (city && selectedCityId.value !== city.id) {
       selectedCityId.value = city.id
-      fetchDistricts()
+      fetchCityDetail(city.id)
     }
   }
 })
@@ -209,7 +165,7 @@ async function onCityChange(cityId: string) {
   const city = cities.value?.find(c => c.id === cityId)
   if (city) {
     emit('update:city', city.name)
-    await fetchDistricts()
+    await fetchCityDetail(cityId)
   }
 }
 
@@ -227,14 +183,13 @@ watch(() => props.city, async (val) => {
   if (!val) {
     selectedCityId.value = ''
     selectedDistrictName.value = ''
-    cityData.value = null
   } else {
     // Nếu cities đã load, tìm và set ngay
     if (cities.value && cities.value.length > 0) {
       const city = cities.value.find(c => c.name === val)
       if (city) {
         selectedCityId.value = city.id
-        await fetchDistricts()
+        await fetchCityDetail(city.id)
       }
     }
     // Nếu cities chưa load, watch trên cities.value sẽ handle

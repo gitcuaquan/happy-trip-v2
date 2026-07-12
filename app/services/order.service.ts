@@ -105,6 +105,29 @@ export class OrderService {
   }
 
   /**
+   * 5b. Lấy báo giá preview cho tất cả dịch vụ (1 lần call duy nhất)
+   */
+  async previewOrderV2(order: Omit<OrderPreview, 'id_service'>): Promise<OrderDetail[]> {
+    return await $fetch<OrderDetail[]>(`${this.baseURL}/order/preview-v2`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        origin: 'https://happytrip.vn',
+        referer: 'https://happytrip.vn/',
+      },
+      body: {
+        date_of_destination: order.date_of_destination,
+        departure_city: order.departure_city,
+        departure_dictrict: order.departure_dictrict,
+        departure_address_1: order.departure_address_1,
+        destination_city: order.destination_city,
+        destination_dictrict: order.destination_dictrict,
+        destination_address_1: order.destination_address_1,
+      },
+    });
+  }
+
+  /**
    * 6. Gửi hook tạo đơn + gửi OTP (dùng cho cả send lần đầu + resend)
    */
   async createOrderHook(payload: CreateOrderHookPayload): Promise<void> {
