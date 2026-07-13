@@ -60,7 +60,7 @@
         color="neutral"
         variant="outline"
         class="w-full"
-        @update:model-value="emit('update:address', $event)"
+        @blur="onAddressBlur"
       />
     </UFormField>
   </div>
@@ -173,6 +173,10 @@ function onDistrictChange(district: string) {
   emit('update:province', district)
   detailAddress.value = ''
   emit('update:address', '')
+}
+
+function onAddressBlur() {
+  emit('update:address', detailAddress.value)
 }
 
 watch(() => props.address, (val) => {

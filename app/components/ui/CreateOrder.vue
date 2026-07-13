@@ -423,25 +423,18 @@ const addressFingerprint = computed(() => {
   ].join('|');
 });
 
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-
 watch(
   [addressReady, addressFingerprint, dateOnly],
-  ([isReady]) => {
-    if (debounceTimer) clearTimeout(debounceTimer);
-
+  async ([isReady]) => {
     if (!isReady) {
       previews.value = [];
       order.value.id_service = "";
       return;
     }
-
-    debounceTimer = setTimeout(async () => {
-      await calcPreviews();
-      if (!order.value.id_service) {
-        order.value.id_service = services.value[0]?.id || "";
-      }
-    }, 500);
+    await calcPreviews();
+    if (!order.value.id_service) {
+      order.value.id_service = services.value[0]?.id || "";
+    }
   }
 );
 
