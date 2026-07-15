@@ -174,7 +174,7 @@ const emit = defineEmits<{
 }>()
 
 const { setAuth } = useAuth()
-const { trackBookingSubmit, trackBookingSuccess } = useGtagEvent()
+const { trackBookingSubmit, trackPurchase } = useGtagEvent()
 const { trackPixelBookingSubmit, trackPixelBookingSuccess } = useMetaPixelEvent()
 
 const contact = reactive({ name: "", phone: "" })
@@ -308,14 +308,14 @@ async function confirmOTP() {
       price: savedPrice.value,
     })
 
-    // Track GA4 & Meta Pixel booking_success event (conversion)
+    // Track GA4 & Meta Pixel purchase event (conversion)
     const params = {
       route_from: props.order.departure_city,
       route_to: props.order.destination_city,
       service_name: props.serviceName,
       price: savedPrice.value,
     }
-    trackBookingSuccess(params)
+    trackPurchase(params)
     trackPixelBookingSuccess(params)
 
     // Lưu log vào cơ sở dữ liệu (fire and forget)
