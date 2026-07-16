@@ -1,10 +1,14 @@
 /**
  * Composable gửi custom events lên Meta (Facebook) Pixel
- * Sử dụng proxy từ @nuxt/scripts để đảm bảo events được queue
- * ngay cả khi Pixel chưa load xong, không làm ảnh hưởng GA.
+ * Sử dụng global window.fbq trực tiếp (traditional pixel code).
+ * Mọi event call đều check fbq tồn tại để tránh lỗi runtime.
  */
 export const useMetaPixelEvent = () => {
-  const { proxy } = useScriptMetaPixel()
+  const fbq = (...args: any[]) => {
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq(...args)
+    }
+  }
 
   /**
    * Gửi event view_price — tương tự GA4 view_price
@@ -15,7 +19,7 @@ export const useMetaPixelEvent = () => {
     service_name?: string
     price?: number
   }) => {
-    proxy.fbq('trackCustom', 'view_price', {
+    fbq('trackCustom', 'view_price', {
       route_from: params.route_from,
       route_to: params.route_to,
       service_name: params.service_name,
@@ -33,7 +37,7 @@ export const useMetaPixelEvent = () => {
     service_name?: string
     price?: number
   }) => {
-    proxy.fbq('track', 'InitiateCheckout', {
+    fbq('track', 'InitiateCheckout', {
       content_name: params.service_name,
       route_from: params.route_from,
       route_to: params.route_to,
@@ -51,7 +55,7 @@ export const useMetaPixelEvent = () => {
     service_name?: string
     price?: number
   }) => {
-    proxy.fbq('trackCustom', 'booking_submit', {
+    fbq('trackCustom', 'booking_submit', {
       route_from: params.route_from,
       route_to: params.route_to,
       service_name: params.service_name,
@@ -69,7 +73,7 @@ export const useMetaPixelEvent = () => {
     service_name?: string
     price?: number
   }) => {
-    proxy.fbq('track', 'Purchase', {
+    fbq('track', 'Purchase', {
       content_name: params.service_name,
       route_from: params.route_from,
       route_to: params.route_to,

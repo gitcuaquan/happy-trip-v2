@@ -55,11 +55,23 @@ useSeoMeta({
 
 // Force light theme — đã xử lý ở plugins/force-light-theme.client.ts
 
-// Google Analytics & Meta Pixel — page view tracking on route change
+// Google Analytics — page view tracking on route change
 const { proxy: gaProxy } = useScriptGoogleAnalytics();
-const { proxy: fbProxy } = useScriptMetaPixel({ 
-  id: '2229315357857572',
-  trigger: 'client'
+
+// Meta Pixel — inject traditional pixel code into <head>
+useHead({
+  script: [
+    {
+      key: 'meta-pixel',
+      innerHTML: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1160626542496232');fbq('track','PageView');`,
+    },
+  ],
+  noscript: [
+    {
+      key: 'meta-pixel-noscript',
+      innerHTML: `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1160626542496232&ev=PageView&noscript=1" />`,
+    },
+  ],
 });
 
 useScriptEventPage(({ title, path }) => {
@@ -67,7 +79,10 @@ useScriptEventPage(({ title, path }) => {
     page_title: title,
     page_path: path,
   });
-  fbProxy.fbq('track', 'PageView');
+  // Track Meta Pixel PageView on SPA route change
+  if (typeof window !== 'undefined' && (window as any).fbq) {
+    (window as any).fbq('track', 'PageView');
+  }
 });
 
 onMounted(() => {

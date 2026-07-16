@@ -61,9 +61,6 @@ export default defineNuxtConfig({
       googleAnalytics: {
         id: 'G-SH28CNXKX9',
       },
-      metaPixel: {
-        id: '2229315357857572',
-      },
     },
   },
   sitemap: {
