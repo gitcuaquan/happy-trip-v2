@@ -13,15 +13,9 @@ export interface RouteEntry {
 
 // Cấu trúc Interface cho một Route kết quả
 export interface CustomRoute {
-  name: string;
-  slug: string;
+  name: string
+  slug: string
 }
-
-// Gộp tất cả các entry thành một danh sách chung
-const allEntries: RouteEntry[] = [
-  ...(routerFrom as RouteEntry[]),
-  ...(routerTo as RouteEntry[]),
-]
 
 export const getFromRoute = (slug: string): RouteEntry | null => {
   if (!slug) return null
@@ -44,21 +38,21 @@ export const getToRoute = (slug: string): RouteEntry | null => {
 }
 
 export const generateAllRoutes = (): CustomRoute[] => {
-  const routes: CustomRoute[] = [];
-  routerFrom.forEach(fromItem => {
-    routerTo.forEach(toItem => {
+  const routes: CustomRoute[] = []
+  routerFrom.forEach((fromItem) => {
+    routerTo.forEach((toItem) => {
       // 1. Chiều đi: từ A đến B
       routes.push({
         name: `Xe riêng ${fromItem.name} đi ${toItem.name}`,
-        slug: `xe-rieng-${fromItem.slug}-di-${toItem.slug}`,
-      });
+        slug: `xe-rieng-${fromItem.slug}-di-${toItem.slug}`
+      })
 
       // 2. Chiều về: từ B về A
       routes.push({
         name: `Xe riêng ${toItem.name} đi ${fromItem.name}`,
-        slug: `xe-rieng-${toItem.slug}-di-${fromItem.slug}`,
-      });
-    });
-  });
-  return routes;
-};
+        slug: `xe-rieng-${toItem.slug}-di-${fromItem.slug}`
+      })
+    })
+  })
+  return routes
+}

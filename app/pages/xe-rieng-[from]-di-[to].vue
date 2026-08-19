@@ -203,7 +203,7 @@ useSchemaOrg([
   },
 ]);
 
-const fromData = getFromRoute(String(route.params.from).toLowerCase());
+const fromData = getFromRoute(String(route.params.from).toLowerCase()) ?? undefined;
 const toData = getToRoute(String(route.params.to).toLowerCase()) ?? undefined;
 
 const breadcrumbItems = computed(() => [

@@ -1,5 +1,11 @@
 [
   {
+    "name": "Sân Bay Tân Sơn Nhất",
+    "slug": "san-bay-tan-son-nhat",
+    "parentId": "69d85c7e0d4befc8e55b1ead",
+    "data": "Sân Bay Tân Sơn Nhất"
+  },
+  {
     "name": "Vũng Tàu",
     "slug": "vung-tau",
     "parentId": "69d85c7e0d4befc8e55b1ead",
@@ -16,6 +22,77 @@
     "slug": "long-hai",
     "parentId": "69d85c7e0d4befc8e55b1ead",
     "data": "Xã Long Hải"
+  },
+  {
+    "name": "Đồng Nai",
+    "slug": "dong-nai",
+    "parentId": "69d85c7e0d4befc8e55b1ead",
+    "data": "Tỉnh Đồng Nai"
+  },
+  {
+    "name": "Tây Ninh",
+    "slug": "tay-ninh",
+    "parentId": "69d85c7e0d4befc8e55b1ead",
+    "data": "Tỉnh Tây Ninh"
+  },
+  {
+    "name": "Lâm Đồng (Đà Lạt)",
+    "slug": "da-lat",
+    "parentId": "69d9b2a508540946eb18983d",
+    "data": "Thành phố Đà Lạt, Lâm Đồng"
+  },
+  {
+    "name": "Lâm Đồng",
+    "slug": "lam-dong",
+    "parentId": "69d9b2a508540946eb18983d",
+    "data": "Tỉnh Lâm Đồng"
+  },
+  {
+    "name": "Khánh Hòa (Nha Trang)",
+    "slug": "nha-trang",
+    "parentId": "69d85c550d4befc8e55b1ea8",
+    "data": "Thành phố Nha Trang, Khánh Hòa"
+  },
+  {
+    "name": "Khánh Hòa",
+    "slug": "khanh-hoa",
+    "parentId": "69d85c550d4befc8e55b1ea8",
+    "data": "Tỉnh Khánh Hòa"
+  },
+  {
+    "name": "Thành Phố Cần Thơ",
+    "slug": "can-tho",
+    "id": "69d85c550d4befc8e55b1ea8"
+  },
+  {
+    "name": "An Giang",
+    "slug": "an-giang",
+    "data": "Tỉnh An Giang"
+  },
+  {
+    "name": "Đồng Tháp",
+    "slug": "dong-thap",
+    "data": "Tỉnh Đồng Tháp"
+  },
+  {
+    "name": "Vĩnh Long",
+    "slug": "vinh-long",
+    "data": "Tỉnh Vĩnh Long"
+  },
+  {
+    "name": "Cà Mau",
+    "slug": "ca-mau",
+    "data": "Tỉnh Cà Mau"
+  },
+  {
+    "name": "Đắk Lắk",
+    "slug": "dak-lak",
+    "data": "Tỉnh Đắk Lắk"
+  },
+  {
+    "name": "Gia Lai",
+    "slug": "gia-lai",
+    "data": "Tỉnh Gia Lai"
   },
   {
     "name": "Phường Cam Ly - Đà Lạt",
@@ -70,10 +147,5 @@
     "slug": "phuong-tay-nha-trang",
     "parentId": "69d85c550d4befc8e55b1ea8",
     "data": "Phường Tây Nha Trang"
-  },
-  {
-    "name": "Thành Phố Cần Thơ",
-    "slug": "can-tho",
-    "id": "69d85c550d4befc8e55b1ea8"
   }
 ]

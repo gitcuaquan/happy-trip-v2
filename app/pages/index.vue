@@ -12,99 +12,166 @@ const carLogos = [
   "vinfast.svg",
 ];
 
-const service = {
-  title: "Dịch Vụ & Hỗ Trợ",
-  description:
-    "Chúng tôi cam kết mang đến dịch vụ tốt nhất và hỗ trợ tận tâm cho khách hàng",
-
-  carpool: {
-    badge: "Tiết kiệm tối đa · Đi chung, vui hơn",
-    title: "Dịch Vụ Xe Tiện Chuyến",
+const serviceCards = [
+  {
+    id: "rieng-tu",
+    badge: "100% Không Ghép Khách",
+    badgeColor: "primary" as const,
+    title: "Xe Riêng Biệt Lập",
+    subtitle: "Riêng tư tuyệt đối · Làm chủ lịch trình",
     description:
-      "Giải pháp kinh tế nhất cho nhu cầu di chuyển hàng ngày. Chia sẻ hành trình, tiết kiệm chi phí mà vẫn đảm bảo sự thoải mái và an toàn tuyệt đối.",
+      "Toàn bộ xe chỉ phục vụ riêng bạn và gia đình. Không đón khách dọc đường, không chen chúc. Tự do dừng nghỉ, ăn uống hoặc ghé thăm các điểm tham quan theo ý muốn.",
     image:
-      "https://datxegiare.vn/wp-content/uploads/2023/11/taxi-noi-bai-phu-tho-3-datxegiare.jpg",
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=800",
+    icon: "i-lucide-user-check",
     features: [
-      "Giá cước rẻ nhất, tiết kiệm 40–60%",
-      "Lộ trình cố định, giờ khởi hành chuẩn xác",
-      "Tài xế chuyên nghiệp, kiểm tra lý lịch rõ ràng",
-      "Xe luôn sạch sẽ, bảo dưỡng định kỳ",
+      "Không gian riêng tư 100% cho gia đình & đối tác",
+      "Làm chủ 100% thời gian xuất phát và điểm dừng",
+      "Thoải mái như xe nhà, không bị làm phiền",
+      "Hỗ trợ chở thú cưng & hành lý cồng kềnh",
     ],
   },
-
-  charter: {
-    badge: "Riêng tư tuyệt đối · Linh hoạt thời gian",
-    title: "Dịch Vụ Bao Xe Tiện Chuyến",
+  {
+    id: "don-tan-noi",
+    badge: "Tiện Lợi Tối Đa",
+    badgeColor: "success" as const,
+    title: "Đón Trả Tận Nhà 24/7",
+    subtitle: "Đón tận cửa · Trả tận nơi",
     description:
-      "Không gian hoàn toàn riêng tư. Bạn làm chủ lộ trình và thời gian khởi hành. Phù hợp cho gia đình, đối tác hoặc những chuyến đi cần sự yên tĩnh.",
+      "Tài xế có mặt đúng giờ tại địa chỉ nhà, khách sạn hoặc cơ quan của bạn. Không cần tốn thêm chi phí và thời gian trung chuyển ra bến xe đông đúc.",
     image:
-      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800",
+      "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&q=80&w=800",
+    icon: "i-lucide-map-pin",
     features: [
-      "Giá trọn gói, cam kết không phát sinh chi phí",
-      "Khởi hành ngay lập tức theo yêu cầu",
-      "Đáp ứng đa dạng nhu cầu với nhiều dòng xe",
-      "Thoải mái như xe nhà, tiện lợi hơn xe khách",
+      "Đón tận ngõ, trả tận sảnh khách sạn / resort",
+      "Hỗ trợ khuân vác, sắp xếp hành lý chu đáo",
+      "Phục vụ xuyên đêm và sáng sớm 24/7",
+      "Theo dõi vị trí xe thời gian thực",
     ],
   },
+  {
+    id: "gia-tron-goi",
+    badge: "Tiết Kiệm Tới 30%",
+    badgeColor: "warning" as const,
+    title: "Đặt Trước 1 Chiều / Khứ Hồi",
+    subtitle: "Trọn gói minh bạch · 0đ phí ẩn",
+    description:
+      "Giá cước niêm yết rõ ràng, đã bao gồm xăng xe, phí cao tốc và cầu đường. Đặt xe 2 chiều nhận ưu đãi giảm sâu tới 30% cho chiều về trong ngày hoặc dài ngày.",
+    image:
+      "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&q=80&w=800",
+    icon: "i-lucide-badge-percent",
+    features: [
+      "Báo giá chính xác trước khi khởi hành",
+      "Cam kết không phát sinh chi phí dọc đường",
+      "Giảm tới 30% cho chuyến đi khứ hồi 2 chiều",
+      "Không cần đặt cọc, thanh toán khi đến nơi",
+    ],
+  },
+  {
+    id: "san-bay-du-lich",
+    badge: "Đúng Giờ Tuyệt Đối",
+    badgeColor: "info" as const,
+    title: "Đón Tiễn Sân Bay & Du Lịch",
+    subtitle: "Tân Sơn Nhất & Tour liên tỉnh",
+    description:
+      "Chuyên tuyến Sân bay Tân Sơn Nhất đi các tỉnh và ngược lại. Theo dõi lịch trình chuyến bay sát sao, miễn phí thời gian chờ khi chuyến bay bị delay.",
+    image:
+      "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=800",
+    icon: "i-lucide-plane-takeoff",
+    features: [
+      "Đón tại ga Quốc nội và Quốc tế Tân Sơn Nhất",
+      "Tự động cập nhật giờ hạ cánh khi delay",
+      "Đội xe Sedan, MPV, SUV đời mới từ 2022+",
+      "Thuê xe theo ngày đi công tác / du lịch",
+    ],
+  },
+];
 
-  howItWorks: {
-    title: "Cách Thức Hoạt Động",
-    description: "Chỉ với 4 bước đơn giản để bắt đầu hành trình của bạn",
-    steps: [
-      {
-        icon: "i-lucide-smartphone",
-        label: "Bước 1: Đặt xe",
-        desc: "Qua web hoặc hotline 24/7",
-      },
-      {
-        icon: "i-lucide-map-pin",
-        label: "Bước 2: Chọn điểm đến",
-        desc: "Nhập lộ trình bạn muốn đi",
-      },
-      {
-        icon: "i-lucide-car",
-        label: "Bước 3: Lên xe",
-        desc: "Tài xế đón đúng giờ",
-      },
-      {
-        icon: "i-lucide-credit-card",
-        label: "Bước 4: Thanh toán",
-        desc: "Linh hoạt tiền mặt hoặc ví",
-      },
-    ],
+const vehicleClasses = [
+  {
+    id: "dich-vu-5-cho",
+    title: "Xe Riêng 5 Chỗ (Sedan)",
+    tag: "Phổ biến nhất",
+    capacity: "1 - 3 hành khách · 2 vali lớn",
+    image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=600",
+    models: "Toyota Vios, Hyundai Accent, Honda City, Mazda 3...",
+    suitable: "Cá nhân, cặp đôi, gia đình nhỏ đi khám bệnh, về quê, công tác",
+    features: ["Điều hòa mát lạnh", "Êm ái, tiết kiệm", "Cốp chứa vừa 2 vali 24 inch"],
   },
+  {
+    id: "dich-vu-7-cho",
+    title: "Xe Riêng 7 Chỗ (MPV / SUV)",
+    tag: "Gia đình & Nhóm bạn",
+    capacity: "4 - 6 hành khách · 4 vali lớn",
+    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600",
+    models: "Mitsubishi Xpander, Toyota Veloz, Innova, Fortuner...",
+    suitable: "Gia đình đông người, nhóm bạn du lịch, có nhiều hành lý cồng kềnh",
+    features: ["Khoang ngồi cực kỳ rộng", "Gầm cao êm ái đường dài", "Cốp siêu rộng khi gập hàng ghế"],
+  },
+];
 
-  faq: {
-    title: "Câu Hỏi Thường Gặp",
-    description: "Những thắc mắc phổ biến nhất của khách hàng",
-    items: [
-      {
-        label: "Tôi có thể huỷ chuyến đi không?",
-        content:
-          "Bạn có thể hủy chuyến nhưng khuyến nghị trước ít nhất 30 phút trước giờ khởi hành.",
-      },
-      {
-        label: "Các phương thức thanh toán được chấp nhận?",
-        content:
-          "Happy Trip chấp nhận thanh toán tiền mặt hoặc chuyển khoản ngân hàng.",
-      },
-      {
-        label: "Xe của tôi có được bảo hiểm không?",
-        content:
-          "Toàn bộ xe trên nền tảng Happy Trip đều có bảo hiểm hành khách. Khách hàng được bảo vệ trong suốt hành trình di chuyển.",
-      },
-      {
-        label: "Làm thế nào để xuất hóa đơn VAT?",
-        content:
-          "Vui lòng liên hệ bộ phận kế toán qua hotline 097 297 0000 khi đặt chuyến",
-      },
-      {
-        label: "Tôi có thể đặt xe cho người khác không?",
-        content:
-          "Có. Bạn có thể đặt xe cho người thân hoặc đồng nghiệp bằng cách nhập tên và số điện thoại của người đi khi đặt chuyến.",
-      },
-    ],
-  },
+const howItWorks = {
+  title: "Quy Trình 4 Bước Đặt Xe Nhanh Chóng",
+  description: "Chỉ với 1 phút để hoàn tất đặt xe riêng cho hành trình trọn vẹn",
+  steps: [
+    {
+      icon: "i-lucide-smartphone",
+      label: "Bước 1: Chọn Điểm Đi & Đến",
+      desc: "Nhập điểm đón tại nhà và địa chỉ nơi đến trên website hoặc gọi Hotline",
+    },
+    {
+      icon: "i-lucide-calculator",
+      label: "Bước 2: Xem Báo Giá Trọn Gói",
+      desc: "Hệ thống hiển thị giá niêm yết minh bạch 1 chiều / khứ hồi 0đ phụ phí",
+    },
+    {
+      icon: "i-lucide-car",
+      label: "Bước 3: Tài Xế Đón Tận Nơi",
+      desc: "Tài xế nhận chuyến, liên hệ xác nhận và đón quý khách đúng giờ hẹn",
+    },
+    {
+      icon: "i-lucide-shield-check",
+      label: "Bước 4: Trải Nghiệm & Thanh Toán",
+      desc: "Tận hưởng chuyến xe riêng êm ái, thanh toán sau khi hoàn tất chuyến đi",
+    },
+  ],
+};
+
+const faq = {
+  title: "Câu Hỏi Thường Gặp",
+  description: "Những thắc mắc phổ biến nhất của khách hàng khi đặt xe riêng Happy Trip",
+  items: [
+    {
+      label: "Xe riêng của Happy Trip có phải là xe ghép không?",
+      content:
+        "Hoàn toàn không. Dịch vụ của Happy Trip là thuê xe riêng trọn gói 100%. Quý khách toàn quyền sử dụng toàn bộ xe cho cá nhân hoặc gia đình mình, tuyệt đối không đón ghép thêm khách lạ dọc đường.",
+    },
+    {
+      label: "Giá cước hiển thị đã bao gồm phí cao tốc và xăng xe chưa?",
+      content:
+        "Giá cước trên Happy Trip là giá trọn gói 100%, đã bao gồm chi phí xăng dầu, lương tài xế và phí cầu đường cao tốc. Quý khách không phải trả thêm bất kỳ phụ phí ẩn nào.",
+    },
+    {
+      label: "Tôi có được đón trả tận nhà ở cả 2 đầu tỉnh không?",
+      content:
+        "Có. Dịch vụ xe riêng của chúng tôi đón tận ngõ nhà bạn và trả tận địa chỉ nơi đến ở tỉnh, không cần trung chuyển ra bến xe.",
+    },
+    {
+      label: "Đặt xe 2 chiều (khứ hồi) có được giảm giá không?",
+      content:
+        "Có. Khi đặt xe 2 chiều khứ hồi trong ngày hoặc nhiều ngày, quý khách được ưu đãi giảm tới 30% cho chiều về.",
+    },
+    {
+      label: "Tôi có thể hủy hoặc đổi giờ khởi hành không?",
+      content:
+        "Quý khách có thể thay đổi giờ hoặc hủy chuyến miễn phí nếu báo trước ít nhất 1-2 tiếng trước giờ khởi hành.",
+    },
+    {
+      label: "Tôi có cần phải đặt cọc trước không?",
+      content:
+        "Happy Trip không yêu cầu đặt cọc cho các chuyến xe thông thường. Quý khách chỉ cần thanh toán trực tiếp cho tài xế hoặc chuyển khoản sau khi kết thúc chuyến đi an toàn.",
+    },
+  ],
 };
 
 useSchemaOrg([
@@ -155,7 +222,7 @@ useSchemaOrg([
         name: "Happy Trip cung cấp dịch vụ gì?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Happy Trip cung cấp dịch vụ xe riêng, xe tiện chuyến và đưa đón sân bay trên toàn quốc.",
+          text: "Happy Trip cung cấp dịch vụ thuê xe riêng đi tỉnh 1 chiều & khứ hồi, đưa đón sân bay Tân Sơn Nhất và xe công tác trọn gói.",
         },
       },
       {
@@ -177,25 +244,186 @@ useSchemaOrg([
     ],
   },
 ]);
+
+const scrollToTopBooking = () => {
+  if (typeof window !== "undefined") {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+};
 </script>
 
 <template>
+  <!-- Hero Section with Booking Form -->
   <Hero />
 
+  <!-- Trust Metrics & Highlights -->
   <TrustMetrics />
-  <About />
-  <section class="py-24">
+
+  <!-- ============ CORE SERVICE CARDS GRID ============ -->
+  <section id="dich-vu" class="py-20 lg:py-28 scroll-mt-16 bg-slate-50/70 dark:bg-slate-950">
     <UContainer>
-      <div class="text-center mb-12">
-        <p
-          class="text-sm font-semibold text-primary uppercase tracking-widest mb-2"
-        >
-          Đối tác
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <p class="text-xs sm:text-sm font-bold text-primary uppercase tracking-widest mb-2">
+          Dịch Vụ Cốt Lõi
         </p>
-        <h2 class="text-3xl md:text-4xl font-bold">
-          Các hãng xe chúng tôi phục vụ
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
+          Nền Tảng Xe Riêng Đi Tỉnh <span class="text-primary">2 Chiều</span>
         </h2>
-        <div class="mx-auto w-16 h-1 rounded-full bg-primary mt-4" />
+        <div class="mx-auto w-16 h-1.5 rounded-full bg-primary mt-4" />
+        <p class="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+          Cam kết 100% xe riêng không ghép khách, đón trả tận nhà, minh bạch trọn gói không phát sinh chi phí.
+        </p>
+      </div>
+
+      <!-- 4 Core Service Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <div
+          v-for="card in serviceCards"
+          :key="card.id"
+          class="group bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+        >
+          <div>
+            <!-- Image with Badge Overlay -->
+            <div class="relative aspect-16/9 overflow-hidden bg-slate-100 dark:bg-slate-800">
+              <img
+                :src="card.image"
+                :alt="card.title"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+              
+              <!-- Floating Badge -->
+              <div class="absolute top-4 left-4">
+                <UBadge
+                  :label="card.badge"
+                  :color="card.badgeColor"
+                  variant="solid"
+                  size="md"
+                  class="font-bold shadow-md"
+                />
+              </div>
+
+              <!-- Floating Icon -->
+              <div class="absolute bottom-4 left-4 flex items-center gap-2 text-white">
+                <div class="p-2 rounded-xl bg-white/20 backdrop-blur-md border border-white/20">
+                  <UIcon :name="card.icon" class="size-5 text-amber-300" />
+                </div>
+                <div>
+                  <h3 class="text-lg sm:text-xl font-bold text-white leading-tight drop-shadow-sm">
+                    {{ card.title }}
+                  </h3>
+                  <p class="text-xs text-slate-200 drop-shadow-sm">
+                    {{ card.subtitle }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-6 sm:p-7 space-y-4">
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                {{ card.description }}
+              </p>
+
+              <!-- Checklist Features -->
+              <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <div
+                  v-for="feat in card.features"
+                  :key="feat"
+                  class="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300"
+                >
+                  <UIcon name="i-lucide-check-circle-2" class="size-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <span>{{ feat }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action -->
+          <div class="px-6 pb-6 pt-0">
+            <UButton
+              color="primary"
+              variant="subtle"
+              block
+              size="md"
+              class="font-bold rounded-xl group-hover:bg-primary group-hover:text-white transition-colors"
+              trailing-icon="i-lucide-arrow-right"
+              @click="scrollToTopBooking"
+            >
+              Đặt Chuyến Ngay
+            </UButton>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ VEHICLE CLASS SECTION ============ -->
+      <div class="mt-20">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">
+            Đội Xe Phục Vụ
+          </p>
+          <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+            Lựa Chọn Dòng Xe Phù Hợp Với Nhu Cầu
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-500 mt-2">
+            Đội xe đời mới từ 2022+, nội thất sang trọng, bảo dưỡng định kỳ và khử khuẩn sau mỗi chuyến
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div
+            v-for="car in vehicleClasses"
+            :id="car.id"
+            :key="car.id"
+            class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col md:flex-row gap-6 items-center scroll-mt-24"
+          >
+            <div class="w-full md:w-48 h-40 rounded-2xl overflow-hidden shrink-0 relative bg-slate-100 dark:bg-slate-800">
+              <img :src="car.image" :alt="car.title" class="w-full h-full object-cover" loading="lazy" />
+              <UBadge :label="car.tag" color="primary" variant="solid" size="xs" class="absolute top-2.5 left-2.5 font-bold" />
+            </div>
+            <div class="space-y-3 flex-1">
+              <div>
+                <h4 class="text-lg font-bold text-slate-900 dark:text-white">{{ car.title }}</h4>
+                <p class="text-xs text-primary font-semibold mt-0.5 flex items-center gap-1">
+                  <UIcon name="i-lucide-users" class="size-3.5" />
+                  {{ car.capacity }}
+                </p>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                <strong>Dòng xe:</strong> {{ car.models }}
+              </p>
+              <div class="flex flex-wrap gap-2 pt-1">
+                <span
+                  v-for="f in car.features"
+                  :key="f"
+                  class="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium"
+                >
+                  <UIcon name="i-lucide-check" class="size-3 text-emerald-500" />
+                  {{ f }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </UContainer>
+  </section>
+
+  <!-- About Section -->
+  <About />
+
+  <!-- Partner Logos Marquee -->
+  <section class="py-16 bg-white dark:bg-slate-950 border-y border-slate-100 dark:border-slate-800/80">
+    <UContainer>
+      <div class="text-center mb-8">
+        <p class="text-xs font-semibold text-primary uppercase tracking-widest mb-1">
+          Đối Tác
+        </p>
+        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+          Các Hãng Xe Đời Mới Chúng Tôi Phục Vụ
+        </h3>
       </div>
       <UMarquee :repeat="4">
         <img
@@ -203,214 +431,72 @@ useSchemaOrg([
           :key="logo"
           :src="`/images/car-logo/${logo}`"
           :alt="logo.replace('.svg', '')"
-          class="h-12 w-auto shrink-0"
+          class="h-10 sm:h-12 w-auto shrink-0 mx-6 opacity-75 hover:opacity-100 transition-opacity"
           loading="lazy"
         />
       </UMarquee>
     </UContainer>
   </section>
+
+  <!-- Testimonials & Reviews -->
   <Testimonials />
+
+  <!-- Articles & Travel Guides -->
   <Articles />
 
-  <!-- ============ SERVICE SECTION  ============ -->
-  <UContainer id="dich-vu" class="py-10 scroll-mt-20">
-    <!-- HEADER -->
-    <div class="text-center mb-12">
-      <p
-        class="text-sm font-semibold text-primary uppercase tracking-widest mb-2"
-      >
-        Dịch vụ
-      </p>
-      <h2 class="text-3xl md:text-4xl font-bold">
-        {{ service.title }}
-      </h2>
-      <div class="mx-auto w-16 h-1 rounded-full bg-primary mt-4" />
-      <p class="mt-4 text-muted max-w-xl mx-auto">
-        {{ service.description }}
-      </p>
-    </div>
-
-    <!-- XE GHÉP -->
-    <div
-      id="xe-ghep"
-      class="grid lg:grid-cols-2 gap-12 items-center mb-24 scroll-mt-20"
-    >
-      <div class="relative">
-        <div
-          class="rounded-3xl overflow-hidden shadow-lg aspect-4/3 bg-slate-100 dark:bg-slate-800"
-        >
-          <img
-            :src="service.carpool.image"
-            alt="Xe tiện chuyến Happy Trip"
-            class="w-full h-full object-cover"
-          />
-        </div>
-        <div
-          class="absolute top-4 left-4 w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl shadow-md flex items-center justify-center"
-        >
-          <UIcon name="i-lucide-users" class="size-6 text-primary" />
-        </div>
-      </div>
-
-      <div>
-        <p
-          class="text-xs font-semibold uppercase tracking-widest text-primary mb-2"
-        >
-          {{ service.carpool.badge }}
+  <!-- ============ HOW IT WORKS (Quy trình) ============ -->
+  <section class="bg-slate-900 text-white py-20 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]" />
+    <UContainer class="relative z-10">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <p class="text-xs font-bold text-primary uppercase tracking-widest mb-2">
+          Quy Trình Nhanh Gọn
         </p>
-        <h2 class="text-3xl md:text-4xl font-bold mb-4 leading-tight">
-          {{ service.carpool.title }}
-        </h2>
-        <p class="text-muted text-sm leading-relaxed mb-6">
-          {{ service.carpool.description }}
-        </p>
-        <div class="flex flex-col gap-3">
-          <SharedFeatureList
-            v-for="feature in service.carpool.features"
-            :key="feature"
-            :feature="feature"
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- XE TIỆN CHUYẾN (BAO XE) -->
-    <div
-      id="bao-xe"
-      class="grid lg:grid-cols-2 gap-12 items-center mb-24 scroll-mt-20"
-    >
-      <div>
-        <p
-          class="text-xs font-semibold uppercase tracking-widest text-primary mb-2"
-        >
-          {{ service.charter.badge }}
-        </p>
-        <h2 class="text-3xl md:text-4xl font-bold mb-4 leading-tight">
-          {{ service.charter.title }}
-        </h2>
-        <p class="text-muted text-sm leading-relaxed mb-6">
-          {{ service.charter.description }}
-        </p>
-        <div class="flex flex-col gap-3">
-          <SharedFeatureList
-            v-for="feature in service.charter.features"
-            :key="feature"
-            :feature="feature"
-          />
-        </div>
-      </div>
-
-      <div class="relative order-first lg:order-last">
-        <div
-          class="rounded-3xl overflow-hidden shadow-lg aspect-4/3 bg-slate-100 dark:bg-slate-800"
-        >
-          <img
-            :src="service.charter.image"
-            alt="Xe tiện chuyến Happy Trip"
-            class="w-full h-full object-cover"
-          />
-        </div>
-        <div
-          class="absolute top-4 right-4 w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl shadow-md flex items-center justify-center"
-        >
-          <UIcon name="i-lucide-zap" class="size-6 text-primary" />
-        </div>
-      </div>
-    </div>
-  </UContainer>
-
-  <!-- CÁCH THỨC HOẠT ĐỘNG (full width) -->
-  <div class="bg-elevated py-16">
-    <UContainer>
-      <div class="text-center mb-12">
-        <p
-          class="text-sm font-semibold text-primary uppercase tracking-widest mb-2"
-        >
-          Quy trình
-        </p>
-        <h3 class="text-3xl md:text-4xl font-bold">
-          {{ service.howItWorks.title }}
+        <h3 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
+          {{ howItWorks.title }}
         </h3>
         <div class="mx-auto w-16 h-1 rounded-full bg-primary mt-4" />
-        <p class="mt-4 text-muted max-w-xl mx-auto">
-          {{ service.howItWorks.description }}
+        <p class="mt-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+          {{ howItWorks.description }}
         </p>
       </div>
 
-      <div class="relative grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
         <div
-          class="lg:hidden absolute left-8 top-16 bottom-0 w-px border-l-2 border-dashed border-default"
-        />
-        <div
-          class="hidden lg:block absolute top-8 left-[calc(12.5%+1rem)] right-[calc(12.5%+1rem)] h-px border-t-2 border-dashed border-default"
-        />
-
-        <div
-          v-for="step in service.howItWorks.steps"
+          v-for="(step, index) in howItWorks.steps"
           :key="step.label"
-          class="relative flex flex-col items-center text-center"
+          class="relative flex flex-col items-center text-center p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md"
         >
-          <div
-            class="relative z-10 w-16 h-16 bg-default rounded-2xl border border-default shadow-sm flex items-center justify-center mb-6"
-          >
-            <UIcon :name="step.icon" class="size-7 text-muted" />
+          <span class="absolute top-3 right-4 text-2xl font-black text-white/15 select-none">
+            0{{ index + 1 }}
+          </span>
+          <div class="w-14 h-14 bg-primary/20 border border-primary/40 rounded-2xl flex items-center justify-center mb-5 text-primary">
+            <UIcon :name="step.icon" class="size-7" />
           </div>
-          <h4 class="text-sm font-bold mb-2">{{ step.label }}</h4>
-          <p class="text-xs text-muted leading-relaxed">{{ step.desc }}</p>
+          <h4 class="text-sm font-bold mb-2 text-white">{{ step.label }}</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">{{ step.desc }}</p>
         </div>
       </div>
     </UContainer>
-  </div>
+  </section>
 
-  <!-- FAQ -->
-  <UContainer class="py-16">
-    <div class="text-center mb-10">
-      <p
-        class="text-sm font-semibold text-primary uppercase tracking-widest mb-2"
-      >
-        Hỗ trợ
-      </p>
-      <h3 class="text-3xl md:text-4xl font-bold">
-        {{ service.faq.title }}
-      </h3>
-      <div class="mx-auto w-16 h-1 rounded-full bg-primary mt-4" />
-      <p class="mt-4 text-muted max-w-xl mx-auto">
-        {{ service.faq.description }}
-      </p>
-    </div>
-    <div
-      class="bg-default border border-default rounded-2xl shadow-sm overflow-hidden max-w-3xl mx-auto"
-    >
-      <CollapsibleCard :items="service.faq.items" />
-    </div>
-  </UContainer>
-
-  <!-- ============ POPULAR ROUTES SECTION ============ -->
-  <section class="py-16 bg-slate-100/70 dark:bg-slate-900/50 border-t border-slate-200/80 dark:border-slate-800">
-    <UContainer>
-      <div class="text-center max-w-2xl mx-auto mb-12">
+  <!-- ============ FAQ SECTION ============ -->
+  <section class="py-20 lg:py-24 bg-white dark:bg-slate-950">
+    <UContainer class="max-w-4xl">
+      <div class="text-center mb-12">
         <p class="text-xs font-bold text-primary uppercase tracking-widest mb-2">
-          Mạng Lưới Phục Vụ
+          Hỗ Trợ Khách Hàng
         </p>
-        <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
-          Các Tuyến Xe Riêng Phổ Biến
+        <h3 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white">
+          {{ faq.title }}
         </h3>
         <div class="mx-auto w-16 h-1 rounded-full bg-primary mt-4" />
+        <p class="mt-4 text-xs sm:text-sm text-slate-500 max-w-xl mx-auto">
+          {{ faq.description }}
+        </p>
       </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
-        <NuxtLink
-          v-for="(item, index) in generateAllRoutes()"
-          :key="index"
-          :to="`/${item.slug}`"
-          class="p-3.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:border-primary hover:text-primary hover:shadow-md transition-all duration-200 flex items-center justify-between group shadow-2xs"
-        >
-          <div class="flex items-center gap-2.5 min-w-0">
-            <UIcon name="i-lucide-map-pin" class="size-4 text-primary shrink-0" />
-            <span class="truncate">{{ item.name }}</span>
-          </div>
-          <UIcon name="i-lucide-chevron-right" class="size-4 text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
-        </NuxtLink>
+      <div class="bg-slate-50/60 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-4 sm:p-6 shadow-sm">
+        <CollapsibleCard :items="faq.items" />
       </div>
     </UContainer>
   </section>
