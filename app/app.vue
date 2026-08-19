@@ -40,9 +40,9 @@ useHead({
 });
 
 const origin = "https://v2.happytrip.vn";
-const title = "Happy Trip - Dịch vụ xe tiện chuyến hàng đầu tại Việt Nam";
+const title = "Happy Trip - Dịch vụ bao xe giá tốt hàng đầu tại Việt Nam";
 const description =
-  "Happy Trip – Dịch vụ xe tiện chuyến hàng đầu tại Việt Nam, kết nối hành khách với các chuyến xe chất lượng cao trên toàn quốc. Đặt vé nhanh chóng, giá minh bạch, nhiều lựa chọn tuyến đường, hỗ trợ 24/7 và mang đến trải nghiệm di chuyển an toàn, tiện lợi cho mọi hành trình.";
+  "Happy Trip – Dịch vụ bao xe giá tốt hàng đầu tại Việt Nam, kết nối hành khách với các chuyến xe chất lượng cao trên toàn quốc. Đặt vé nhanh chóng, giá minh bạch, nhiều lựa chọn tuyến đường, hỗ trợ 24/7 và mang đến trải nghiệm di chuyển an toàn, tiện lợi cho mọi hành trình.";
 useSeoMeta({
   title,
   description,
@@ -54,6 +54,50 @@ useSeoMeta({
 });
 
 // Force light theme — đã xử lý ở plugins/force-light-theme.client.ts
+
+// Google Analytics — page view tracking on route change
+const { proxy: gaProxy } = useScriptGoogleAnalytics();
+
+// Meta Pixel — inject traditional pixel code into <head>
+useHead({
+  script: [
+    {
+      key: 'meta-pixel',
+      innerHTML: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1160626542496232');fbq('init','2229315357857572');fbq('track','PageView');`,
+    },
+  ],
+  noscript: [
+    {
+      key: 'meta-pixel-noscript',
+      innerHTML: `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1160626542496232&ev=PageView&noscript=1" /><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=2229315357857572&ev=PageView&noscript=1" />`,
+    },
+  ],
+});
+
+useScriptEventPage(({ title, path }) => {
+  gaProxy.gtag('event', 'page_view', {
+    page_title: title,
+    page_path: path,
+  });
+  // Track Meta Pixel PageView on SPA route change
+  if (typeof window !== 'undefined' && (window as any).fbq) {
+    (window as any).fbq('track', 'PageView');
+  }
+});
+
+onMounted(() => {
+  if (typeof document !== 'undefined') {
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a');
+      if (anchor && anchor.href && anchor.href.startsWith('tel:')) {
+        if (typeof window !== 'undefined' && (window as any).fbq) {
+          (window as any).fbq('track', 'Contact');
+        }
+      }
+    });
+  }
+});
 </script>
 
 <template>

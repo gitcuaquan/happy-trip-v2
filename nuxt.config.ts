@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ["@nuxt/eslint", "@nuxt/ui", "@pinia/nuxt", "@nuxtjs/seo"],
+  modules: ["@nuxt/eslint", "@nuxt/ui", "@pinia/nuxt", "@nuxtjs/seo", "@nuxt/scripts"],
   devtools: {
     enabled: true,
   },
@@ -19,7 +19,7 @@ export default defineNuxtConfig({
     url: "https://happytrip.vn",
     name: "Happy Trip",
     description:
-      "Happy Trip – Dịch vụ xe tiện chuyến hàng đầu tại Việt Nam, kết nối hành khách với các chuyến xe chất lượng cao trên toàn quốc. Đặt vé nhanh chóng, giá minh bạch, nhiều lựa chọn tuyến đường, hỗ trợ 24/7 và mang đến trải nghiệm di chuyển an toàn, tiện lợi cho mọi hành trình.",
+      "Happy Trip – Dịch vụ bao xe giá tốt hàng đầu tại Việt Nam, kết nối hành khách với các chuyến xe chất lượng cao trên toàn quốc. Đặt vé nhanh chóng, giá minh bạch, nhiều lựa chọn tuyến đường, hỗ trợ 24/7 và mang đến trải nghiệm di chuyển an toàn, tiện lợi cho mọi hành trình.",
   },
   colorMode: {
     preference: "light",
@@ -53,6 +53,13 @@ export default defineNuxtConfig({
       stylistic: {
         commaDangle: "never",
         braceStyle: "1tbs",
+      },
+    },
+  },
+  scripts: {
+    registry: {
+      googleAnalytics: {
+        id: 'G-SH28CNXKX9',
       },
     },
   },

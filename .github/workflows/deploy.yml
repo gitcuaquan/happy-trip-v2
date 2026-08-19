@@ -66,4 +66,3 @@ jobs:
             npm run build
 
             pm2 restart production-app-8888
-
