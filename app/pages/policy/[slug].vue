@@ -59,7 +59,7 @@
 
         <!-- Document Content -->
         <div
-          class="prose prose-slate dark:prose-invert prose-base max-w-none prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white prose-a:text-primary prose-table:border-collapse prose-td:border prose-th:border"
+          class="doc-content article-content"
           v-html="article.content"
         />
       </div>

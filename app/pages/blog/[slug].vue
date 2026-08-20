@@ -109,7 +109,7 @@
 
         <!-- Article Content -->
         <div
-          class="prose prose-slate dark:prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white prose-a:text-primary prose-img:rounded-2xl prose-img:shadow-md"
+          class="article-content"
           v-html="article.content"
         />
 
