@@ -5,10 +5,13 @@ export default defineNuxtConfig({
     enabled: true,
   },
   runtimeConfig: {
+    mongodbUri: process.env.NUXT_MONGODB_URI || "",
+    jwtSecret: process.env.NUXT_JWT_SECRET || "happytrip_jwt_secret_key_2026_super_secure",
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "https://sys.happytrip.vn",
     },
   },
+
 
   sourcemap: {
     server: false,

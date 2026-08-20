@@ -37,8 +37,8 @@
       :items="items"
       variant="link"
       :ui="{
-        list: 'gap-2 xl:gap-5',
-        link: 'font-bold uppercase tracking-wide text-xs xl:text-sm text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 py-2',
+        list: 'gap-3 xl:gap-6',
+        link: 'font-bold uppercase tracking-wide text-sm xl:text-[15px] text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 py-2',
         viewport: 'shadow-2xl rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden',
         content: 'overflow-hidden max-h-none',
         viewportWrapper: 'justify-center',
@@ -46,31 +46,29 @@
     >
       <!-- Custom Content Slot for "Dịch Vụ Xe Riêng" (2-column balanced layout) -->
       <template #services-content>
-        <div class="p-4 w-[640px] max-w-[90vw] bg-white dark:bg-slate-900 text-left grid grid-cols-12 gap-4 overflow-hidden">
+        <div class="p-5 w-[680px] max-w-[92vw] bg-white dark:bg-slate-900 text-left grid grid-cols-12 gap-5 overflow-hidden">
           <!-- Left Column (7 cols): 4 Services -->
-          <div class="col-span-7 space-y-1">
-            <div class="px-2 py-1 mb-1 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-              <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Phân loại dòng xe</span>
-              <UBadge label="100% Không ghép" color="primary" variant="subtle" size="xs" />
+          <div class="col-span-7 space-y-1.5">
+            <div class="px-2 py-1 mb-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Phân loại dòng xe</span>
             </div>
 
             <NuxtLink
               v-for="service in privateCarServices"
               :key="service.label"
               :to="service.to"
-              class="flex items-start gap-2.5 p-2 rounded-xl hover:bg-primary/10 transition-colors group"
+              class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/70 transition-colors group"
             >
-              <div class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 group-hover:bg-primary group-hover:text-white transition-colors shrink-0 mt-0.5">
-                <UIcon :name="service.icon" class="size-4" />
+              <div class="w-8 h-8 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors shrink-0 mt-0.5">
+                <UIcon :name="service.icon" class="size-4.5" />
               </div>
               <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-1.5">
-                  <span class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
                     {{ service.label }}
                   </span>
-                  <UBadge v-if="service.badge" :label="service.badge" color="neutral" variant="subtle" size="xs" class="text-[10px] px-1.5 py-0" />
                 </div>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
+                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5 leading-relaxed">
                   {{ service.description }}
                 </p>
               </div>
@@ -78,26 +76,26 @@
           </div>
 
           <!-- Right Column (5 cols): Highlight Commitment Card -->
-          <div class="col-span-5 flex flex-col justify-between p-3.5 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white shadow-inner">
-            <div class="space-y-2">
-              <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold border border-primary/30">
-                <UIcon name="i-lucide-sparkles" class="size-3" />
+          <div class="col-span-5 flex flex-col justify-between p-4 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white shadow-inner">
+            <div class="space-y-2.5">
+              <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold border border-primary/30">
+                <UIcon name="i-lucide-sparkles" class="size-3.5" />
                 <span>Happy Trip Cam Kết</span>
               </div>
-              <h4 class="text-xs font-bold text-white leading-snug">
+              <h4 class="text-sm font-bold text-white leading-snug">
                 Xe Riêng Chuẩn 5 Sao Đi Tỉnh & Sân Bay
               </h4>
-              <ul class="space-y-1 text-[10px] text-slate-300">
-                <li class="flex items-center gap-1.5">
-                  <UIcon name="i-lucide-check-circle" class="size-3 text-emerald-400 shrink-0" />
+              <ul class="space-y-1.5 text-xs text-slate-300">
+                <li class="flex items-center gap-2">
+                  <UIcon name="i-lucide-check-circle" class="size-4 text-emerald-400 shrink-0" />
                   <span>100% Không đón khách dọc đường</span>
                 </li>
-                <li class="flex items-center gap-1.5">
-                  <UIcon name="i-lucide-check-circle" class="size-3 text-emerald-400 shrink-0" />
+                <li class="flex items-center gap-2">
+                  <UIcon name="i-lucide-check-circle" class="size-4 text-emerald-400 shrink-0" />
                   <span>Đón tận ngõ, trả tận cửa</span>
                 </li>
-                <li class="flex items-center gap-1.5">
-                  <UIcon name="i-lucide-check-circle" class="size-3 text-emerald-400 shrink-0" />
+                <li class="flex items-center gap-2">
+                  <UIcon name="i-lucide-check-circle" class="size-4 text-emerald-400 shrink-0" />
                   <span>Giá trọn gói 0đ phụ phí</span>
                 </li>
               </ul>
@@ -105,30 +103,28 @@
 
             <a
               href="tel:0972970000"
-              class="mt-2.5 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-primary hover:bg-orange-600 text-white font-bold text-xs shadow-md transition-colors"
+              class="mt-3 flex items-center justify-center gap-2 py-2 px-3.5 rounded-xl bg-primary hover:bg-orange-600 text-white font-bold text-sm shadow-md transition-colors"
             >
-              <UIcon name="i-lucide-phone-call" class="size-3" />
+              <UIcon name="i-lucide-phone-call" class="size-4" />
               <span>Gọi 0972 97 0000</span>
             </a>
           </div>
         </div>
       </template>
 
-      <!-- Custom Content Slot for "Mega Menu Tuyến Đi Tỉnh 2 Chiều" (No Scrollbar, Clean Fit) -->
+      <!-- Custom Content Slot for "Mega Menu Tuyến Đi Tỉnh 2 Chiều" -->
       <template #routes-content>
-        <div class="p-5 w-[900px] max-w-[92vw] bg-white dark:bg-slate-900 space-y-3.5 text-left overflow-hidden">
+        <div class="p-6 w-[960px] max-w-[94vw] bg-white dark:bg-slate-900 space-y-4 text-left overflow-hidden">
           <!-- Mega Menu Top Header -->
-          <div class="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800">
-            <div class="flex items-center gap-2">
-              <div class="p-1 rounded-lg bg-primary/10 text-primary">
-                <UIcon name="i-lucide-route" class="size-4" />
-              </div>
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div class="flex items-center gap-2.5">
+              <UIcon name="i-lucide-route" class="size-6 text-primary shrink-0" />
               <div>
-                <h4 class="text-xs font-bold text-slate-900 dark:text-white">
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white">
                   Thuê Xe Riêng Đi Tỉnh 2 Chiều & Sân Bay
                 </h4>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400">
-                  Đón trả tận nhà · Giá trọn gói minh bạch · Tiết kiệm tới 30% chuyến khứ hồi
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                  Đón trả tận nhà · Giá trọn gói minh bạch · Phục vụ 24/7
                 </p>
               </div>
             </div>
@@ -136,7 +132,7 @@
               to="/#dich-vu"
               variant="ghost"
               color="primary"
-              size="xs"
+              size="sm"
               trailing-icon="i-lucide-arrow-right"
               class="font-semibold text-xs py-1"
             >
@@ -145,43 +141,33 @@
           </div>
 
           <!-- 4 Multi-Columns Grid -->
-          <div class="grid grid-cols-4 gap-3">
+          <div class="grid grid-cols-4 gap-4">
             <div
               v-for="col in megaMenuColumns"
               :key="col.title"
-              class="space-y-2"
+              class="space-y-2.5"
             >
-              <!-- Column Title with Badge -->
-              <div class="flex items-center justify-between gap-1 pb-1 border-b border-slate-100 dark:border-slate-800">
-                <div class="flex items-center gap-1 min-w-0">
-                  <UIcon :name="col.icon" class="size-3.5 text-primary shrink-0" />
-                  <span class="text-[11px] font-bold text-slate-900 dark:text-white uppercase tracking-wide truncate">
-                    {{ col.title }}
-                  </span>
-                </div>
-                <UBadge
-                  v-if="col.badge"
-                  :label="col.badge"
-                  :color="col.badgeColor"
-                  variant="subtle"
-                  size="xs"
-                  class="text-[9px] px-1 py-0 shrink-0"
-                />
+              <!-- Column Title -->
+              <div class="flex items-center gap-1.5 pb-1.5 border-b border-slate-100 dark:border-slate-800">
+                <UIcon :name="col.icon" class="size-4 text-primary shrink-0" />
+                <span class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wide truncate">
+                  {{ col.title }}
+                </span>
               </div>
 
               <!-- Route Items -->
-              <div class="space-y-0.5">
+              <div class="space-y-1">
                 <NuxtLink
                   v-for="item in col.routes"
                   :key="item.slug"
                   :to="`/${item.slug}`"
-                  class="group flex flex-col p-1.5 rounded-lg hover:bg-primary/10 transition-colors duration-150"
+                  class="group flex flex-col p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/70 transition-colors duration-150"
                 >
-                  <div class="flex items-start justify-between gap-1 text-[11px] font-semibold text-slate-700 dark:text-slate-200 group-hover:text-primary leading-tight">
+                  <div class="flex items-start justify-between gap-1 text-xs xl:text-[13px] font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary leading-snug">
                     <span>{{ item.name }}</span>
-                    <UIcon name="i-lucide-arrow-up-right" class="size-3 text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0 mt-0.5" />
+                    <UIcon name="i-lucide-arrow-up-right" class="size-3.5 text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0 mt-0.5" />
                   </div>
-                  <span v-if="item.desc" class="text-[10px] text-slate-400 dark:text-slate-500 line-clamp-1 mt-0.5">
+                  <span v-if="item.desc" class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
                     {{ item.desc }}
                   </span>
                 </NuxtLink>
@@ -190,26 +176,26 @@
           </div>
 
           <!-- Mega Menu Footer Bar -->
-          <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-            <div class="flex items-center gap-2.5 text-[11px] text-slate-600 dark:text-slate-300">
-              <span class="flex items-center gap-1 font-semibold text-slate-900 dark:text-white">
-                <UIcon name="i-lucide-check-circle-2" class="size-3.5 text-emerald-500" />
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
+                <UIcon name="i-lucide-check-circle-2" class="size-4 text-emerald-500" />
                 Bao trọn xe 100%
               </span>
               <span>•</span>
-              <span class="flex items-center gap-1">
-                <UIcon name="i-lucide-clock" class="size-3.5 text-primary" />
+              <span class="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
+                <UIcon name="i-lucide-clock" class="size-4 text-primary" />
                 Đón đúng giờ hẹn
               </span>
               <span>•</span>
-              <span class="flex items-center gap-1">
-                <UIcon name="i-lucide-badge-percent" class="size-3.5 text-amber-500" />
+              <span class="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
+                <UIcon name="i-lucide-badge-percent" class="size-4 text-amber-500" />
                 0đ phụ phí ẩn
               </span>
             </div>
             <a
               href="tel:0972970000"
-              class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+              class="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"
             >
               <UIcon name="i-lucide-phone" class="size-3.5" />
               Tổng đài 24/7: 0972 97 0000
@@ -226,6 +212,12 @@
           :items="items"
           orientation="vertical"
           class="-mx-2.5"
+          :ui="{
+            link: 'text-sm font-bold py-2.5',
+            childLink: 'text-sm font-medium py-2',
+            childLinkLabel: 'text-sm font-bold',
+            childLinkDescription: 'text-xs text-slate-500',
+          }"
         />
 
         <!-- Hotline Card in Mobile Drawer -->
@@ -236,9 +228,9 @@
           </div>
           <a
             href="tel:0972970000"
-            class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-primary text-white font-black text-sm tracking-wide shadow-md shadow-primary/30"
+            class="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-primary text-white font-black text-base tracking-wide shadow-md shadow-primary/30"
           >
-            <UIcon name="i-lucide-phone-call" class="size-4 animate-bounce" />
+            <UIcon name="i-lucide-phone-call" class="size-5 animate-bounce" />
             0972 97 0000
           </a>
         </div>
@@ -253,13 +245,13 @@
           <UDropdownMenu :items="adminMenuItems">
             <UButton
               variant="ghost"
-              class="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-primary/10 transition-colors"
+              class="flex items-center gap-2 px-3.5 py-2 rounded-full hover:bg-primary/10 transition-colors"
             >
               <UBadge label="Admin" color="primary" variant="subtle" size="md" />
-              <span class="text-sm font-semibold text-gray-800 dark:text-white max-w-28 truncate">
+              <span class="text-sm font-bold text-gray-800 dark:text-white max-w-28 truncate">
                 {{ getAdmin?.full_name || getAdmin?.phone }}
               </span>
-              <UIcon name="i-lucide-chevron-down" class="size-3.5 text-muted shrink-0" />
+              <UIcon name="i-lucide-chevron-down" class="size-4 text-muted shrink-0" />
             </UButton>
           </UDropdownMenu>
         </template>
@@ -269,10 +261,10 @@
           <UDropdownMenu :items="menuItems">
             <UButton
               variant="ghost"
-              class="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-primary/10 transition-colors"
+              class="flex items-center gap-2 px-3.5 py-2 rounded-full hover:bg-primary/10 transition-colors"
             >
-              <div class="relative w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
-                <span class="text-xs font-bold text-primary uppercase leading-none">
+              <div class="relative w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center">
+                <span class="text-sm font-bold text-primary uppercase leading-none">
                   {{ getCustomer?.full_name?.charAt(0) ?? '?' }}
                 </span>
                 <span
@@ -281,10 +273,10 @@
                   title="Tài khoản chưa có mật khẩu"
                 />
               </div>
-              <span class="text-sm font-semibold text-gray-800 dark:text-white max-w-24 truncate">
+              <span class="text-sm font-bold text-gray-800 dark:text-white max-w-28 truncate">
                 {{ getCustomer?.phone }}
               </span>
-              <UIcon name="i-lucide-chevron-down" class="size-3.5 text-muted shrink-0" />
+              <UIcon name="i-lucide-chevron-down" class="size-4 text-muted shrink-0" />
             </UButton>
           </UDropdownMenu>
         </template>
@@ -297,8 +289,8 @@
             icon="i-lucide-user"
             color="primary"
             variant="solid"
-            size="xs"
-            class="rounded-full uppercase font-bold text-xs tracking-wide py-2.5 px-4 lg:px-5 shadow-sm hover:shadow-md transition-shadow"
+            size="sm"
+            class="rounded-full uppercase font-bold text-xs xl:text-sm tracking-wide py-2 px-4 lg:px-5 shadow-sm hover:shadow-md transition-shadow"
           />
         </template>
       </ClientOnly>
@@ -318,45 +310,39 @@ const { isLoggedIn, isAdmin, getCustomer, getAdmin, logOut, logOutAdmin } = useA
 const showCreatePwd = ref(false)
 const needCreatePassword = computed(() => isLoggedIn.value && getCustomer.value?.has_password === false)
 
-// 1. Danh sách Dịch vụ xe riêng
+// 1. Danh sách Dịch vụ xe riêng (Đã bỏ các badge không cần thiết)
 const privateCarServices = [
   {
     label: 'Xe Riêng 5 Chỗ (Sedan)',
     description: 'Sedan đời mới êm ái, tối ưu chi phí 1-3 người',
     icon: 'i-lucide-car',
-    to: '/#dich-vu-5-cho',
-    badge: 'Phổ biến'
+    to: '/#dich-vu-5-cho'
   },
   {
     label: 'Xe Riêng 7 Chỗ (MPV / SUV)',
     description: 'MPV / SUV rộng rãi, cốp lớn cho 4-6 người',
     icon: 'i-lucide-car-front',
-    to: '/#dich-vu-7-cho',
-    badge: 'Gia đình'
+    to: '/#dich-vu-7-cho'
   },
   {
     label: 'Xe Đưa Đón Sân Bay TSN',
     description: 'Đón tiễn đúng giờ bay Tân Sơn Nhất 24/7',
     icon: 'i-lucide-plane-takeoff',
-    to: '/xe-rieng-tphcm-di-san-bay-tan-son-nhat',
-    badge: '24/7'
+    to: '/xe-rieng-tphcm-di-san-bay-tan-son-nhat'
   },
   {
     label: 'Xe Công Tác & Du Lịch',
     description: 'Thuê xe theo lịch trình / tour trọn gói',
     icon: 'i-lucide-briefcase',
-    to: '/#dich-vu-cong-tac',
-    badge: 'Trọn gói'
+    to: '/#dich-vu-cong-tac'
   }
 ]
 
-// 2. Danh sách Tuyến xe đa cột Mega Menu
+// 2. Danh sách Tuyến xe đa cột Mega Menu (Đã bỏ các badge Hot, Tuyến Vàng, Cao Tốc, Đường Dài)
 const megaMenuColumns = [
   {
     title: 'Đưa Đón Sân Bay',
     icon: 'i-lucide-plane',
-    badge: 'Hot',
-    badgeColor: 'primary' as const,
     routes: [
       {
         name: 'Sân bay TSN ⇄ Sài Gòn',
@@ -373,8 +359,6 @@ const megaMenuColumns = [
   {
     title: 'Miền Đông & Du Lịch',
     icon: 'i-lucide-palmtree',
-    badge: 'Tuyến Vàng',
-    badgeColor: 'success' as const,
     routes: [
       {
         name: 'Sài Gòn ⇄ Vũng Tàu / Hồ Tràm',
@@ -406,8 +390,6 @@ const megaMenuColumns = [
   {
     title: 'Miền Tây (ĐBSCL)',
     icon: 'i-lucide-waves',
-    badge: 'Cao Tốc',
-    badgeColor: 'info' as const,
     routes: [
       {
         name: 'Sài Gòn ⇄ Cần Thơ',
@@ -439,8 +421,6 @@ const megaMenuColumns = [
   {
     title: 'Tây Nguyên',
     icon: 'i-lucide-mountain-snow',
-    badge: 'Đường Dài',
-    badgeColor: 'warning' as const,
     routes: [
       {
         name: 'Sài Gòn ⇄ Đắk Lắk',
@@ -484,6 +464,10 @@ const items = computed<NavigationMenuItem[]>(() => {
     {
       label: 'Tài Xế',
       to: '/driver'
+    },
+    {
+      label: 'Cẩm Nang',
+      to: '/blog'
     },
     {
       label: 'Chính Sách',

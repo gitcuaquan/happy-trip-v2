@@ -111,15 +111,38 @@ export class Article {
   id: string = ''
   slug: string = ''
   name: string = ''
-  title?: string
-  thumbnail?: string
-  excerpt?: string
-  created_at?: string
-  content: any
+  title: string = ''
+  thumbnail?: string = ''
+  excerpt?: string = ''
+  content: any = ''
+  category: 'blog' | 'policy' = 'blog'
+  status: boolean = true
+  views: number = 0
+  reading_time?: number = 3
+  author_name?: string = 'Happy Trip'
+
+  // SEO Fields
+  meta_title?: string = ''
+  meta_description?: string = ''
+  meta_keywords?: string[] = []
+  focus_keyword?: string = ''
+  canonical_url?: string = ''
+  og_image?: string = ''
+  noindex?: boolean = false
+  published_at?: string = ''
+
+  created_at?: string = ''
+  updated_at?: string = ''
 
   constructor(data?: Partial<Article>) {
     if (data) {
       Object.assign(this, data)
+      if (!this.title && (data as any).name) {
+        this.title = (data as any).name
+      }
+      if (!this.name && (data as any).title) {
+        this.name = (data as any).title
+      }
     }
   }
 }
@@ -344,16 +367,29 @@ export interface ActionResponse {
 
 
 // === PAGE / BLOG (admin) ===
-
-// Body gửi lên POST/PUT /api/page — mọi field theo swagger đều nullable
 export interface PagePayload {
   id?: string
   short_id?: string
   title?: string
+  name?: string
   slug?: string
   status?: boolean
+  category?: 'blog' | 'policy'
+  excerpt?: string
   content?: string
   thumbnail?: string
+  reading_time?: number
+  author_name?: string
+
+  // SEO Fields
+  meta_title?: string
+  meta_description?: string
+  meta_keywords?: string[]
+  focus_keyword?: string
+  canonical_url?: string
+  og_image?: string
+  noindex?: boolean
+  published_at?: string
 }
 
 // Response của POST /api/upload — swagger không document

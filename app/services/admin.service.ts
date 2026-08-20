@@ -1,41 +1,31 @@
 import type { AdminProfile, AdminLoginResponse } from '~/type'
 
 export class AdminService {
-    private get baseURL() {
-        return useRuntimeConfig().public.apiBase + '/api'
-    }
+  // POST /api/admin/auth/login
+  async login(phoneOrUsername: string, password: string): Promise<{ token: string; admin: AdminProfile }> {
+    const raw = await $fetch<AdminLoginResponse>(
+      '/api/admin/auth/login',
+      {
+        method: 'POST',
+        body: { username: phoneOrUsername, password },
+      }
+    )
 
+    const token = raw.accessToken || ''
+    const admin = raw.user as AdminProfile
 
-    // POST /api/partner/login — body { phone, password }
-    // Swagger không document response shape → handle linh hoạt nhiều kiểu trả về
-    async login(phone: string, password: string): Promise<{ token: string; admin: AdminProfile }> {
-        const raw = await $fetch<AdminLoginResponse | Record<string, unknown>>(
-            `${this.baseURL}/partner/login`,
-            {
-                method: 'POST',
-                body: { phone, password },
-            }
-        )
+    if (!token) throw new Error('Không nhận được token xác thực từ server')
 
-        console.log('[adminService.login] raw response:', raw)
+    return { token, admin }
+  }
 
-        const token =
-            (raw as AdminLoginResponse).accessToken ??
-            (raw as { token?: string }).token ??
-            (raw as { access_token?: string }).access_token ??
-            ''
-
-        console.log('[adminService.login] token extracted:', token ? token.slice(0, 20) + '...' : '(EMPTY)')
-
-        const admin = ((raw as AdminLoginResponse).user ??
-            (raw as { admin?: AdminProfile }).admin ??
-            (raw as { data?: AdminProfile }).data ??
-            raw) as AdminProfile
-
-        if (!token) throw new Error('Không nhận được token từ server')
-
-        return { token, admin }
-    }
+  // GET /api/admin/auth/me
+  async getProfile(token: string): Promise<AdminProfile> {
+    return await $fetch<AdminProfile>('/api/admin/auth/me', {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+  }
 }
 
 export const adminService = new AdminService()

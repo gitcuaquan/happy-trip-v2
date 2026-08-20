@@ -168,7 +168,8 @@ const serviceLinks = [
 
 const infoLinks = [
   { label: 'Giới thiệu', to: '/introduce' },
-  { label: 'Chính sách', to: '/policy' },
+  { label: 'Cẩm nang du lịch', to: '/blog' },
+  { label: 'Chính sách & Quy định', to: '/policy' },
   { label: 'Liên hệ', to: '/contact' }
 ]
 

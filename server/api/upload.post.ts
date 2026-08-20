@@ -6,32 +6,24 @@ export default defineEventHandler(async (event) => {
     const files = await readMultipartFormData(event)
 
     const file = files?.find(
-      item => item.name === 'image' && item.data
-    )
+      item => (item.name === 'image' || item.name === 'file') && item.data
+    ) || files?.[0]
 
     if (!file?.data) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Image file is required'
+        statusMessage: 'Vui lòng chọn tệp hình ảnh để tải lên',
       })
     }
 
-    const uploadDir = join(
-      process.cwd(),
-      'public',
-      'uploads'
-    )
+    const uploadDir = join(process.cwd(), 'public', 'uploads')
 
     await mkdir(uploadDir, {
-      recursive: true
+      recursive: true,
     })
 
     const ext = file.filename?.split('.').pop() || 'jpg'
-
-    const fileName = `${Date.now()}-${Math.random()
-      .toString(36)
-      .slice(2)}.${ext}`
-
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
     const filePath = join(uploadDir, fileName)
 
     await writeFile(filePath, file.data)
@@ -39,13 +31,13 @@ export default defineEventHandler(async (event) => {
     return {
       success: true,
       filename: fileName,
-      url: `/uploads/${fileName}`
+      url: `/uploads/${fileName}`,
+      path: `/uploads/${fileName}`,
     }
   } catch (error: any) {
     throw createError({
       statusCode: error.statusCode || 500,
-      statusMessage:
-        error.statusMessage || 'Upload failed'
+      statusMessage: error.statusMessage || 'Upload thất bại',
     })
   }
 })

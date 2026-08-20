@@ -1,378 +1,123 @@
 <template>
-  <div class="min-h-screen bg-slate-50">
-    <div v-if="pending" class="py-20 text-center">
-      <USkeleton class="h-8 w-64 mx-auto mb-4 rounded" />
-      <USkeleton class="h-4 w-full max-w-2xl mx-auto mb-2 rounded" />
-      <USkeleton class="h-4 w-3/4 max-w-2xl mx-auto rounded" />
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-950 py-10">
+    <!-- Breadcrumbs -->
+    <UContainer class="max-w-4xl mb-6">
+      <nav class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+        <NuxtLink to="/" class="hover:text-primary transition-colors">Trang chủ</NuxtLink>
+        <span>/</span>
+        <NuxtLink to="/policy" class="hover:text-primary transition-colors">Chính sách & Quy định</NuxtLink>
+        <span>/</span>
+        <span class="text-slate-800 dark:text-slate-200 font-semibold truncate max-w-xs md:max-w-md">
+          {{ article?.title }}
+        </span>
+      </nav>
+    </UContainer>
+
+    <!-- Loading -->
+    <div v-if="pending" class="max-w-4xl mx-auto py-20 text-center space-y-4">
+      <USkeleton class="h-10 w-3/4 mx-auto rounded-xl" />
+      <USkeleton class="h-4 w-1/2 mx-auto rounded" />
+      <USkeleton class="h-96 w-full mx-auto rounded-2xl" />
     </div>
 
-    <div v-else-if="error" class="flex flex-col items-center justify-center py-32 px-4 text-center">
+    <!-- Error -->
+    <div v-else-if="error || !article" class="max-w-4xl mx-auto flex flex-col items-center justify-center py-20 px-4 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
       <UIcon name="i-lucide-file-x" class="w-12 h-12 text-gray-300 mx-auto mb-4" />
-      <p class="text-gray-400 mb-6">Không tìm thấy bài viết </p>
-      <UButton color="primary" icon="i-lucide-arrow-left" @click="navigateTo('/policy')">
-        Quay lại trang chủ
+      <h2 class="text-xl font-bold text-slate-800 dark:text-white">Không tìm thấy văn bản chính sách</h2>
+      <p class="text-gray-400 mt-2 mb-6">Văn bản này không tồn tại hoặc đã được cập nhật sang đường dẫn mới.</p>
+      <UButton color="primary" variant="solid" class="rounded-full px-6 font-bold" icon="i-lucide-arrow-left" @click="navigateTo('/policy')">
+        Quay lại danh sách chính sách
       </UButton>
     </div>
 
-    <template v-else>
-      <div class="relative min-h-56 lg:min-h-72 overflow-hidden bg-slate-800 flex flex-col justify-end">
-        <img v-if="article?.thumbnail" :src="resolveImageUrl(article.thumbnail)"
-          :alt="article.title || article.name" class="absolute inset-0 w-full h-full object-cover opacity-60">
-
-        <div
-          class="relative z-10 w-full pt-10 pb-5 bg-linear-to-t from-slate-900/95 to-transparent cursor-pointer transition-all duration-300">
-          <UContainer class="max-w-3xl">
-            <div class="flex items-center gap-2 text-white/80 text-xs mb-2 lg:mb-3">
-              <UIcon name="i-lucide-calendar" class="w-3.5 h-3.5" />
-              {{ formatDate(article?.created_at) }}
-            </div>
-
-            <h1 class="text-sm lg:text-3xl font-extrabold text-white leading-snug transition-all duration-300">
-              {{ article?.title || article?.name }}
-            </h1>
-
-            <p v-if="subtitle" class="mt-1 lg:mt-2 text-xs lg:text-sm text-white/60 italic transition-all duration-300">
-              {{ subtitle }}
-            </p>
-
-          
-          </UContainer>
+    <!-- Detail Content -->
+    <UContainer v-else class="max-w-4xl space-y-8">
+      <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200/80 dark:border-slate-800 p-6 sm:p-10 space-y-6">
+        <!-- Header -->
+        <div class="border-b border-slate-100 dark:border-slate-800 pb-6 space-y-3">
+          <UBadge label="Văn Bản Chính Thức" color="info" variant="subtle" size="sm" class="font-bold" />
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">
+            {{ article.title }}
+          </h1>
+          <div class="flex items-center gap-4 text-xs text-slate-400">
+            <span class="flex items-center gap-1">
+              <UIcon name="i-lucide-calendar" class="size-3.5" />
+              Cập nhật: {{ formatDate(article.updated_at || article.created_at) }}
+            </span>
+            <span>•</span>
+            <span class="flex items-center gap-1">
+              <UIcon name="i-lucide-shield" class="size-3.5 text-emerald-500" />
+              Bản quyền HappyTrip Express
+            </span>
+          </div>
         </div>
+
+        <!-- Excerpt -->
+        <div v-if="article.excerpt" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-300 text-sm leading-relaxed italic">
+          {{ article.excerpt }}
+        </div>
+
+        <!-- Document Content -->
+        <div
+          class="prose prose-slate dark:prose-invert prose-base max-w-none prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white prose-a:text-primary prose-table:border-collapse prose-td:border prose-th:border"
+          v-html="article.content"
+        />
       </div>
 
-      <UContainer class="max-w-3xl pt-10 px-4 sm:px-6 pb-20">
-        <div class="bg-white rounded-xs shadow-sm border border-slate-100 p-6 sm:p-10">
-          <div class="doc-content" v-html="formatContent(article?.content)"></div>
+      <!-- Other Policies Quick Links -->
+      <div v-if="otherPolicies?.length" class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+          Các Văn Bản & Chính Sách Khác:
+        </h3>
+        <div class="flex flex-wrap gap-2">
+          <NuxtLink
+            v-for="item in otherPolicies"
+            :key="item.id"
+            :to="`/policy/${item.slug}`"
+            class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 hover:text-primary text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors"
+          >
+            {{ item.title }}
+          </NuxtLink>
         </div>
-      </UContainer>
-    </template>
+      </div>
+    </UContainer>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { BlogService } from '~/services/blog.service';
-import { resolveImageUrl } from '~/utils';
+import { blogService } from '~/services/blog.service'
+import type { Article } from '~/type'
 
 const route = useRoute()
-const slug = route.params.slug as string
-const blogService = new BlogService()
+const slug = computed(() => (route.params.slug as string) || '')
 
-
-
-
-const { data: article, pending, error } = await useAsyncData(
-  `policy-${slug}`,
-  () => blogService.getPageDetail(slug)
+const { data: responseData, pending, error } = await useAsyncData(
+  `policy-detail-${slug.value}`,
+  () => blogService.getPolicyDetail(slug.value),
 )
 
-function formatDate(dateStr?: string): string {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
+const article = computed<Article | undefined>(() => (responseData.value as any)?.data || responseData.value)
+const otherPolicies = computed<Article[]>(() => (responseData.value as any)?.other_policies || [])
+
+const pageTitle = computed(() => article.value?.meta_title || `${article.value?.title || 'Chính Sách'} - Happy Trip`)
+const pageDescription = computed(() => article.value?.meta_description || article.value?.excerpt || 'Chính sách và điều khoản dịch vụ chính thức từ Happy Trip.')
+
+useSeoMeta({
+  title: pageTitle,
+  description: pageDescription,
+  ogTitle: pageTitle,
+  ogDescription: pageDescription,
+  ogType: 'article',
+})
+
+function formatDate(value?: string): string {
+  if (!value) return ''
   try {
-    return new Intl.DateTimeFormat('vi-VN', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric'
-    }).format(new Date(date))
+    const d = new Date(value)
+    if (isNaN(d.getTime())) return value
+    return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`
   } catch {
-    return ''
+    return value
   }
 }
-// Trích xuất subtitle từ nội dung thô (đoạn văn đầu tiên hợp lệ)
-function extractSubtitle(raw?: string): string {
-  if (!raw) return ''
-  const matches = [...raw.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)]
-  for (const m of matches) {
-    const text = (m[1] ?? '').replace(/<[^>]+>/g, '').trim()
-    if (!text) continue
-    if (/^\d+[\.\s]/.test(text)) break
-    if (/^cập nhật:/i.test(text)) continue
-    if (/^điều khoản/i.test(text)) continue
-    return text
-  }
-  return ''
-}
-
-const RE_H2 = /^\d{1,2}\.\s+\p{L}/u
-const RE_H3 = /^\d+\.\d+\.\s+\p{L}/u
-const RE_SUB = /^\d+\.\d+\.\d+[\.\s]/
-// Chuyển đổi nội dung: H2 thường → H2 uppercase, H3 thường → H3, loại bỏ thẻ p thừa
-function formatContent(raw?: string): string {
-  if (!raw || import.meta.server) return raw ?? ''
-
-  const doc = new DOMParser().parseFromString(raw, 'text/html')
-  const body = doc.body
-
-  body.querySelectorAll('h1').forEach(el => el.remove())
-
-  body.querySelectorAll('p').forEach(p => {
-    const plain = p.textContent?.trim() ?? ''
-    if (!plain) { p.remove(); return }
-
-    const children = [...p.children]
-
-    if (
-      children.length === 1 &&
-      children[0] && children[0].tagName === 'STRONG' &&
-      RE_H2.test(plain) &&
-      !RE_H3.test(plain)
-    ) {
-      const h2 = doc.createElement('h2')
-      h2.textContent = plain
-      return p.replaceWith(h2)
-    }
-
-    if (RE_H3.test(plain) && !RE_SUB.test(plain)) {
-      const h3 = doc.createElement('h3')
-      h3.innerHTML = p.innerHTML
-      return p.replaceWith(h3)
-    }
-  })
-
-  const firstH2 = body.querySelector('h2')
-  if (firstH2) {
-    let node: ChildNode | null = body.firstChild
-    while (node && node !== firstH2) {
-      const next = node.nextSibling
-      node.remove()
-      node = next
-    }
-  }
-
-  return body.innerHTML
-}
-
-const subtitle = computed(() => extractSubtitle(article.value?.content))
 </script>
-
-<style scoped>
-/* ══════════════════════════════════════════
-   BASE
-══════════════════════════════════════════ */
-:deep(.doc-content) {
-  font-size: 15px;
-  line-height: 1.85;
-  color: #374151;
-}
-
-/* ══════════════════════════════════════════
-   PARAGRAPH
-══════════════════════════════════════════ */
-:deep(.doc-content p) {
-  margin: 0 0 10px 0;
-  padding-left: 0;
-  text-align: justify;
-}
-
-/* Dòng trống → ẩn */
-:deep(.doc-content p:empty) {
-  display: none;
-}
-
-/* ══════════════════════════════════════════
-   H2
-══════════════════════════════════════════ */
-:deep(.doc-content h2) {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #111827;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  line-height: 1.5;
-  margin: 32px 0 8px 0;
-  padding: 0;
-}
-
-:deep(.doc-content h2:first-child) {
-  margin-top: 0;
-}
-
-/* ══════════════════════════════════════════
-   H3
-══════════════════════════════════════════ */
-:deep(.doc-content h3) {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: #1f2937;
-  line-height: 1.6;
-  margin: 14px 0 6px 0;
-  padding-left: 20px;
-}
-
-:deep(.doc-content h3 + p) {
-  padding-left: 20px;
-}
-
-/* ══════════════════════════════════════════
-   DOC-INDENT
-══════════════════════════════════════════ */
-:deep(.doc-content p.doc-indent),
-:deep(.doc-content .ql-indent-1) {
-  padding-left: 36px;
-  margin-bottom: 6px;
-}
-
-:deep(.doc-content .ql-indent-2) {
-  padding-left: 52px;
-}
-
-:deep(.doc-content .ql-indent-3) {
-  padding-left: 68px;
-}
-
-/* ══════════════════════════════════════════
-   STRONG / BOLD
-══════════════════════════════════════════ */
-:deep(.doc-content strong),
-:deep(.doc-content b) {
-  font-weight: 600;
-  color: #111827;
-}
-
-/* ══════════════════════════════════════════
-   QUILL ALIGNMENT
-══════════════════════════════════════════ */
-:deep(.doc-content .ql-align-justify) {
-  text-align: justify;
-}
-
-:deep(.doc-content .ql-align-center) {
-  text-align: center;
-}
-
-:deep(.doc-content .ql-align-right) {
-  text-align: right;
-}
-
-:deep(.doc-content .ql-align-left) {
-  text-align: left;
-}
-
-/* ══════════════════════════════════════════
-   LINKS
-══════════════════════════════════════════ */
-:deep(.doc-content a) {
-  color: #2563eb;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-/* ══════════════════════════════════════════
-   QUILL LIST
-══════════════════════════════════════════ */
-:deep(.doc-content ol),
-:deep(.doc-content ul) {
-  padding-left: 0;
-  margin: 4px 0 10px 0;
-  list-style: none;
-  counter-reset: list-0 list-1 list-2;
-}
-
-:deep(.doc-content li) {
-  position: relative;
-  padding-left: 1.8em;
-  margin-bottom: 6px;
-  line-height: 1.75;
-}
-
-:deep(.doc-content li::before) {
-  position: absolute;
-  left: 0;
-  width: 1.4em;
-  text-align: right;
-}
-
-:deep(.doc-content li[data-list="bullet"]::before) {
-  content: '•';
-  color: #6b7280;
-}
-
-:deep(.doc-content li[data-list="ordered"]) {
-  counter-increment: list-0;
-}
-
-:deep(.doc-content li[data-list="ordered"]::before) {
-  content: counter(list-0, decimal) '.';
-  color: #374151;
-  font-weight: 500;
-}
-
-:deep(.doc-content li[data-list="bullet"].ql-indent-1) {
-  padding-left: 3.2em;
-}
-
-:deep(.doc-content li[data-list="bullet"].ql-indent-1::before) {
-  content: '○';
-  left: 1.6em;
-  color: #9ca3af;
-}
-
-:deep(.doc-content li[data-list="bullet"].ql-indent-2) {
-  padding-left: 4.8em;
-}
-
-:deep(.doc-content li[data-list="bullet"].ql-indent-2::before) {
-  content: '▪';
-  left: 3.2em;
-  color: #9ca3af;
-}
-
-:deep(.doc-content li[data-list="ordered"].ql-indent-1) {
-  counter-increment: list-1;
-  padding-left: 3.2em;
-}
-
-:deep(.doc-content li[data-list="ordered"].ql-indent-1::before) {
-  content: counter(list-1, lower-alpha) '.';
-  left: 1.6em;
-}
-
-:deep(.doc-content ul:not([data-list]) li),
-:deep(.doc-content ol:not([data-list]) li) {
-  list-style: revert;
-  padding-left: 0;
-}
-
-:deep(.doc-content ul:not([data-list])),
-:deep(.doc-content ol:not([data-list])) {
-  padding-left: 1.5em;
-}
-
-/* ══════════════════════════════════════════
-   IMAGE
-══════════════════════════════════════════ */
-:deep(.doc-content img) {
-  max-width: 100%;
-  border-radius: 8px;
-  margin: 16px auto;
-  display: block;
-}
-
-/* ══════════════════════════════════════════
-   TABLE
-══════════════════════════════════════════ */
-:deep(.doc-content table) {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 12px 0 18px;
-  font-size: 14px;
-}
-
-:deep(.doc-content th) {
-  background: #f1f5f9;
-  font-weight: 600;
-  padding: 8px 12px;
-  border: 1px solid #e2e8f0;
-  text-align: left;
-}
-
-:deep(.doc-content td) {
-  padding: 8px 12px;
-  border: 1px solid #e2e8f0;
-  vertical-align: top;
-}
-
-:deep(.doc-content tr:nth-child(even) td) {
-  background: #f8fafc;
-}
-</style>
