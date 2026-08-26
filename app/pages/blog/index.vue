@@ -62,7 +62,7 @@
           @click="navigateTo(`/blog/${article.slug}`)"
         >
           <!-- Thumbnail Image -->
-          <div class="relative h-52 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+          <div class="relative aspect-[1200/630] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
             <img
               v-if="article.thumbnail"
               :src="resolveImageUrl(article.thumbnail)"

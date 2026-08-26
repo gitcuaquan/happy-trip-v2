@@ -2,7 +2,7 @@
   <div class="group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
    @click="emit('click', article)">
     <!-- Thumbnail -->
-    <div class="relative h-52 overflow-hidden bg-gray-50">
+    <div class="relative aspect-[1200/630] w-full overflow-hidden bg-gray-50">
       <img v-if="article.thumbnail" :src="resolveImageUrl(article.thumbnail)"
         :alt="article.title || article.name"
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">

@@ -98,10 +98,16 @@
 
         <!-- Trình soạn thảo Rich Text -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-3">
-          <label class="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center justify-between">
-            <span>Chi tiết nội dung <span class="text-red-500">*</span></span>
-            <span class="text-xs text-muted font-normal">Hỗ trợ chèn ảnh, định dạng H2, H3, bảng, danh sách</span>
-          </label>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-1">
+            <label class="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+              <span>Chi tiết nội dung</span>
+              <span class="text-red-500">*</span>
+            </label>
+            <span class="text-xs text-muted font-normal flex items-center gap-1.5">
+              <UIcon name="i-lucide-info" class="size-3.5 text-primary shrink-0" />
+              <span>Gợi ý ảnh chèn bài viết: Chiều rộng 800 – 1200px (16:9), dung lượng &lt; 5MB</span>
+            </span>
+          </div>
           <UiRichEditor
             v-model="form.content"
             placeholder="Soạn thảo nội dung bài viết tại đây..."
@@ -215,50 +221,149 @@
       <div class="space-y-6">
         <!-- Ảnh đại diện (Thumbnail) -->
         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-sm">
-          <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200 block">Ảnh đại diện (Thumbnail)</h3>
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+              <UIcon name="i-lucide-image" class="size-4 text-primary" />
+              <span>Ảnh đại diện (Thumbnail)</span>
+            </h3>
+            <UBadge label="Chuẩn SEO 1.91:1" color="primary" variant="subtle" size="xs" class="font-bold" />
+          </div>
 
+          <!-- Khung Preview khi đã có ảnh -->
           <div
             v-if="form.thumbnail"
-            class="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700"
+            class="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 aspect-[1200/630] bg-slate-900/5 dark:bg-slate-800/60 group cursor-pointer"
+            @click="pickThumbnail"
           >
-            <img :src="resolveImageUrl(form.thumbnail)" alt="thumbnail" class="w-full h-44 object-cover" />
+            <img
+              :src="resolveImageUrl(form.thumbnail)"
+              alt="thumbnail"
+              class="w-full h-full object-cover"
+              @load="onImageLoaded"
+            />
+            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+              <span class="text-white text-xs font-bold bg-black/60 px-3 py-1.5 rounded-lg flex items-center gap-1.5 backdrop-blur-sm">
+                <UIcon name="i-lucide-camera" class="size-3.5" />
+                Đổi ảnh đại diện
+              </span>
+            </div>
+
+            <!-- Badge thông số kích thước thực tế của ảnh đã tải -->
+            <div
+              v-if="thumbMeta"
+              class="absolute bottom-2 left-2 px-2.5 py-1 rounded-lg bg-slate-900/85 backdrop-blur-md text-[11px] font-mono text-white flex items-center gap-1.5 shadow-md"
+            >
+              <UIcon
+                :name="thumbMeta.isOptimal ? 'i-lucide-check-circle-2' : 'i-lucide-info'"
+                class="size-3.5"
+                :class="thumbMeta.isOptimal ? 'text-emerald-400' : 'text-amber-400'"
+              />
+              <span>{{ thumbMeta.width }} × {{ thumbMeta.height }} px ({{ thumbMeta.ratioText }})</span>
+            </div>
+
+            <!-- Nút xóa ảnh -->
             <UButton
               icon="i-lucide-x"
               color="error"
               variant="solid"
               size="xs"
-              class="absolute top-2 right-2 rounded-full"
-              @click="form.thumbnail = ''"
+              class="absolute top-2 right-2 rounded-full shadow-md z-10"
+              @click.stop="clearThumbnail"
               aria-label="Xóa ảnh đại diện"
             />
           </div>
 
+          <!-- Dropzone khi chưa có ảnh -->
           <div
             v-else
-            class="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6 text-center"
+            class="border-2 border-dashed rounded-xl p-5 text-center transition-all cursor-pointer select-none"
+            :class="isDragging ? 'border-primary bg-primary/5 dark:bg-primary/10 scale-[0.99]' : 'border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30'"
+            @click="pickThumbnail"
+            @dragover.prevent="isDragging = true"
+            @dragleave.prevent="isDragging = false"
+            @drop.prevent="onDropThumbnail"
           >
-            <UIcon name="i-lucide-image" class="size-10 text-slate-300 mx-auto mb-2" />
-            <p class="text-xs text-slate-500">Kích thước chuẩn: 1200 x 630 px</p>
+            <div class="size-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-2.5">
+              <UIcon name="i-lucide-upload-cloud" class="size-6" />
+            </div>
+            <p class="text-xs font-bold text-slate-800 dark:text-slate-200">
+              Nhấp hoặc kéo thả ảnh vào đây
+            </p>
+            <p class="text-[11px] text-muted mt-0.5">
+              Khuyến nghị chuẩn SEO: <span class="font-semibold text-slate-700 dark:text-slate-300">1200 × 630 px</span>
+            </p>
           </div>
 
-          <UButton
-            type="button"
-            block
-            color="primary"
-            variant="outline"
-            icon="i-lucide-upload"
-            :label="form.thumbnail ? 'Đổi ảnh đại diện' : 'Tải ảnh đại diện'"
-            :loading="uploadingThumb"
-            class="font-bold"
-            @click="pickThumbnail"
-          />
+          <!-- Nút hành động -->
+          <div class="flex items-center gap-2">
+            <UButton
+              type="button"
+              block
+              color="primary"
+              variant="outline"
+              icon="i-lucide-upload"
+              :label="form.thumbnail ? 'Đổi ảnh đại diện' : 'Tải ảnh đại diện'"
+              :loading="uploadingThumb"
+              class="font-bold flex-1"
+              @click="pickThumbnail"
+            />
+            <UButton
+              v-if="form.thumbnail"
+              type="button"
+              color="error"
+              variant="ghost"
+              icon="i-lucide-trash-2"
+              title="Xóa ảnh đại diện"
+              aria-label="Xóa ảnh đại diện"
+              @click="clearThumbnail"
+            />
+          </div>
+
           <input
             ref="thumbInput"
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml,image/avif"
             style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;"
             @change="onThumbnailSelected"
           />
+
+          <!-- Bảng hướng dẫn & gợi ý kích thước ảnh upload (LUÔN HIỂN THỊ) -->
+          <div class="rounded-xl p-3.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 space-y-2 text-left">
+            <div class="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+              <UIcon name="i-lucide-sparkles" class="size-3.5 text-amber-500 shrink-0" />
+              <span>Gợi ý kích thước & Định dạng chuẩn</span>
+            </div>
+            <ul class="text-[11px] space-y-1.5 text-slate-600 dark:text-slate-300 leading-relaxed pl-0.5">
+              <li class="flex items-start gap-1.5">
+                <span class="text-primary font-bold">▪</span>
+                <span>
+                  <strong class="text-slate-800 dark:text-white font-semibold">Kích thước chuẩn:</strong>
+                  <code class="px-1 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-primary font-bold text-[10.5px]">1200 × 630 px</code>
+                  (Tỷ lệ <strong>1.91:1</strong> tối ưu Facebook, Zalo Open Graph và giao diện HappyTrip).
+                </span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-primary font-bold">▪</span>
+                <span>
+                  <strong class="text-slate-800 dark:text-white font-semibold">Tỷ lệ tương thích:</strong>
+                  <code class="px-1 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-[10.5px]">16:9</code>
+                  (<code class="text-[10px]">1200×675</code> hoặc <code class="text-[10px]">1920×1080</code>, hệ thống tự động căn giữa).
+                </span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-primary font-bold">▪</span>
+                <span>
+                  <strong class="text-slate-800 dark:text-white font-semibold">Định dạng & Dung lượng:</strong> JPG, PNG, WebP (Tối đa <strong>10MB</strong>, khuyến nghị ≤ 2MB để tải trang nhanh).
+                </span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-primary font-bold">▪</span>
+                <span>
+                  <strong class="text-slate-800 dark:text-white font-semibold">Bố cục:</strong> Đặt nội dung/chủ thể trọng tâm ở giữa ảnh để hiển thị trọn vẹn trên cả mobile và desktop.
+                </span>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <!-- Tác giả & Thời gian đọc -->
@@ -397,23 +502,138 @@ const submitting = ref(false)
 const submitError = ref('')
 const contentError = ref('')
 
-// === Thumbnail upload ===
+// === Thumbnail upload & Metadata ===
 const thumbInput = ref<HTMLInputElement | null>(null)
 const uploadingThumb = ref(false)
+const isDragging = ref(false)
+const thumbMeta = ref<{ width: number; height: number; ratioText: string; isOptimal: boolean } | null>(null)
+
+function inspectImageDimensions(url: string) {
+  if (!url) {
+    thumbMeta.value = null
+    return
+  }
+  const resolved = resolveImageUrl(url)
+  const img = new Image()
+  img.onload = () => {
+    const width = img.naturalWidth
+    const height = img.naturalHeight
+    const ratio = width / (height || 1)
+    let ratioText = `${ratio.toFixed(2)}:1`
+    let isOptimal = false
+
+    if (Math.abs(ratio - (1200 / 630)) < 0.05) {
+      ratioText = '1.91:1 Chuẩn SEO'
+      isOptimal = true
+    } else if (Math.abs(ratio - (16 / 9)) < 0.05) {
+      ratioText = '16:9 Tương thích'
+      isOptimal = true
+    } else if (Math.abs(ratio - (4 / 3)) < 0.05) {
+      ratioText = '4:3'
+    } else if (Math.abs(ratio - 1) < 0.05) {
+      ratioText = '1:1 Vuông'
+    }
+
+    thumbMeta.value = {
+      width,
+      height,
+      ratioText,
+      isOptimal,
+    }
+  }
+  img.src = resolved
+}
+
+function onImageLoaded(e: Event) {
+  const img = e.target as HTMLImageElement
+  if (!img || !img.naturalWidth || !img.naturalHeight) return
+  const width = img.naturalWidth
+  const height = img.naturalHeight
+  const ratio = width / (height || 1)
+  let ratioText = `${ratio.toFixed(2)}:1`
+  let isOptimal = false
+
+  if (Math.abs(ratio - (1200 / 630)) < 0.05) {
+    ratioText = '1.91:1 Chuẩn SEO'
+    isOptimal = true
+  } else if (Math.abs(ratio - (16 / 9)) < 0.05) {
+    ratioText = '16:9 Tương thích'
+    isOptimal = true
+  } else if (Math.abs(ratio - (4 / 3)) < 0.05) {
+    ratioText = '4:3'
+  } else if (Math.abs(ratio - 1) < 0.05) {
+    ratioText = '1:1 Vuông'
+  }
+
+  thumbMeta.value = {
+    width,
+    height,
+    ratioText,
+    isOptimal,
+  }
+}
+
+watch(
+  () => form.thumbnail,
+  (newVal) => {
+    if (newVal) {
+      inspectImageDimensions(newVal)
+    } else {
+      thumbMeta.value = null
+    }
+  },
+  { immediate: true },
+)
+
+function clearThumbnail() {
+  form.thumbnail = ''
+  thumbMeta.value = null
+  if (thumbInput.value) thumbInput.value.value = ''
+}
 
 function pickThumbnail() {
   if (!thumbInput.value) return
   thumbInput.value.click()
 }
 
-async function onThumbnailSelected(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file || !adminToken.value) return
+async function uploadThumbnailFile(file: File) {
+  if (!file) return
+  if (!adminToken.value) {
+    toast.add({
+      title: 'Chưa đăng nhập tài khoản quản trị',
+      color: 'error',
+      icon: 'i-lucide-circle-x',
+    })
+    return
+  }
+
+  if (!file.type.startsWith('image/')) {
+    toast.add({
+      title: 'Định dạng tệp không hợp lệ',
+      description: 'Vui lòng chọn tệp hình ảnh (JPG, PNG, WebP, GIF, SVG, AVIF)',
+      color: 'error',
+      icon: 'i-lucide-circle-x',
+    })
+    return
+  }
+
+  const MAX_SIZE = 10 * 1024 * 1024
+  if (file.size > MAX_SIZE) {
+    toast.add({
+      title: 'Dung lượng ảnh quá lớn',
+      description: 'Vui lòng chọn ảnh có dung lượng dưới 10MB (Khuyến nghị ≤ 2MB)',
+      color: 'error',
+      icon: 'i-lucide-circle-x',
+    })
+    return
+  }
+
   uploadingThumb.value = true
   try {
     const url = await blogService.uploadFile(adminToken.value, file)
     if (url) {
       form.thumbnail = url
+      inspectImageDimensions(url)
       toast.add({
         title: 'Đã tải ảnh đại diện thành công',
         color: 'success',
@@ -426,7 +646,7 @@ async function onThumbnailSelected(e: Event) {
     console.error(err)
     toast.add({
       title: 'Không thể tải ảnh',
-      description: err?.message || 'Vui lòng thử lại',
+      description: err?.data?.statusMessage || err?.data?.message || err?.message || 'Vui lòng thử lại',
       color: 'error',
       icon: 'i-lucide-circle-x',
     })
@@ -436,17 +656,53 @@ async function onThumbnailSelected(e: Event) {
   }
 }
 
+async function onThumbnailSelected(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (file) {
+    await uploadThumbnailFile(file)
+  }
+}
+
+async function onDropThumbnail(e: DragEvent) {
+  isDragging.value = false
+  const file = e.dataTransfer?.files?.[0]
+  if (file) {
+    await uploadThumbnailFile(file)
+  }
+}
+
 async function onUploadImage(file: File, cb: (url: string) => void) {
   if (!adminToken.value) return
+  if (!file.type.startsWith('image/')) {
+    toast.add({
+      title: 'Định dạng tệp không hợp lệ',
+      description: 'Vui lòng chọn tệp hình ảnh để chèn vào nội dung',
+      color: 'error',
+      icon: 'i-lucide-circle-x',
+    })
+    return
+  }
+  const MAX_SIZE = 10 * 1024 * 1024
+  if (file.size > MAX_SIZE) {
+    toast.add({
+      title: 'Dung lượng ảnh quá lớn',
+      description: 'Ảnh chèn vào bài viết tối đa 10MB (Khuyến nghị 800-1200px, < 5MB)',
+      color: 'error',
+      icon: 'i-lucide-circle-x',
+    })
+    return
+  }
+
   try {
     const url = await blogService.uploadFile(adminToken.value, file)
     if (url) {
       cb(resolveImageUrl(url))
     }
-  } catch (err) {
+  } catch (err: any) {
     console.error(err)
     toast.add({
       title: 'Không thể tải ảnh vào nội dung',
+      description: err?.data?.statusMessage || err?.data?.message || err?.message || 'Vui lòng thử lại',
       color: 'error',
       icon: 'i-lucide-circle-x',
     })

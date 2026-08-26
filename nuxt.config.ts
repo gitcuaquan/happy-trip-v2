@@ -50,6 +50,9 @@ export default defineNuxtConfig({
     viewTransition: true,
   },
   compatibilityDate: "2025-01-15",
+  ogImage: {
+    enabled: false,
+  },
 
   eslint: {
     config: {

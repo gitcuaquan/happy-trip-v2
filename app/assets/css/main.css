@@ -183,46 +183,65 @@
 /* Tables */
 .article-content table, .doc-content table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   margin: 1.5rem 0;
   font-size: 0.9375rem;
+  border: 1px solid #cbd5e1;
   border-radius: 0.75rem;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
 }
 
 .article-content th, .doc-content th {
-  background-color: #f8fafc;
+  background-color: var(--ui-primary);
   font-weight: 700;
-  padding: 0.75rem 1rem;
-  border: 1px solid #e2e8f0;
+  padding: 0.625rem 0.875rem;
+  border-bottom: 1px solid #cbd5e1;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
   text-align: left;
-  color: #0f172a;
+  color: #fff;
+}
+
+.article-content th:last-child, .doc-content th:last-child {
+  border-right: none;
 }
 
 .article-content td, .doc-content td {
-  padding: 0.75rem 1rem;
-  border: 1px solid #e2e8f0;
+  padding: 0.625rem 0.875rem;
+  border-bottom: 1px solid #cbd5e1;
+  border-right: 1px solid #cbd5e1;
   vertical-align: top;
+  background-color: #fff;
 }
 
-.article-content tr:nth-child(even) td, .doc-content tr:nth-child(even) td {
-  background-color: #f8fafc;
+.article-content td:last-child, .doc-content td:last-child {
+  border-right: none;
 }
 
-:is(.dark .article-content, .dark .doc-content) table,
-:is(.dark .article-content, .dark .doc-content) th,
-:is(.dark .article-content, .dark .doc-content) td {
-  border-color: #1e293b;
+.article-content tr:last-child td, .doc-content tr:last-child td {
+  border-bottom: none;
 }
 
+/* TipTap table wrapper */
+.article-content .tableWrapper, .doc-content .tableWrapper {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+.article-content .tableWrapper table, .doc-content .tableWrapper table {
+  margin: 0;
+}
+
+:is(.dark .article-content, .dark .doc-content) table {
+  border-color: #334155;
+}
 :is(.dark .article-content, .dark .doc-content) th {
-  background-color: #0f172a;
-  color: #f8fafc;
+  background-color: var(--ui-primary);
+  color: #fff;
+  border-bottom-color: #334155;
 }
-
-:is(.dark .article-content, .dark .doc-content) tr:nth-child(even) td {
-  background-color: rgba(15, 23, 42, 0.5);
+:is(.dark .article-content, .dark .doc-content) td {
+  border-color: #334155;
+  background-color: transparent;
 }
 
 /* Horizontal Rules */

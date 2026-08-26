@@ -99,11 +99,11 @@
         </div>
 
         <!-- Featured Image -->
-        <div v-if="article.thumbnail" class="rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800">
+        <div v-if="article.thumbnail" class="rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800 aspect-[1200/630] w-full bg-slate-100 dark:bg-slate-800">
           <img
             :src="resolveImageUrl(article.thumbnail)"
             :alt="article.title"
-            class="w-full h-auto max-h-[460px] object-cover"
+            class="w-full h-full object-cover"
           />
         </div>
 
@@ -161,7 +161,7 @@
               class="group rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col"
               @click="navigateTo(`/blog/${rel.slug}`)"
             >
-              <div class="h-36 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+              <div class="aspect-[1200/630] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                 <img
                   v-if="rel.thumbnail"
                   :src="resolveImageUrl(rel.thumbnail)"
@@ -207,7 +207,13 @@ const relatedArticles = computed<Article[]>(() => (responseData.value as any)?.r
 const siteUrl = 'https://happytrip.vn'
 const pageTitle = computed(() => article.value?.meta_title || `${article.value?.title || 'Cẩm Nang Du Lịch'} - Happy Trip`)
 const pageDescription = computed(() => article.value?.meta_description || article.value?.excerpt || 'Kinh nghiệm du lịch và đặt xe riêng an toàn, tiện lợi từ Happy Trip.')
-const pageImage = computed(() => resolveImageUrl(article.value?.og_image || article.value?.thumbnail || ''))
+const pageImage = computed(() => {
+  const raw = article.value?.og_image || article.value?.thumbnail || ''
+  const resolved = resolveImageUrl(raw)
+  if (!resolved) return `${siteUrl}/images/banner.webp`
+  if (resolved.startsWith('http')) return resolved
+  return `${siteUrl}${resolved}`
+})
 const canonicalUrl = computed(() => article.value?.canonical_url || `${siteUrl}/blog/${slug.value}`)
 
 useSeoMeta({
