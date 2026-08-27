@@ -27,9 +27,9 @@
   <!-- Main Navigation Header with Nuxt UI NavigationMenu -->
   <UHeader mode="drawer" class="border-b border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md sticky top-0 z-40">
     <template #left>
-      <NuxtLink to="/" class="flex items-center gap-2">
+      <div class="flex items-center gap-2">
         <AppLogo class="w-auto h-7 sm:h-8 shrink-0" />
-      </NuxtLink>
+      </div>
     </template>
 
     <!-- Desktop Navigation Menu using Nuxt UI UNavigationMenu with Slots -->
@@ -121,50 +121,53 @@
               <UIcon name="i-lucide-route" class="size-6 text-primary shrink-0" />
               <div>
                 <h4 class="text-sm font-bold text-slate-900 dark:text-white">
-                  Thuê Xe Riêng Đi Tỉnh 2 Chiều & Sân Bay
+                  {{ bannerTop.title }}
                 </h4>
                 <p class="text-xs text-slate-500 dark:text-slate-400">
-                  Đón trả tận nhà · Giá trọn gói minh bạch · Phục vụ 24/7
+                  {{ bannerTop.subtitle }}
                 </p>
               </div>
             </div>
             <UButton
-              to="/#dich-vu"
+              :to="bannerTop.cta_link"
               variant="ghost"
               color="primary"
               size="sm"
               trailing-icon="i-lucide-arrow-right"
               class="font-semibold text-xs py-1"
             >
-              Xem cam kết dịch vụ
+              {{ bannerTop.cta_text }}
             </UButton>
           </div>
 
-          <!-- 4 Multi-Columns Grid -->
-          <div class="grid grid-cols-4 gap-4">
+          <!-- Multi-Columns Grid -->
+          <div
+            class="grid gap-4"
+            :class="dynamicMegaColumns.length <= 4 ? 'grid-cols-4' : 'grid-cols-4'"
+          >
             <div
-              v-for="col in megaMenuColumns"
+              v-for="col in dynamicMegaColumns"
               :key="col.title"
               class="space-y-2.5"
             >
               <!-- Column Title -->
               <div class="flex items-center gap-1.5 pb-1.5 border-b border-slate-100 dark:border-slate-800">
-                <UIcon :name="col.icon" class="size-4 text-primary shrink-0" />
+                <UIcon :name="col.icon || 'i-lucide-route'" class="size-4 text-primary shrink-0" />
                 <span class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wide truncate">
                   {{ col.title }}
                 </span>
               </div>
 
-              <!-- Route Items -->
+              <!-- Route / Article Items -->
               <div class="space-y-1">
                 <NuxtLink
                   v-for="item in col.routes"
-                  :key="item.slug"
-                  :to="`/${item.slug}`"
+                  :key="item.link || item.slug"
+                  :to="item.link ? (item.link.startsWith('/') ? item.link : `/${item.link}`) : `/${item.slug}`"
                   class="group flex flex-col p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/70 transition-colors duration-150"
                 >
                   <div class="flex items-start justify-between gap-1 text-xs xl:text-[13px] font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary leading-snug">
-                    <span>{{ item.name }}</span>
+                    <span class="line-clamp-2">{{ item.name }}</span>
                     <UIcon name="i-lucide-arrow-up-right" class="size-3.5 text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0 mt-0.5" />
                   </div>
                   <span v-if="item.desc" class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
@@ -178,27 +181,20 @@
           <!-- Mega Menu Footer Bar -->
           <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
             <div class="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-300 font-medium">
-              <span class="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
-                <UIcon name="i-lucide-check-circle-2" class="size-4 text-emerald-500" />
-                Bao trọn xe 100%
-              </span>
-              <span>•</span>
-              <span class="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
-                <UIcon name="i-lucide-clock" class="size-4 text-primary" />
-                Đón đúng giờ hẹn
-              </span>
-              <span>•</span>
-              <span class="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
-                <UIcon name="i-lucide-badge-percent" class="size-4 text-amber-500" />
-                0đ phụ phí ẩn
-              </span>
+              <template v-for="(txt, idx) in footerBar.items" :key="idx">
+                <span class="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
+                  <UIcon name="i-lucide-check-circle-2" class="size-4 text-emerald-500" />
+                  {{ txt }}
+                </span>
+                <span v-if="idx < footerBar.items.length - 1">•</span>
+              </template>
             </div>
             <a
-              href="tel:0972970000"
+              :href="`tel:${(footerBar.hotline || '0972970000').replace(/\\s/g, '')}`"
               class="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"
             >
               <UIcon name="i-lucide-phone" class="size-3.5" />
-              Tổng đài 24/7: 0972 97 0000
+              Tổng đài 24/7: {{ footerBar.hotline }}
             </a>
           </div>
         </div>
@@ -304,11 +300,33 @@
 
 <script lang="ts" setup>
 import type { NavigationMenuItem } from '@nuxt/ui'
+import { menuService } from '~/services/menu.service'
+import type { MegaMenuData } from '~/type'
 
 const { isLoggedIn, isAdmin, getCustomer, getAdmin, logOut, logOutAdmin } = useAuth()
 
 const showCreatePwd = ref(false)
 const needCreatePassword = computed(() => isLoggedIn.value && getCustomer.value?.has_password === false)
+
+// Nạp dữ liệu Mega Menu Động từ CSDL (Non-blocking, không chặn render)
+const { data: menuApiRes } = useLazyAsyncData('public-mega-menu-routes', () =>
+  menuService.getPublicMenu('routes'),
+  { default: () => null }
+)
+
+const megaMenuData = computed<MegaMenuData | null>(() => menuApiRes.value || null)
+
+const bannerTop = computed(() => megaMenuData.value?.banner_top || {
+  title: 'Thuê Xe Riêng Đi Tỉnh 2 Chiều & Sân Bay',
+  subtitle: 'Đón trả tận nhà · Giá trọn gói minh bạch · Phục vụ 24/7',
+  cta_text: 'Xem cam kết dịch vụ',
+  cta_link: '/#dich-vu'
+})
+
+const footerBar = computed(() => megaMenuData.value?.footer_bar || {
+  items: ['Bao trọn xe 100%', 'Đón đúng giờ hẹn', '0đ phụ phí ẩn'],
+  hotline: '0972 97 0000'
+})
 
 // 1. Danh sách Dịch vụ xe riêng (Đã bỏ các badge không cần thiết)
 const privateCarServices = [
@@ -338,8 +356,8 @@ const privateCarServices = [
   }
 ]
 
-// 2. Danh sách Tuyến xe đa cột Mega Menu (Đã bỏ các badge Hot, Tuyến Vàng, Cao Tốc, Đường Dài)
-const megaMenuColumns = [
+// 2. Danh sách Tuyến xe đa cột Mega Menu (Fallback tĩnh nếu DB trống)
+const fallbackMegaMenuColumns = [
   {
     title: 'Đưa Đón Sân Bay',
     icon: 'i-lucide-plane',
@@ -352,7 +370,8 @@ const megaMenuColumns = [
       {
         name: 'Sân bay TSN ⇄ Vũng Tàu',
         slug: 'xe-rieng-vung-tau-di-san-bay-tan-son-nhat',
-        desc: 'Cao tốc Long Thành êm ái'
+        desc: 'Cao tốc Long Thành êm ái',
+        link: '/xe-rieng-vung-tau-di-san-bay-tan-son-nhat'
       }
     ]
   },
@@ -363,27 +382,32 @@ const megaMenuColumns = [
       {
         name: 'Sài Gòn ⇄ Vũng Tàu / Hồ Tràm',
         slug: 'xe-rieng-tphcm-di-vung-tau',
-        desc: 'Đón trả tận resort & khách sạn'
+        desc: 'Đón trả tận resort & khách sạn',
+        link: '/xe-rieng-tphcm-di-vung-tau'
       },
       {
         name: 'Sài Gòn ⇄ Đồng Nai',
         slug: 'xe-rieng-tphcm-di-dong-nai',
-        desc: 'Biên Hòa, Long Khánh, KCN'
+        desc: 'Biên Hòa, Long Khánh, KCN',
+        link: '/xe-rieng-tphcm-di-dong-nai'
       },
       {
         name: 'Sài Gòn ⇄ Tây Ninh',
         slug: 'xe-rieng-tphcm-di-tay-ninh',
-        desc: 'Núi Bà Đen, Tòa Thánh'
+        desc: 'Núi Bà Đen, Tòa Thánh',
+        link: '/xe-rieng-tphcm-di-tay-ninh'
       },
       {
         name: 'Sài Gòn ⇄ Lâm Đồng (Đà Lạt)',
         slug: 'xe-rieng-tphcm-di-da-lat',
-        desc: 'Du lịch nghỉ dưỡng phố núi'
+        desc: 'Du lịch nghỉ dưỡng phố núi',
+        link: '/xe-rieng-tphcm-di-da-lat'
       },
       {
         name: 'Sài Gòn ⇄ Khánh Hòa (Nha Trang)',
         slug: 'xe-rieng-tphcm-di-nha-trang',
-        desc: 'Cao tốc Bắc Nam liền mạch'
+        desc: 'Cao tốc Bắc Nam liền mạch',
+        link: '/xe-rieng-tphcm-di-nha-trang'
       }
     ]
   },
@@ -394,27 +418,32 @@ const megaMenuColumns = [
       {
         name: 'Sài Gòn ⇄ Cần Thơ',
         slug: 'xe-rieng-tphcm-di-can-tho',
-        desc: 'Thủ phủ miền Tây Nam Bộ'
+        desc: 'Thủ phủ miền Tây Nam Bộ',
+        link: '/xe-rieng-tphcm-di-can-tho'
       },
       {
         name: 'Sài Gòn ⇄ An Giang',
         slug: 'xe-rieng-tphcm-di-an-giang',
-        desc: 'Châu Đốc, Miếu Bà Chúa Xứ'
+        desc: 'Châu Đốc, Miếu Bà Chúa Xứ',
+        link: '/xe-rieng-tphcm-di-an-giang'
       },
       {
         name: 'Sài Gòn ⇄ Đồng Tháp',
         slug: 'xe-rieng-tphcm-di-dong-thap',
-        desc: 'Cao Lãnh, Làng hoa Sa Đéc'
+        desc: 'Cao Lãnh, Làng hoa Sa Đéc',
+        link: '/xe-rieng-tphcm-di-dong-thap'
       },
       {
         name: 'Sài Gòn ⇄ Vĩnh Long',
         slug: 'xe-rieng-tphcm-di-vinh-long',
-        desc: 'Cầu Mỹ Thuận 2 nhanh chóng'
+        desc: 'Cầu Mỹ Thuận 2 nhanh chóng',
+        link: '/xe-rieng-tphcm-di-vinh-long'
       },
       {
         name: 'Sài Gòn ⇄ Cà Mau',
         slug: 'xe-rieng-tphcm-di-ca-mau',
-        desc: 'Đất Mũi, trọn gói khứ hồi'
+        desc: 'Đất Mũi, trọn gói khứ hồi',
+        link: '/xe-rieng-tphcm-di-ca-mau'
       }
     ]
   },
@@ -425,16 +454,37 @@ const megaMenuColumns = [
       {
         name: 'Sài Gòn ⇄ Đắk Lắk',
         slug: 'xe-rieng-tphcm-di-dak-lak',
-        desc: 'Buôn Ma Thuột thủ phủ cà phê'
+        desc: 'Buôn Ma Thuột thủ phủ cà phê',
+        link: '/xe-rieng-tphcm-di-dak-lak'
       },
       {
         name: 'Sài Gòn ⇄ Gia Lai',
         slug: 'xe-rieng-tphcm-di-gia-lai',
-        desc: 'Pleiku, Biển Hồ phố núi'
+        desc: 'Pleiku, Biển Hồ phố núi',
+        link: '/xe-rieng-tphcm-di-gia-lai'
       }
     ]
   }
 ]
+
+// Cột Mega Menu Động tính toán từ API CSDL
+const dynamicMegaColumns = computed(() => {
+  if (megaMenuData.value?.columns?.length) {
+    return megaMenuData.value.columns.map(col => ({
+      title: col.title,
+      icon: col.icon || 'i-lucide-route',
+      routes: (col.items || []).filter(item => item.is_active !== false).map(item => ({
+        name: item.title,
+        desc: item.description || '',
+        slug: item.link.startsWith('/') ? item.link.substring(1) : item.link,
+        link: item.link,
+        item_type: item.item_type,
+        badge: item.badge
+      }))
+    }))
+  }
+  return fallbackMegaMenuColumns
+})
 
 // 3. Khởi tạo menu items với slots và cấu trúc đa cấp cho Mobile
 const items = computed<NavigationMenuItem[]>(() => {
@@ -451,13 +501,13 @@ const items = computed<NavigationMenuItem[]>(() => {
     {
       label: 'Tuyến Đi Tỉnh 2 Chiều',
       slot: 'routes',
-      children: megaMenuColumns.map(col => ({
+      children: dynamicMegaColumns.value.map(col => ({
         label: col.title,
         icon: col.icon,
         children: col.routes.map(r => ({
           label: r.name,
           description: r.desc,
-          to: `/${r.slug}`
+          to: r.link ? (r.link.startsWith('/') ? r.link : `/${r.link}`) : `/${r.slug}`
         }))
       }))
     },
@@ -492,7 +542,7 @@ const menuItems = computed(() => {
       {
         label: 'Chuyến xe của tôi',
         icon: 'i-lucide-package',
-        onSelect: () => navigateTo('/history')
+        onSelect: () => { navigateTo('/history') }
       }
     ]
   ]
@@ -510,7 +560,7 @@ const menuItems = computed(() => {
       label: 'Đăng xuất',
       icon: 'i-lucide-log-out',
       color: 'error' as const,
-      onSelect: logOut
+      onSelect: () => { logOut() }
     }
   ])
   return groups
@@ -521,7 +571,12 @@ const adminMenuItems = computed(() => [
     {
       label: 'Quản lý bài viết',
       icon: 'i-lucide-file-text',
-      onSelect: () => navigateTo('/admin/blog/')
+      onSelect: () => { navigateTo('/admin/blog/') }
+    },
+    {
+      label: 'Quản lý Mega Menu',
+      icon: 'i-lucide-layout-grid',
+      onSelect: () => { navigateTo('/admin/menu/') }
     }
   ],
   [
@@ -529,7 +584,7 @@ const adminMenuItems = computed(() => [
       label: 'Đăng xuất',
       icon: 'i-lucide-log-out',
       color: 'error' as const,
-      onSelect: logOutAdmin
+      onSelect: () => { logOutAdmin() }
     }
   ]
 ])

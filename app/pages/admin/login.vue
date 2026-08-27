@@ -126,8 +126,9 @@ async function onSubmit(_e: FormSubmitEvent<Schema>) {
   errorMsg.value = ''
   try {
     const { token, admin } = await adminService.login(form.username, form.password)
-    setAdminAuth(token, admin)
-    await navigateTo('/admin/blog')
+    const route = useRoute()
+    const redirectUrl = (route.query.redirect as string) || '/admin/blog'
+    await navigateTo(redirectUrl)
   } catch (err: any) {
     errorMsg.value =
       err?.data?.statusMessage ||

@@ -54,8 +54,31 @@ export const useAuth = () => {
         httpOnly: false,
     })
 
-    const isAdmin = computed(() => !!adminToken.value)
-    const getAdmin = computed(() => adminUser.value)
+    function isJwtValid(tokenStr: string | null): boolean {
+        if (!tokenStr) return false
+        try {
+            const parts = tokenStr.split('.')
+            if (parts.length !== 3 || !parts[1]) return false
+            const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+            const payload = JSON.parse(
+                decodeURIComponent(
+                    atob(base64)
+                        .split('')
+                        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                        .join('')
+                )
+            )
+            if (payload.exp && payload.exp * 1000 < Date.now()) {
+                return false
+            }
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    const isAdmin = computed(() => isJwtValid(adminToken.value))
+    const getAdmin = computed(() => (isAdmin.value ? adminUser.value : null))
 
     function setAdminAuth(newToken: string, admin: AdminProfile) {
         adminToken.value = newToken

@@ -2,6 +2,8 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
 import { Admin } from '../models/Admin'
 import { Article } from '../models/Article'
+import { MegaMenu } from '../models/MegaMenu'
+import { defaultRoutesMegaMenu } from '../utils/defaultMenu'
 
 export default defineNitroPlugin(async () => {
   const config = useRuntimeConfig()
@@ -88,6 +90,13 @@ export default defineNitroPlugin(async () => {
         },
       ])
       console.log('🎉 [MongoDB] Đã khởi tạo các bài viết mẫu chuẩn định vị thương hiệu!')
+    }
+
+    // 3. Tự động seed Mega Menu routes ban đầu nếu chưa có
+    const routesMenuCount = await MegaMenu.countDocuments({ menu_key: 'routes' })
+    if (routesMenuCount === 0) {
+      await MegaMenu.create(defaultRoutesMegaMenu)
+      console.log('🎉 [MongoDB] Đã khởi tạo cấu trúc Mega Menu Tuyến Đi Tỉnh 2 Chiều!')
     }
   } catch (error) {
     console.error('❌ [MongoDB] Kết nối thất bại:', error)

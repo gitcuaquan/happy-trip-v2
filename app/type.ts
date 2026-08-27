@@ -400,3 +400,55 @@ export interface UploadResponse {
   fileName?: string
   data?: { url?: string; path?: string }
 }
+
+// ========== MEGA MENU TYPES ==========
+export interface MegaMenuItem {
+  title: string
+  description?: string
+  link: string
+  item_type: 'route' | 'article' | 'custom'
+  article_id?: string
+  badge?: string
+  order?: number
+  is_active: boolean
+}
+
+export interface MegaMenuColumn {
+  column_id: string
+  title: string
+  icon: string
+  order?: number
+  items: MegaMenuItem[]
+}
+
+export interface MegaMenuBannerTop {
+  title: string
+  subtitle: string
+  cta_text: string
+  cta_link: string
+}
+
+export interface MegaMenuFooterBar {
+  items: string[]
+  hotline: string
+}
+
+export interface MegaMenuData {
+  id?: string
+  menu_key: string
+  title: string
+  banner_top: MegaMenuBannerTop
+  columns: MegaMenuColumn[]
+  footer_bar: MegaMenuFooterBar
+  is_active: boolean
+  updated_at?: string
+}
+
+export interface MegaMenuPayload {
+  menu_key?: string
+  title?: string
+  banner_top?: MegaMenuBannerTop
+  columns: MegaMenuColumn[]
+  footer_bar?: MegaMenuFooterBar
+  is_active?: boolean
+}
