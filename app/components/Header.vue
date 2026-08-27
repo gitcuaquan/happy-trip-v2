@@ -345,11 +345,6 @@ const megaMenuColumns = [
     icon: 'i-lucide-plane',
     routes: [
       {
-        name: 'Sân bay TSN ⇄ Sài Gòn',
-        slug: 'xe-rieng-tphcm-di-san-bay-tan-son-nhat',
-        desc: 'Đón trả tận sảnh ga 24/7'
-      },
-      {
         name: 'Sân bay TSN ⇄ Vũng Tàu',
         slug: 'xe-rieng-vung-tau-di-san-bay-tan-son-nhat',
         desc: 'Cao tốc Long Thành êm ái'
