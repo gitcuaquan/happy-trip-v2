@@ -245,11 +245,33 @@ useSchemaOrg([
   },
 ]);
 
+const route = useRoute();
+
 const scrollToTopBooking = () => {
   if (typeof window !== "undefined") {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    const el = document.getElementById("dat-xe");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 };
+
+onMounted(() => {
+  if (route.hash === "#dat-xe" || route.hash === "#booking") {
+    setTimeout(scrollToTopBooking, 150);
+  }
+});
+
+watch(
+  () => route.hash,
+  (hash) => {
+    if (hash === "#dat-xe" || hash === "#booking") {
+      scrollToTopBooking();
+    }
+  }
+);
 </script>
 
 <template>

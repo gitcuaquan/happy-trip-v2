@@ -159,7 +159,7 @@ import { gsap } from 'gsap'
 const year = new Date().getFullYear()
 
 const serviceLinks = [
-  { label: 'Đặt xe trực tuyến', to: '/' },
+  { label: 'Đặt xe trực tuyến', to: '/#dat-xe' },
   { label: 'Xe riêng 5 chỗ', to: '/#dich-vu-5-cho' },
   { label: 'Xe riêng 7 chỗ', to: '/#dich-vu-7-cho' },
   { label: 'Đưa đón Sân bay TSN', to: '/xe-rieng-tphcm-di-san-bay-tan-son-nhat' },

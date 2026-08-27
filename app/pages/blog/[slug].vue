@@ -125,7 +125,7 @@
           </div>
           <div class="flex items-center gap-3 shrink-0">
             <UButton
-              to="/"
+              to="/#dat-xe"
               size="lg"
               color="primary"
               variant="solid"

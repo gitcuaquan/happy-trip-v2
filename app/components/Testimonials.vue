@@ -130,7 +130,7 @@ const testimonials: Testimonial[] = [
           Khách hàng nói gì
         </p>
         <h2 class="text-3xl md:text-4xl font-bold">
-          Hơn 10.000+ khách hàng tin tưởng
+          Hơn 60.000+ khách hàng tin tưởng
         </h2>
         <div class="mx-auto w-16 h-1 rounded-full bg-primary mt-4" />
         <p class="mt-4 text-muted max-w-xl mx-auto">

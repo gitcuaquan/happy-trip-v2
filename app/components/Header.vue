@@ -441,7 +441,7 @@ const items = computed<NavigationMenuItem[]>(() => {
   const all: NavigationMenuItem[] = [
     {
       label: 'Đặt Xe',
-      to: '/',
+      to: '/#dat-xe',
     },
     {
       label: 'Dịch Vụ Xe Riêng',
