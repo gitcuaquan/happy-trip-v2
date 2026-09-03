@@ -57,6 +57,8 @@
               <USelect
                 v-model="form.category"
                 :items="categoryOptions"
+                value-key="value"
+                label-key="label"
                 class="w-full"
                 size="md"
               />
@@ -87,14 +89,101 @@
           <UFormField
             label="Gắn vào Tuyến xe / Landing Page (Tùy chọn)"
             name="route_slug"
-            help="Chọn tuyến xe nếu muốn bài viết này tự động hiển thị trên trang Landing Page của tuyến đó (ở Mega Menu)"
+            help="Chọn hoặc tìm kiếm tuyến xe nếu muốn bài viết này tự động hiển thị trên trang Landing Page của tuyến đó"
           >
-            <USelect
-              v-model="form.route_slug"
-              :items="routeOptions"
-              class="w-full"
-              size="md"
-            />
+            <div ref="routeContainerRef" class="relative space-y-2">
+              <!-- Search box / Trigger Input -->
+              <div class="relative">
+                <UInput
+                  v-model="routeSearch"
+                  :placeholder="selectedRouteObj ? `Đang chọn: ${selectedRouteObj.name}` : 'Tìm kiếm và chọn tuyến xe (VD: Vũng Tàu, Đà Lạt, Sân bay...)'"
+                  leading-icon="i-lucide-search"
+                  class="w-full cursor-pointer"
+                  @focus="showRouteDropdown = true"
+                  @click="showRouteDropdown = true"
+                >
+                  <template #trailing>
+                    <div class="flex items-center gap-1">
+                      <UButton
+                        v-if="form.route_slug"
+                        type="button"
+                        size="xs"
+                        variant="ghost"
+                        color="error"
+                        icon="i-lucide-x"
+                        class="p-1"
+                        title="Bỏ gắn tuyến xe"
+                        @click.stop="clearRoute"
+                      />
+                      <UIcon
+                        name="i-lucide-chevron-down"
+                        class="size-4 text-slate-400 transition-transform duration-200"
+                        :class="{ 'rotate-180': showRouteDropdown }"
+                      />
+                    </div>
+                  </template>
+                </UInput>
+
+                <!-- Search Results Dropdown -->
+                <div
+                  v-if="showRouteDropdown"
+                  class="absolute left-0 right-0 top-full mt-1.5 max-h-64 overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl z-50 p-1.5 space-y-0.5"
+                >
+                  <!-- Option: Độc lập -->
+                  <button
+                    type="button"
+                    class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between cursor-pointer transition-colors"
+                    :class="!form.route_slug ? 'text-primary bg-primary/10' : 'text-slate-600 dark:text-slate-300'"
+                    @click="selectRoute('')"
+                  >
+                    <span>-- Không gắn vào tuyến xe nào (Bài viết độc lập) --</span>
+                    <UIcon v-if="!form.route_slug" name="i-lucide-check" class="size-4 text-primary" />
+                  </button>
+
+                  <div class="h-px bg-slate-100 dark:bg-slate-800 my-1" />
+
+                  <!-- Filtered Routes -->
+                  <div v-if="filteredRouteOptions.length === 0" class="px-3 py-4 text-xs text-center text-slate-400">
+                    Không tìm thấy tuyến xe nào khớp với "{{ routeSearch }}"
+                  </div>
+
+                  <button
+                    v-for="r in filteredRouteOptions"
+                    :key="r.slug"
+                    type="button"
+                    class="w-full text-left px-3 py-2 rounded-lg text-xs hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between cursor-pointer transition-colors"
+                    :class="form.route_slug === r.slug ? 'text-primary bg-primary/10 font-bold' : 'text-slate-700 dark:text-slate-200'"
+                    @click="selectRoute(r.slug)"
+                  >
+                    <div class="min-w-0 flex-1 pr-2">
+                      <div class="font-medium truncate">{{ r.name }}</div>
+                      <div class="text-[11px] text-slate-400 font-mono">/{{ r.slug }}</div>
+                    </div>
+                    <UIcon v-if="form.route_slug === r.slug" name="i-lucide-check" class="size-4 text-primary shrink-0" />
+                  </button>
+                </div>
+              </div>
+
+              <!-- Selected Route Preview Badge -->
+              <div v-if="selectedRouteObj" class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-xs">
+                <div class="flex items-center gap-2 min-w-0">
+                  <UIcon name="i-lucide-route" class="size-4 text-emerald-600 shrink-0" />
+                  <div class="truncate">
+                    <span class="font-bold text-emerald-800 dark:text-emerald-300">Đang gắn vào: </span>
+                    <span class="text-emerald-700 dark:text-emerald-400 font-semibold">{{ selectedRouteObj.name }}</span>
+                    <span class="text-emerald-600/80 font-mono ml-1.5">(/{{ selectedRouteObj.slug }})</span>
+                  </div>
+                </div>
+                <UButton
+                  size="xs"
+                  variant="ghost"
+                  color="error"
+                  icon="i-lucide-x"
+                  label="Gỡ gắn tuyến"
+                  @click="clearRoute"
+                />
+              </div>
+            </div>
           </UFormField>
 
           <UFormField label="Đoạn tóm tắt mở đầu (Excerpt)" name="excerpt">
@@ -366,16 +455,43 @@ const categoryOptions = [
   { label: 'Chính Sách & Điều Khoản Pháp Lý (Policy)', value: 'policy' },
 ]
 
-const routeOptions = computed(() => {
-  const routes = generateAllRoutes().map(r => ({
-    label: `${r.name} (/${r.slug})`,
-    value: r.slug,
-  }))
-  return [
-    { label: '-- Không gắn vào tuyến xe nào (Bài viết độc lập) --', value: '' },
-    ...routes,
-  ]
+import { onClickOutside } from '@vueuse/core'
+
+const allRoutes = computed(() => generateAllRoutes())
+const routeSearch = ref('')
+const showRouteDropdown = ref(false)
+const routeContainerRef = ref<HTMLElement | null>(null)
+
+onClickOutside(routeContainerRef, () => {
+  showRouteDropdown.value = false
 })
+
+const filteredRouteOptions = computed(() => {
+  const query = routeSearch.value.trim().toLowerCase()
+  if (!query) return allRoutes.value
+  return allRoutes.value.filter(
+    r => r.name.toLowerCase().includes(query) || r.slug.toLowerCase().includes(query)
+  )
+})
+
+const selectedRouteObj = computed(() => {
+  if (!form.route_slug) return null
+  return allRoutes.value.find(r => r.slug === form.route_slug) ?? {
+    name: form.route_slug,
+    slug: form.route_slug
+  }
+})
+
+function selectRoute(slug: string) {
+  form.route_slug = slug
+  showRouteDropdown.value = false
+  routeSearch.value = ''
+}
+
+function clearRoute() {
+  form.route_slug = ''
+  routeSearch.value = ''
+}
 
 const schema = z.object({
   title: z.string().min(1, 'Vui lòng nhập tiêu đề bài viết'),
@@ -560,20 +676,20 @@ async function onSubmit(_e: FormSubmitEvent<{ title: string; slug: string }>) {
   submitError.value = ''
   try {
     const payload: PagePayload = {
-      title: form.title,
-      slug: form.slug,
-      thumbnail: form.thumbnail || undefined,
+      title: form.title.trim(),
+      slug: form.slug.trim(),
+      thumbnail: form.thumbnail || '',
       content: form.content,
       status: form.status,
       category: form.category,
-      route_slug: form.route_slug || undefined,
-      excerpt: form.excerpt || undefined,
+      route_slug: form.route_slug || '',
+      excerpt: form.excerpt || '',
       reading_time: form.reading_time || 3,
-      author_name: form.author_name || undefined,
-      meta_title: form.meta_title || undefined,
-      meta_description: form.meta_description || undefined,
-      focus_keyword: form.focus_keyword || undefined,
-      canonical_url: form.canonical_url || undefined,
+      author_name: form.author_name || 'Happy Trip',
+      meta_title: form.meta_title || '',
+      meta_description: form.meta_description || '',
+      focus_keyword: form.focus_keyword || '',
+      canonical_url: form.canonical_url || '',
       noindex: form.noindex,
     }
 
