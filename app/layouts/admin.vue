@@ -42,11 +42,6 @@ const menuItems = computed(() => [
       icon: 'i-lucide-file-text',
       onSelect: () => { navigateTo('/admin/blog') },
     },
-    {
-      label: 'Quản lý Mega Menu',
-      icon: 'i-lucide-layout-grid',
-      onSelect: () => { navigateTo('/admin/menu') },
-    },
   ],
   [
     {

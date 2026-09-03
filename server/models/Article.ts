@@ -8,6 +8,7 @@ export interface IArticle {
   content?: string
   thumbnail?: string
   category: 'blog' | 'policy'
+  route_slug?: string
   status: boolean
   views: number
   reading_time?: number
@@ -59,6 +60,11 @@ const ArticleSchema = new Schema<IArticleDocument>(
       type: String,
       enum: ['blog', 'policy'],
       default: 'blog',
+      index: true,
+    },
+    route_slug: {
+      type: String,
+      default: '',
       index: true,
     },
     status: {

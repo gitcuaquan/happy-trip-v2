@@ -39,6 +39,7 @@ export default defineEventHandler(async (event) => {
     content: body.content || '',
     thumbnail: (body.thumbnail || '').trim(),
     category,
+    route_slug: (body.route_slug || '').trim(),
     status,
     reading_time: body.reading_time || readingTime,
     author_name: (body.author_name || auth.full_name || 'Happy Trip').trim(),

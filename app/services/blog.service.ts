@@ -48,6 +48,18 @@ export class BlogService {
     return res.data
   }
 
+  // Lấy bài viết gắn với tuyến đường / landing page (nếu có)
+  async getArticleByRoute(routeSlug: string): Promise<Article | null> {
+    try {
+      const res = await $fetch<{ data: Article | null }>(`/api/public/route-article/${routeSlug}`, {
+        method: 'GET',
+      })
+      return res.data
+    } catch {
+      return null
+    }
+  }
+
   // Tương thích ngược getPageList
   async getPageList(params: any = {}): Promise<PageListResponse> {
     const category = params.category

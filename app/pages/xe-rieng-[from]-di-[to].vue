@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getFromRoute, getToRoute, generateAllRoutes } from "~/utils/routes";
+import { blogService } from "~/services/blog.service";
 import CollapsibleCard from "~/components/shared/collapsible-card.vue";
 
 const route = useRoute();
@@ -32,9 +33,18 @@ if (from.slug !== canonicalFromSlug) {
   });
 }
 
-const canonicalUrl = `https://happytrip.vn/xe-rieng-${canonicalFromSlug}-di-${to.slug}`;
-const seoTitle = `Xe riêng ${from.name} đi ${to.name} | Happy Trip`;
-const seoDescription = `Dịch vụ xe riêng ${from.name} đi ${to.name}. Đón tận nơi, giá minh bạch, hỗ trợ 24/7. Liên hệ Happy Trip để đặt xe nhanh chóng.`;
+const currentRouteSlug = `xe-rieng-${canonicalFromSlug}-di-${to.slug}`;
+const canonicalUrl = `https://happytrip.vn/${currentRouteSlug}`;
+
+// Nạp bài viết gắn với tuyến đường (nếu có)
+const { data: routeArticle } = await useAsyncData(
+  `route-article-${currentRouteSlug}`,
+  () => blogService.getArticleByRoute(currentRouteSlug),
+  { default: () => null }
+);
+
+const seoTitle = computed(() => routeArticle.value?.meta_title || `Xe riêng ${from.name} đi ${to.name} | Happy Trip`);
+const seoDescription = computed(() => routeArticle.value?.meta_description || routeArticle.value?.excerpt || `Dịch vụ xe riêng ${from.name} đi ${to.name}. Đón tận nơi, giá minh bạch, hỗ trợ 24/7. Liên hệ Happy Trip để đặt xe nhanh chóng.`);
 
 useSeoMeta({
   title: seoTitle,
@@ -55,6 +65,17 @@ useHead({
     },
   ],
 });
+
+function formatDate(value?: string | Date): string {
+  if (!value) return "";
+  try {
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return String(value);
+    return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+  } catch {
+    return String(value);
+  }
+}
 
 const faqItems = [
   {
@@ -373,6 +394,53 @@ onMounted(() => {
             <p class="text-xs text-slate-300 leading-relaxed">{{ step.desc }}</p>
           </div>
         </div>
+      </UContainer>
+    </section>
+
+    <!-- ============ ATTACHED ARTICLE / ROUTE GUIDE ============ -->
+    <section v-if="routeArticle" class="py-16 lg:py-20 bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800">
+      <UContainer class="max-w-4xl">
+        <!-- Section Tag & Title -->
+        <div class="mb-8 text-center">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-3">
+            <UIcon name="i-lucide-book-open" class="size-3.5" />
+            <span>Cẩm Nang & Hướng Dẫn Di Chuyển</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white leading-tight">
+            {{ routeArticle.title || routeArticle.name }}
+          </h2>
+          <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs text-slate-500 dark:text-slate-400 mt-3">
+            <span class="flex items-center gap-1.5">
+              <UIcon name="i-lucide-user" class="size-3.5 text-primary" />
+              {{ routeArticle.author_name || 'Happy Trip' }}
+            </span>
+            <span>•</span>
+            <span class="flex items-center gap-1.5">
+              <UIcon name="i-lucide-clock" class="size-3.5 text-primary" />
+              {{ routeArticle.reading_time || 3 }} phút đọc
+            </span>
+            <template v-if="routeArticle.published_at">
+              <span>•</span>
+              <span class="flex items-center gap-1.5">
+                <UIcon name="i-lucide-calendar" class="size-3.5 text-primary" />
+                {{ formatDate(routeArticle.published_at) }}
+              </span>
+            </template>
+          </div>
+          <div class="mx-auto w-16 h-1 rounded-full bg-primary mt-4" />
+        </div>
+
+        <!-- Excerpt Callout -->
+        <div v-if="routeArticle.excerpt" class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-l-4 border-primary text-slate-700 dark:text-slate-300 text-sm sm:text-base italic leading-relaxed mb-8">
+          {{ routeArticle.excerpt }}
+        </div>
+
+        <!-- Article Rich Content -->
+        <div
+          v-if="routeArticle.content"
+          class="prose prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 text-sm sm:text-base leading-relaxed space-y-4"
+          v-html="routeArticle.content"
+        />
       </UContainer>
     </section>
 

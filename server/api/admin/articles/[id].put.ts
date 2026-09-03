@@ -46,6 +46,7 @@ export default defineEventHandler(async (event) => {
   existingArticle.content = body.content !== undefined ? body.content : existingArticle.content
   existingArticle.thumbnail = (body.thumbnail !== undefined ? body.thumbnail : existingArticle.thumbnail).trim()
   existingArticle.category = category
+  if (body.route_slug !== undefined) existingArticle.route_slug = (body.route_slug || '').trim()
   existingArticle.status = status
   existingArticle.reading_time = body.reading_time || readingTime
   if (body.author_name) existingArticle.author_name = body.author_name.trim()

@@ -84,6 +84,19 @@
             </UFormField>
           </div>
 
+          <UFormField
+            label="Gắn vào Tuyến xe / Landing Page (Tùy chọn)"
+            name="route_slug"
+            help="Chọn tuyến xe nếu muốn bài viết này tự động hiển thị trên trang Landing Page của tuyến đó (ở Mega Menu)"
+          >
+            <USelect
+              v-model="form.route_slug"
+              :items="routeOptions"
+              class="w-full"
+              size="md"
+            />
+          </UFormField>
+
           <UFormField label="Đoạn tóm tắt mở đầu (Excerpt)" name="excerpt">
             <UTextarea
               v-model="form.excerpt"
@@ -336,6 +349,7 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import z from 'zod'
 import { blogService } from '~/services/blog.service'
 import { resolveImageUrl } from '~/utils'
+import { generateAllRoutes } from '~/utils/routes'
 import type { PagePayload } from '~/type'
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
@@ -352,6 +366,17 @@ const categoryOptions = [
   { label: 'Chính Sách & Điều Khoản Pháp Lý (Policy)', value: 'policy' },
 ]
 
+const routeOptions = computed(() => {
+  const routes = generateAllRoutes().map(r => ({
+    label: `${r.name} (/${r.slug})`,
+    value: r.slug,
+  }))
+  return [
+    { label: '-- Không gắn vào tuyến xe nào (Bài viết độc lập) --', value: '' },
+    ...routes,
+  ]
+})
+
 const schema = z.object({
   title: z.string().min(1, 'Vui lòng nhập tiêu đề bài viết'),
   slug: z
@@ -367,6 +392,7 @@ const form = reactive<PagePayload & {
   content: string
   status: boolean
   category: 'blog' | 'policy'
+  route_slug: string
   excerpt: string
   reading_time: number
   author_name: string
@@ -382,6 +408,7 @@ const form = reactive<PagePayload & {
   content: '',
   status: true,
   category: 'blog',
+  route_slug: '',
   excerpt: '',
   reading_time: 3,
   author_name: 'Happy Trip',
@@ -488,6 +515,7 @@ async function loadDetail() {
     form.content = typeof data.content === 'string' ? data.content : ''
     form.excerpt = data.excerpt || ''
     form.category = data.category || 'blog'
+    form.route_slug = data.route_slug || ''
     form.status = data.status !== false
     form.reading_time = data.reading_time || 3
     form.author_name = data.author_name || 'Happy Trip'
@@ -538,6 +566,7 @@ async function onSubmit(_e: FormSubmitEvent<{ title: string; slug: string }>) {
       content: form.content,
       status: form.status,
       category: form.category,
+      route_slug: form.route_slug || undefined,
       excerpt: form.excerpt || undefined,
       reading_time: form.reading_time || 3,
       author_name: form.author_name || undefined,
