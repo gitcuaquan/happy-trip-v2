@@ -35,6 +35,7 @@ export default defineNitroPlugin(async () => {
         {
           title: 'Kinh Nghiệm Thuê Xe Riêng Đi Vũng Tàu Trọn Gói Tiết Kiệm & An Toàn',
           slug: 'kinh-nghiem-thue-xe-rieng-di-vung-tau',
+          route_slug: 'xe-rieng-tphcm-di-vung-tau',
           excerpt: 'Bí quyết đặt xe riêng 100% không ghép từ Sài Gòn đi Vũng Tàu, Hồ Tràm đón trả tận sảnh khách sạn với giá minh bạch không phụ phí.',
           content: `<h2>1. Vì sao nên chọn xe riêng khi đi Vũng Tàu?</h2><p>Di chuyển từ TP.HCM đi Vũng Tàu bằng xe riêng mang lại sự thoải mái tuyệt đối cho gia đình có người lớn tuổi và trẻ nhỏ. Xe đón tận nhà, trả tận sảnh khách sạn hoặc resort mà không phải chen chúc bắt khách dọc đường.</p><h2>2. Lộ trình cao tốc Long Thành - Dầu Giây</h2><p>Thời gian di chuyển chỉ mất khoảng 2 tiếng đến 2 tiếng 30 phút qua cao tốc êm ái, xe đời mới rộng rãi.</p><h2>3. Đặt xe riêng tại Happy Trip</h2><p>Happy Trip cam kết bao trọn xe 100%, đón đúng giờ hẹn, tài xế lịch sự văn minh và giá trọn gói niêm yết minh bạch.</p>`,
           thumbnail: '/images/vung-tau.jpg',
@@ -50,6 +51,7 @@ export default defineNitroPlugin(async () => {
         {
           title: 'Cẩm Nang Thuê Xe Riêng Sài Gòn Đi Đà Lạt Cho Gia Đình Nghỉ Dưỡng',
           slug: 'cam-nang-thue-xe-rieng-sai-gon-di-da-lat',
+          route_slug: 'xe-rieng-tphcm-di-da-lat',
           excerpt: 'Kinh nghiệm di chuyển bằng xe 7 chỗ MPV/SUV cao cấp lên phố hoa Đà Lạt êm ái, tài xế giàu kinh nghiệm đèo dốc.',
           content: `<h2>1. Lộ trình từ Sài Gòn lên Đà Lạt</h2><p>Hành trình dài khoảng 300km qua cao tốc Dầu Giây - Phan Thiết và đèo Prenn tuyệt đẹp. Chọn xe riêng 7 chỗ giúp cả nhà thoải mái nghỉ ngơi suốt chuyến đi.</p><h2>2. Dòng xe 7 chỗ MPV cao cấp tại Happy Trip</h2><p>Khoang hành lý rộng rãi chứa trọn vẹn vali và đồ ấm, ghế ngả sâu êm ái.</p>`,
           thumbnail: '/images/da-lat.jpg',

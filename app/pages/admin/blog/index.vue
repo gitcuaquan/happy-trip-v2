@@ -143,6 +143,23 @@
                     <UIcon name="i-lucide-external-link" class="size-3" />
                   </a>
                 </div>
+                <div v-if="article.route_slug" class="flex items-center gap-1.5 mt-1">
+                  <UBadge
+                    :label="`Landing Page: /${article.route_slug}`"
+                    color="warning"
+                    variant="subtle"
+                    size="xs"
+                    class="font-mono text-[10px]"
+                  />
+                  <a
+                    :href="`/${article.route_slug}`"
+                    target="_blank"
+                    class="text-xs text-amber-600 hover:underline inline-flex items-center"
+                    title="Xem trang Tuyến Landing Page"
+                  >
+                    <UIcon name="i-lucide-external-link" class="size-2.5" />
+                  </a>
+                </div>
               </td>
               <td class="px-4 py-3">
                 <UBadge

@@ -40,14 +40,14 @@ const menuItems = computed(() => [
     {
       label: 'Quản lý bài viết',
       icon: 'i-lucide-file-text',
-      onSelect: () => navigateTo('/admin/blog'),
+      onSelect: () => { navigateTo('/admin/blog') },
     },
   ],
   [
     {
       label: 'Về trang chủ',
       icon: 'i-lucide-home',
-      onSelect: () => navigateTo('/'),
+      onSelect: () => { navigateTo('/') },
     },
   ],
   [
@@ -55,7 +55,7 @@ const menuItems = computed(() => [
       label: 'Đăng xuất',
       icon: 'i-lucide-log-out',
       color: 'error' as const,
-      onSelect: logOutAdmin,
+      onSelect: () => { logOutAdmin() },
     },
   ],
 ])

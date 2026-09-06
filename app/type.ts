@@ -116,6 +116,7 @@ export class Article {
   excerpt?: string = ''
   content: any = ''
   category: 'blog' | 'policy' = 'blog'
+  route_slug?: string = ''
   status: boolean = true
   views: number = 0
   reading_time?: number = 3
@@ -375,6 +376,7 @@ export interface PagePayload {
   slug?: string
   status?: boolean
   category?: 'blog' | 'policy'
+  route_slug?: string
   excerpt?: string
   content?: string
   thumbnail?: string
@@ -400,3 +402,5 @@ export interface UploadResponse {
   fileName?: string
   data?: { url?: string; path?: string }
 }
+
+
