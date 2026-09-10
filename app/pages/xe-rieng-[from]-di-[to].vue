@@ -256,8 +256,104 @@ onMounted(() => {
       </UContainer>
     </div>
 
-    <!-- ============ HERO SECTION ============ -->
-    <section class="relative bg-slate-900 bg-image-hero text-white overflow-hidden py-10 lg:py-16">
+    <!-- ============ ARTICLE / ROUTE GUIDE (TOP) ============ -->
+    <article v-if="routeArticle" class="py-10 lg:py-16 bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800">
+      <div class="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Section Tag & Title -->
+        <header class="mb-8 text-center">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-3">
+            <UIcon name="i-lucide-book-open" class="size-3.5" />
+            <span>Cẩm Nang & Hướng Dẫn Di Chuyển</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white leading-tight">
+            {{ routeArticle.title || routeArticle.name }}
+          </h1>
+          <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs text-slate-500 dark:text-slate-400 mt-3">
+            <span class="flex items-center gap-1.5">
+              <UIcon name="i-lucide-user" class="size-3.5 text-primary" />
+              {{ routeArticle.author_name || 'Happy Trip' }}
+            </span>
+            <span>•</span>
+            <span class="flex items-center gap-1.5">
+              <UIcon name="i-lucide-clock" class="size-3.5 text-primary" />
+              {{ routeArticle.reading_time || 3 }} phút đọc
+            </span>
+            <template v-if="routeArticle.published_at">
+              <span>•</span>
+              <span class="flex items-center gap-1.5">
+                <UIcon name="i-lucide-calendar" class="size-3.5 text-primary" />
+                {{ formatDate(routeArticle.published_at) }}
+              </span>
+            </template>
+          </div>
+          <div class="mx-auto w-16 h-1 rounded-full bg-primary mt-4" />
+        </header>
+
+        <!-- Excerpt Callout -->
+        <div v-if="routeArticle.excerpt" class="p-4 sm:p-5 rounded-2xl bg-primary/5 dark:bg-slate-800/60 border-l-4 border-primary text-slate-700 dark:text-slate-300 text-sm sm:text-base italic leading-relaxed mb-8">
+          {{ routeArticle.excerpt }}
+        </div>
+
+        <!-- Article Rich Content -->
+        <div
+          v-if="routeArticle.content"
+          class="article-content"
+          v-html="routeArticle.content"
+        />
+
+        <!-- Quick CTA Banner inside Article -->
+        <div class="mt-10 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 class="font-bold text-base sm:text-lg text-slate-900 dark:text-white">
+              Cần đặt xe riêng tuyến {{ from.name }} - {{ to.name }}?
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+              Đón tận nơi, giá trọn gói không phát sinh, không cần đặt cọc.
+            </p>
+          </div>
+          <div class="flex items-center gap-2.5 shrink-0 w-full sm:w-auto justify-end">
+            <UButton
+              to="#dat-xe"
+              color="primary"
+              size="md"
+              class="font-bold rounded-xl"
+              icon="i-lucide-arrow-down"
+            >
+              Đặt xe ngay
+            </UButton>
+            <UButton
+              to="tel:0972970000"
+              color="neutral"
+              variant="outline"
+              size="md"
+              class="font-bold rounded-xl"
+              icon="i-lucide-phone-call"
+            >
+              097 297 0000
+            </UButton>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ============ DEFAULT ROUTE HEADER (IF NO ARTICLE) ============ -->
+    <section v-else class="py-12 lg:py-16 bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 text-center">
+      <UContainer class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+          <UIcon name="i-lucide-sparkles" class="size-4" />
+          <span>Dịch Vụ Xe Riêng Chất Lượng Cao 5★</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-slate-900 dark:text-white">
+          Xe Riêng <span class="text-primary">{{ from.name }}</span> đi <span class="text-primary">{{ to.name }}</span>
+        </h1>
+        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-4 leading-relaxed max-w-xl mx-auto">
+          Đặt xe nhanh chóng, tài xế đón tận nơi tại {{ from.name }} và trả tận nhà ở {{ to.name }}. Cam kết xe đời mới, đi cao tốc, không tăng giá giờ cao điểm.
+        </p>
+      </UContainer>
+    </section>
+
+    <!-- ============ BOOKING SECTION ============ -->
+    <section id="dat-xe" class="relative bg-slate-900 bg-image-hero text-white overflow-hidden py-14 lg:py-20 scroll-mt-14">
       <div class="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/80 to-transparent z-0" />
       
       <UContainer class="relative z-10">
@@ -269,11 +365,11 @@ onMounted(() => {
               <span>Dịch Vụ Xe Riêng Chất Lượng Cao 5★</span>
             </div>
 
-            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight drop-shadow-md text-white">
-              Xe Riêng <span class="text-primary inline-block">{{ from.name }}</span>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight drop-shadow-md text-white">
+              Đặt Xe Riêng <span class="text-primary inline-block">{{ from.name }}</span>
               <span class="inline-block px-1.5 text-slate-200">đi</span>
               <span class="text-primary inline-block">{{ to.name }}</span>
-            </h1>
+            </h2>
 
             <p class="text-sm sm:text-base text-slate-300 max-w-xl mx-auto lg:mx-0 leading-relaxed">
               Đặt xe nhanh chóng, tài xế đón tận nơi tại <strong class="text-white font-semibold">{{ from.name }}</strong> và trả tận nhà ở <strong class="text-white font-semibold">{{ to.name }}</strong>. Cam kết xe đời mới, đi cao tốc, không bao giờ tăng giá giờ cao điểm.
@@ -328,7 +424,7 @@ onMounted(() => {
     </section>
 
     <!-- ============ ROUTE FEATURES / ADVANTAGES ============ -->
-    <section class="py-16 lg:py-24">
+    <section class="py-16 lg:py-20">
       <UContainer>
         <div class="text-center max-w-2xl mx-auto mb-14">
           <p class="text-xs font-bold text-primary uppercase tracking-widest mb-2">
@@ -397,56 +493,9 @@ onMounted(() => {
       </UContainer>
     </section>
 
-    <!-- ============ ATTACHED ARTICLE / ROUTE GUIDE ============ -->
-    <section v-if="routeArticle" class="py-16 lg:py-20 bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800">
-      <UContainer class="max-w-4xl">
-        <!-- Section Tag & Title -->
-        <div class="mb-8 text-center">
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-3">
-            <UIcon name="i-lucide-book-open" class="size-3.5" />
-            <span>Cẩm Nang & Hướng Dẫn Di Chuyển</span>
-          </div>
-          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white leading-tight">
-            {{ routeArticle.title || routeArticle.name }}
-          </h2>
-          <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs text-slate-500 dark:text-slate-400 mt-3">
-            <span class="flex items-center gap-1.5">
-              <UIcon name="i-lucide-user" class="size-3.5 text-primary" />
-              {{ routeArticle.author_name || 'Happy Trip' }}
-            </span>
-            <span>•</span>
-            <span class="flex items-center gap-1.5">
-              <UIcon name="i-lucide-clock" class="size-3.5 text-primary" />
-              {{ routeArticle.reading_time || 3 }} phút đọc
-            </span>
-            <template v-if="routeArticle.published_at">
-              <span>•</span>
-              <span class="flex items-center gap-1.5">
-                <UIcon name="i-lucide-calendar" class="size-3.5 text-primary" />
-                {{ formatDate(routeArticle.published_at) }}
-              </span>
-            </template>
-          </div>
-          <div class="mx-auto w-16 h-1 rounded-full bg-primary mt-4" />
-        </div>
-
-        <!-- Excerpt Callout -->
-        <div v-if="routeArticle.excerpt" class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-l-4 border-primary text-slate-700 dark:text-slate-300 text-sm sm:text-base italic leading-relaxed mb-8">
-          {{ routeArticle.excerpt }}
-        </div>
-
-        <!-- Article Rich Content -->
-        <div
-          v-if="routeArticle.content"
-          class="prose prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 text-sm sm:text-base leading-relaxed space-y-4"
-          v-html="routeArticle.content"
-        />
-      </UContainer>
-    </section>
-
     <!-- ============ FAQ SECTION ============ -->
     <section class="py-16 lg:py-24">
-      <UContainer class="max-w-4xl">
+      <div class="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
           <p class="text-xs font-bold text-primary uppercase tracking-widest mb-2">
             Giải Đáp Thắc Mắc
@@ -458,7 +507,7 @@ onMounted(() => {
         </div>
 
         <CollapsibleCard :items="faqFormattedItems" />
-      </UContainer>
+      </div>
     </section>
 
     <!-- ============ POPULAR ROUTES GRID ============ -->
