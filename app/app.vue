@@ -58,6 +58,26 @@ useSeoMeta({
 // Google Analytics — page view tracking on route change
 const { proxy: gaProxy } = useScriptGoogleAnalytics();
 
+// Google Tag Manager
+useHead({
+  script: [
+    {
+      key: 'gtm',
+      innerHTML: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MRKB7HZM');`,
+    },
+  ],
+  noscript: [
+    {
+      key: 'gtm-noscript',
+      innerHTML: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MRKB7HZM" height="0" width="0" style="display:none;visibility:hidden"></iframe>`,
+    },
+  ],
+});
+
 // Meta Pixel — inject traditional pixel code into <head>
 useHead({
   script: [
@@ -82,6 +102,14 @@ useScriptEventPage(({ title, path }) => {
   // Track Meta Pixel PageView on SPA route change
   if (typeof window !== 'undefined' && (window as any).fbq) {
     (window as any).fbq('track', 'PageView');
+  }
+  // Track GTM page_view on SPA route change
+  if (typeof window !== 'undefined' && (window as any).dataLayer) {
+    (window as any).dataLayer.push({
+      event: 'page_view',
+      page_title: title,
+      page_path: path,
+    });
   }
 });
 
