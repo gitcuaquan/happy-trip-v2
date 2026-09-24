@@ -93,7 +93,7 @@ const vehicleClasses = [
     title: "Xe Riêng 5 Chỗ (Sedan)",
     tag: "Phổ biến nhất",
     capacity: "1 - 3 hành khách · 2 vali lớn",
-    image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=600",
+    image: "/images/cars/vios-sedan-5-cho.jpg",
     models: "Toyota Vios, Hyundai Accent, Honda City, Mazda 3...",
     suitable: "Cá nhân, cặp đôi, gia đình nhỏ đi khám bệnh, về quê, công tác",
     features: ["Điều hòa mát lạnh", "Êm ái, tiết kiệm", "Cốp chứa vừa 2 vali 24 inch"],
