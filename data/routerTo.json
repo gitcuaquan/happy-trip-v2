@@ -6,6 +6,12 @@
     "data": "Sân Bay Tân Sơn Nhất"
   },
   {
+    "name": "TP Phan Thiết",
+    "slug": "phan-thiet",
+    "parentId": "69d9b2a508540946eb18983d",
+    "data": "Phường Phan Thiết"
+  },
+  {
     "name": "Vũng Tàu",
     "slug": "vung-tau",
     "parentId": "69d85c7e0d4befc8e55b1ead",

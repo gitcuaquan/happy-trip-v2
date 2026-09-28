@@ -61,6 +61,7 @@
         variant="outline"
         class="w-full"
         @blur="onAddressBlur"
+        @update:model-value="(val) => emit('update:address', String(val || ''))"
       />
     </UFormField>
   </div>
@@ -89,25 +90,32 @@ const { cities, fetchCities, fetchCityDetail, getCachedCityDetail } = useCityDat
 
 // ─── dùng id để USelectMenu khớp kiểu giá trị emit ra ───
 const selectedCityId = ref<string>('')
-const selectedDistrictName = ref<string>('')
-const detailAddress = ref('')
+const selectedDistrictName = ref<string>(props.province || '')
+const detailAddress = ref(props.address || '')
 
 const cityData = computed(() => {
   if (!selectedCityId.value) return null
   return getCachedCityDetail(selectedCityId.value)
 })
 
-onMounted(() => {
-  fetchCities()
+onMounted(async () => {
+  await fetchCities()
+  if (props.city && cities.value && cities.value.length > 0) {
+    const city = cities.value.find(c => c.name === props.city)
+    if (city && selectedCityId.value !== city.id) {
+      selectedCityId.value = city.id
+      await fetchCityDetail(city.id)
+    }
+  }
 })
 
-watch(() => cities.value, (newCities) => {
+watch(() => cities.value, async (newCities) => {
   // Khi cities load xong, nếu có props.city thì set selectedCityId
   if (newCities && newCities.length > 0 && props.city) {
     const city = newCities.find(c => c.name === props.city)
     if (city && selectedCityId.value !== city.id) {
       selectedCityId.value = city.id
-      fetchCityDetail(city.id)
+      await fetchCityDetail(city.id)
     }
   }
 })
@@ -143,10 +151,18 @@ const availableDistrictNames = computed(() => {
   )
 })
 
-// Tự động chọn phường/xã đầu tiên nếu chưa chọn hoặc không hợp lệ
+// Tự động chọn phường/xã nếu chưa chọn hoặc không hợp lệ
 watch(availableDistrictNames, (districts) => {
   if (districts && districts.length > 0) {
-    if (!selectedDistrictName.value || !districts.includes(selectedDistrictName.value)) {
+    const target = selectedDistrictName.value || props.province
+    if (target && districts.includes(target)) {
+      if (selectedDistrictName.value !== target) {
+        selectedDistrictName.value = target
+      }
+      if (props.province !== target) {
+        emit('update:province', target)
+      }
+    } else {
       const firstDistrict = districts[0]
       if (firstDistrict) {
         selectedDistrictName.value = firstDistrict
@@ -180,8 +196,10 @@ function onAddressBlur() {
 }
 
 watch(() => props.address, (val) => {
-  if (val !== detailAddress.value) detailAddress.value = val
-})
+  if (val !== detailAddress.value) {
+    detailAddress.value = val || ''
+  }
+}, { immediate: true })
 
 watch(() => props.city, async (val) => {
   if (!val) {
@@ -202,7 +220,7 @@ watch(() => props.city, async (val) => {
 
 watch(() => props.province, (val) => {
   if (val !== selectedDistrictName.value) {
-    selectedDistrictName.value = val
+    selectedDistrictName.value = val || ''
     if (!val && availableDistrictNames.value.length > 0) {
       const firstDistrict = availableDistrictNames.value[0]
       if (firstDistrict) {
@@ -211,5 +229,5 @@ watch(() => props.province, (val) => {
       }
     }
   }
-})
+}, { immediate: true })
 </script>

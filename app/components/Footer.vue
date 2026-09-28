@@ -162,7 +162,7 @@ const serviceLinks = [
   { label: 'Đặt xe trực tuyến', to: '/#dat-xe' },
   { label: 'Xe riêng 5 chỗ', to: '/#dich-vu-5-cho' },
   { label: 'Xe riêng 7 chỗ', to: '/#dich-vu-7-cho' },
-  { label: 'Đưa đón Sân bay TSN', to: '/xe-rieng-tphcm-di-san-bay-tan-son-nhat' },
+  { label: 'Đưa đón Sân bay TSN', to: '/xe-rieng-san-bay-tan-son-nhat-di-phan-thiet' },
   { label: 'Tuyến đi tỉnh 2 chiều', to: '/#dich-vu' }
 ]
 

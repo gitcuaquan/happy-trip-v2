@@ -466,7 +466,7 @@ const privateCarServices = [
     label: "Xe Đưa Đón Sân Bay TSN",
     description: "Đón tiễn đúng giờ bay Tân Sơn Nhất 24/7",
     icon: "i-lucide-plane-takeoff",
-    to: "/xe-rieng-tphcm-di-san-bay-tan-son-nhat",
+    to: "/xe-rieng-san-bay-tan-son-nhat-di-phan-thiet",
   },
   {
     label: "Xe Công Tác & Du Lịch",
@@ -483,9 +483,10 @@ const megaMenuColumns = [
     icon: "i-lucide-plane",
     routes: [
       {
-        name: "Sân bay TSN ⇄ Sài Gòn",
-        slug: "xe-rieng-tphcm-di-san-bay-tan-son-nhat",
+        name: "Sân bay TSN ⇄ TP Phan Thiết",
+        slug: "xe-rieng-san-bay-tan-son-nhat-di-phan-thiet",
         desc: "Đón trả tận sảnh ga 24/7",
+        link: "/xe-rieng-san-bay-tan-son-nhat-di-phan-thiet",
       },
       {
         name: "Sân bay TSN ⇄ Vũng Tàu",

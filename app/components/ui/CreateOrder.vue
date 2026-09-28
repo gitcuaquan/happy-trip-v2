@@ -249,6 +249,7 @@ import z from 'zod'
 import type { OrderDetail, OrderPreview } from '~/type'
 import { orderService } from '~/services/order.service'
 import { useOrderForm } from '~/composables/useOrderForm'
+import { getDefaultRouteEndpoints } from '~/utils/routes'
 
 const { trackViewPrice, trackBookingStart } = useGtagEvent()
 const { trackPixelViewPrice, trackPixelBookingStart } = useMetaPixelEvent()
@@ -267,15 +268,26 @@ const props = defineProps<{
 }>()
 
 // ─── Order state ──────────────────────────────────────────
+const isRoutePage = computed(() => !!(props.fromData || props.toData))
+const initialEndpoints = computed(() => {
+  if (!isRoutePage.value) {
+    return {
+      dep: { city: '', district: '', address: '' },
+      dest: { city: '', district: '', address: '' }
+    }
+  }
+  return getDefaultRouteEndpoints(props.fromData?.slug, props.toData?.slug)
+})
+
 const order = ref<OrderPreview>({
   id_service: '',
   date_of_destination: null,
-  departure_city: '',
-  departure_dictrict: '',
-  departure_address_1: '',
-  destination_city: '',
-  destination_dictrict: '',
-  destination_address_1: '',
+  departure_city: initialEndpoints.value.dep.city,
+  departure_dictrict: initialEndpoints.value.dep.district,
+  departure_address_1: initialEndpoints.value.dep.address,
+  destination_city: initialEndpoints.value.dest.city,
+  destination_dictrict: initialEndpoints.value.dest.district,
+  destination_address_1: initialEndpoints.value.dest.address,
   note: ''
 })
 
@@ -340,55 +352,20 @@ onMounted(async () => {
     return
   }
 
-  // Pre-fill from route props (fromData / toData)
+  // Pre-fill from route props (fromData / toData): Sử dụng điểm trung tâm tối ưu để ra mức giá sàn thấp nhất
   if (props.fromData || props.toData) {
     try {
-      const cities = await $fetch<{ id: string, name: string }[]>(
-        `${useRuntimeConfig().public.apiBase}/api/city/list`,
-        {
-          method: 'POST',
-          body: { status: true },
-          params: { fields: 'id,name' }
-        }
-      )
+      const endpoints = getDefaultRouteEndpoints(props.fromData?.slug, props.toData?.slug)
+      order.value.departure_city = endpoints.dep.city
+      order.value.departure_dictrict = endpoints.dep.district
+      order.value.departure_address_1 = endpoints.dep.address
+      order.value.destination_city = endpoints.dest.city
+      order.value.destination_dictrict = endpoints.dest.district
+      order.value.destination_address_1 = endpoints.dest.address
 
-      if (props.fromData) {
-        const targetId = props.fromData.id || props.fromData.parentId
-        if (targetId) {
-          const city = cities.find(c => c.id === targetId)
-          if (city) {
-            order.value.departure_city = city.name
-          }
-        }
-        if (props.fromData.data) {
-          order.value.departure_dictrict = props.fromData.data
-        }
-      }
-
-      if (props.toData) {
-        const targetId = props.toData.id || props.toData.parentId
-        if (targetId) {
-          const city = cities.find(c => c.id === targetId)
-          if (city) {
-            order.value.destination_city = city.name
-          }
-        }
-        if (props.toData.data) {
-          order.value.destination_dictrict = props.toData.data
-        }
-      }
-
-      // Validate: phải tìm thấy city và district trước khi gọi preview
-      if (
-        order.value.departure_city
-        && order.value.destination_city
-        && order.value.destination_dictrict
-      ) {
-        await calcPreviews()
-        // Tự chọn dịch vụ đầu tiên nếu chưa chọn
-        if (!order.value.id_service) {
-          order.value.id_service = services.value[0]?.id || ''
-        }
+      await calcPreviews()
+      if (!order.value.id_service) {
+        order.value.id_service = services.value[0]?.id || ''
       }
     } catch {
       // API failed, leave form empty
