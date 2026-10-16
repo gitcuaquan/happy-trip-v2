@@ -1,105 +1,142 @@
 <template>
-<UModal
-  :open="open"
-  :dismissible="false"
+  <UModal
+    :open="open"
+    :dismissible="false"
     :close="false"
-  :ui="{
-    content: 'sm:max-w-sm md:max-w-lg overflow-hidden',
-    overlay: 'bg-black/40 backdrop-blur-sm',
-  }"
-  @update:open="$emit('update:open', $event)"
->
-  <template #body>
-    <div class="text-center relative overflow-hidden">
-      <div class="mb-6 relative z-10 flex justify-center">
-        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-          <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
-          <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-        </svg>
-      </div>
-
-      <div class="relative z-10">
-        <h3 class="text-2xl font-black text-slate-800 mb-2 uppercase tracking-wide">
-          Đặt xe thành công!
-        </h3>
-        <p class="text-slate-500 text-left text-sm mb-6 leading-relaxed">
-          Hệ thống đã ghi nhận chuyến đi của bạn. Vui lòng kiểm tra lại
-          thông tin chuyến đi được gửi qua Zalo hoặc SMS. Tài xế sẽ liên hệ
-          bạn sớm nhất để xác nhận và hỗ trợ trong quá trình di chuyển.
-        </p>
-
-        <div class="bg-slate-50 rounded-xl mb-6 text-left border border-slate-100 shadow-sm flex flex-col">
-          <div class="px-4 py-4 flex gap-3 items-start">
-            <div class="flex flex-col items-center mt-0.5 shrink-0">
-              <div class="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center">
-                <div class="w-2 h-2 rounded-full bg-blue-500" />
-              </div>
-              <div class="w-px h-8 bg-gradient-to-b from-blue-200 to-orange-200 my-1" />
-              <div class="w-7 h-7 rounded-full bg-orange-50 flex items-center justify-center">
-                <UIcon name="i-lucide-map-pin" class="size-3.5 text-primary" />
-              </div>
-            </div>
-            <div class="flex flex-col gap-4 flex-1 min-w-0">
-              <div>
-                <p class="text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-0.5">Điểm đón</p>
-                <p class="text-sm font-semibold text-slate-800 leading-snug break-words">
-                  {{ successData.departure_address_1 }}
-                </p>
-                <p class="text-xs text-slate-500 mt-0.5">
-                  {{ [successData.departure_district, successData.departure_city].filter(Boolean).join(', ') }}
-                </p>
-              </div>
-              <div>
-                <p class="text-[10px] font-bold text-orange-500 uppercase tracking-wider mb-0.5">Điểm đến</p>
-                <p class="text-sm font-semibold text-slate-800 leading-snug break-words">
-                  {{ successData.destination_address_1 }}
-                </p>
-                <p class="text-xs text-slate-500 mt-0.5">
-                  {{ [successData.destination_district, successData.destination_city].filter(Boolean).join(', ') }}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="px-4 py-3 border-t border-slate-200 flex justify-between items-center">
-            <span class="text-xs text-slate-500 font-medium">Loại xe</span>
-            <span class="text-sm font-bold text-slate-800">{{ successData.service_name }}</span>
-          </div>
-          <div class="bg-orange-50 p-4 rounded-b-xl border-t border-orange-100 flex justify-between items-center">
-            <span class="text-xs text-primary font-bold uppercase tracking-wide">Tổng tiền:</span>
-            <span class="text-lg font-black text-primary">{{ numberToCurrency(successData.price) }}</span>
-          </div>
+    :ui="{
+      content: 'sm:max-w-sm md:max-w-lg overflow-hidden',
+      overlay: 'bg-black/40 backdrop-blur-sm'
+    }"
+    @update:open="$emit('update:open', $event)"
+  >
+    <template #body>
+      <div class="text-center relative overflow-hidden">
+        <div class="mb-6 relative z-10 flex justify-center">
+          <svg
+            class="checkmark"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 52 52"
+          >
+            <circle
+              class="checkmark__circle"
+              cx="26"
+              cy="26"
+              r="25"
+              fill="none"
+            />
+            <path
+              class="checkmark__check"
+              fill="none"
+              d="M14.1 27.2l7.1 7.2 16.7-16.8"
+            />
+          </svg>
         </div>
 
-        <SharedSafetyNotice />
-      </div>
-    </div>
-  </template>
+        <div class="relative z-10">
+          <h3 class="text-2xl font-black text-slate-800 mb-2 uppercase tracking-wide">
+            Đặt xe thành công!
+          </h3>
+          <p class="text-slate-500 text-left text-sm mb-6 leading-relaxed">
+            Hệ thống đã ghi nhận chuyến đi của bạn. Vui lòng kiểm tra lại
+            thông tin chuyến đi được gửi qua Zalo hoặc SMS. Tài xế sẽ liên hệ
+            bạn sớm nhất để xác nhận và hỗ trợ trong quá trình di chuyển.
+          </p>
 
-  <template #footer>
-    <div class="grid grid-cols-2 gap-3.5 w-full">
-      <UButton
-        color="primary"
-        block
-        variant="outline"
-        size="lg"
-        label="Đã hiểu"
-        @click="goHome"
-      />
-      <UButton
-        to="/history"
-        block
-        size="lg"
-        variant="outline"
-        icon="i-lucide-history"
-        label="Xem lịch sử chuyến đi"
-      />
-    </div>
-  </template>
-</UModal>
+          <div class="bg-slate-50 rounded-xl mb-6 text-left border border-slate-100 shadow-sm flex flex-col">
+            <div class="px-4 py-4 flex gap-3 items-start">
+              <div class="flex flex-col items-center mt-0.5 shrink-0">
+                <div class="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center">
+                  <div class="w-2 h-2 rounded-full bg-blue-500" />
+                </div>
+                <div class="w-px h-8 bg-gradient-to-b from-blue-200 to-orange-200 my-1" />
+                <div class="w-7 h-7 rounded-full bg-orange-50 flex items-center justify-center">
+                  <UIcon
+                    name="i-lucide-map-pin"
+                    class="size-3.5 text-primary"
+                  />
+                </div>
+              </div>
+              <div class="flex flex-col gap-4 flex-1 min-w-0">
+                <div>
+                  <p class="text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-0.5">
+                    Điểm đón
+                  </p>
+                  <p class="text-sm font-semibold text-slate-800 leading-snug break-words">
+                    {{ successData.departure_address_1 }}
+                  </p>
+                  <p class="text-xs text-slate-500 mt-0.5">
+                    {{ [successData.departure_district, successData.departure_city].filter(Boolean).join(', ') }}
+                  </p>
+                </div>
+                <div>
+                  <p class="text-[10px] font-bold text-orange-500 uppercase tracking-wider mb-0.5">
+                    Điểm đến
+                  </p>
+                  <p class="text-sm font-semibold text-slate-800 leading-snug break-words">
+                    {{ successData.destination_address_1 }}
+                  </p>
+                  <p class="text-xs text-slate-500 mt-0.5">
+                    {{ [successData.destination_district, successData.destination_city].filter(Boolean).join(', ') }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="px-4 py-3 border-t border-slate-200 flex justify-between items-center">
+              <span class="text-xs text-slate-500 font-medium">Loại xe</span>
+              <span class="text-sm font-bold text-slate-800">{{ successData.service_name }}</span>
+            </div>
+            <!-- Chi tiết giá & ưu đãi -->
+            <div
+              v-if="successData.discount && successData.discount.amount"
+              class="px-4 py-2 border-t border-slate-200 space-y-1 text-xs"
+            >
+              <div class="flex justify-between text-slate-600">
+                <span>Giá chuyến:</span>
+                <span class="font-medium text-slate-800">{{ numberToCurrency(successData.price) }}</span>
+              </div>
+              <div class="flex justify-between text-emerald-600">
+                <span>Ưu đãi ({{ successData.discount.label || 'Voucher' }}):</span>
+                <span class="font-bold">−{{ numberToCurrency(successData.discount.amount) }}</span>
+              </div>
+            </div>
+            <div class="bg-orange-50 p-4 rounded-b-xl border-t border-orange-100 flex justify-between items-center">
+              <span class="text-xs text-primary font-bold uppercase tracking-wide">Thanh toán cho tài xế:</span>
+              <span class="text-lg font-black text-primary">
+                {{ numberToCurrency(successData.price_customer_pay ?? (successData.price - (successData.discount?.amount || 0))) }}
+              </span>
+            </div>
+          </div>
+
+          <SharedSafetyNotice />
+        </div>
+      </div>
+    </template>
+
+    <template #footer>
+      <div class="grid grid-cols-2 gap-3.5 w-full">
+        <UButton
+          color="primary"
+          block
+          variant="outline"
+          size="lg"
+          label="Đã hiểu"
+          @click="goHome"
+        />
+        <UButton
+          to="/history"
+          block
+          size="lg"
+          variant="outline"
+          icon="i-lucide-history"
+          label="Xem lịch sử chuyến đi"
+        />
+      </div>
+    </template>
+  </UModal>
 </template>
 
 <script lang="ts" setup>
-interface SuccessData {
+export interface SuccessData {
   departure_city: string
   departure_district: string
   departure_address_1: string
@@ -108,6 +145,13 @@ interface SuccessData {
   destination_address_1: string
   service_name: string
   price: number
+  price_customer_pay?: number
+  discount?: {
+    type?: string
+    label?: string
+    amount?: number
+    state?: string
+  }
 }
 
 defineProps<{
@@ -116,12 +160,12 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  "update:open": [value: boolean]
+  'update:open': [value: boolean]
 }>()
 
 function goHome() {
-  emit("update:open", false)
-  navigateTo("/")
+  emit('update:open', false)
+  navigateTo('/')
 }
 </script>
 

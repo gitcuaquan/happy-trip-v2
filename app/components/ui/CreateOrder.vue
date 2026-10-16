@@ -6,7 +6,6 @@
       class="relative z-10 backdrop-blur-md bg-white/95 border-2 border-white text-slate-800"
       :ui="{
         root: 'w-full overflow-hidden shadow-2xl',
-
         body: 'sm:p-3 space-y-6',
         footer: 'px-1 pb-1 pt-0 border-t-0'
       }"
@@ -153,6 +152,97 @@
             </div>
           </Transition>
 
+          <!-- Thông tin người đi (hiển thị khi đã đăng nhập) -->
+          <div
+            v-if="isLoggedIn"
+            class="space-y-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="p-1 bg-slate-200/80 rounded-md text-slate-700">
+                  <UIcon
+                    name="i-lucide-user"
+                    class="size-4"
+                  />
+                </div>
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Thông tin người đi</span>
+              </div>
+              <span
+                v-if="!isDifferentPhone"
+                class="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-semibold flex items-center gap-1"
+              >
+                <UIcon
+                  name="i-lucide-badge-check"
+                  class="size-3"
+                />
+                Chính chủ
+              </span>
+              <span
+                v-else
+                class="text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 font-semibold flex items-center gap-1"
+              >
+                <UIcon
+                  name="i-lucide-users"
+                  class="size-3"
+                />
+                Đặt hộ
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <UFormField
+                label="Họ và tên"
+                size="sm"
+                :ui="{ label: 'text-xs font-semibold text-slate-600' }"
+              >
+                <UInput
+                  v-model="loggedInContact.name"
+                  placeholder="Họ và tên"
+                  size="sm"
+                  class="w-full"
+                />
+              </UFormField>
+              <UFormField
+                label="Số điện thoại"
+                size="sm"
+                :ui="{ label: 'text-xs font-semibold text-slate-600' }"
+              >
+                <UInput
+                  v-model="loggedInContact.phone"
+                  placeholder="09..."
+                  type="tel"
+                  size="sm"
+                  class="w-full"
+                />
+              </UFormField>
+            </div>
+
+            <p
+              v-if="isDifferentPhone"
+              class="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-2 flex items-start gap-1.5"
+            >
+              <UIcon
+                name="i-lucide-info"
+                class="size-3.5 text-amber-500 shrink-0 mt-0.5"
+              />
+              <span>SĐT người đi khác SĐT tài khoản: Ưu đãi voucher & giới thiệu chỉ áp dụng cho tài khoản chính chủ nên sẽ không áp dụng cho chuyến này.</span>
+            </p>
+          </div>
+
+          <!-- Khối Ưu đãi (khi đã đăng nhập, cùng SĐT, và có ưu đãi khả dụng) -->
+          <Transition name="fade">
+            <div v-if="isLoggedIn && hasRouteData && !isDifferentPhone && formDiscountOptions.length > 0">
+              <UiOrderDiscountSelect
+                :options="formDiscountOptions"
+                :price-guest-after="selectedTripPrice"
+                :model-value="formSelectedDiscount"
+                :referrer-loading="formReferrerLoading"
+                @update:model-value="formSelectedDiscount = $event"
+                @apply-referrer="handleFormApplyReferrer"
+              />
+            </div>
+          </Transition>
+
           <!-- Ghi chú -->
           <UFormField
             name="note"
@@ -186,11 +276,22 @@
             </div>
           </UFormField>
 
+          <!-- Báo lỗi từ server (nếu có khi submit by-ajax) -->
+          <UAlert
+            v-if="formOrderError"
+            color="error"
+            variant="soft"
+            :description="formOrderError"
+            icon="i-lucide-alert-circle"
+            class="text-xs"
+          />
+
           <UButton
             type="submit"
             color="primary"
             size="lg"
             class="font-black text-sm shadow-xl transition-all duration-300 w-full block"
+            :loading="submitLoading"
           >
             <span class="flex items-center justify-center gap-2 py-1 w-full">
               <UIcon
@@ -198,7 +299,11 @@
                 class="size-5"
               />
               {{
-                hasRouteData ? "ĐẶT CHUYẾN NGAY" : "NHẬP THÔNG TIN ĐỂ XEM GIÁ"
+                !hasRouteData
+                  ? "NHẬP THÔNG TIN ĐỂ XEM GIÁ"
+                  : (isLoggedIn && formSelectedAmount > 0)
+                    ? `ĐẶT CHUYẾN • ${numberToCurrency(formCustomerPay)}`
+                    : "ĐẶT CHUYẾN NGAY"
               }}
             </span>
           </UButton>
@@ -246,13 +351,21 @@
 <script lang="ts" setup>
 import type { FormSubmitEvent } from '@nuxt/ui'
 import z from 'zod'
-import type { OrderDetail, OrderPreview } from '~/type'
+import type {
+  OrderDetail,
+  OrderPreview,
+  DiscountOption,
+  OrderDiscountInput,
+  CreateOrderByAjaxPayload
+} from '~/type'
 import { orderService } from '~/services/order.service'
 import { useOrderForm } from '~/composables/useOrderForm'
 import { getDefaultRouteEndpoints } from '~/utils/routes'
+import type { SuccessData } from '~/components/ui/order/OrderSuccessModal.vue'
 
-const { trackViewPrice, trackBookingStart } = useGtagEvent()
-const { trackPixelViewPrice, trackPixelBookingStart } = useMetaPixelEvent()
+const { token, getCustomer, isLoggedIn, syncMe } = useAuth()
+const { trackViewPrice, trackBookingStart, trackPurchase } = useGtagEvent()
+const { trackPixelViewPrice, trackPixelBookingStart, trackPixelBookingSuccess } = useMetaPixelEvent()
 
 interface RouteData {
   name: string
@@ -315,8 +428,39 @@ const initialCustomerName = ref('')
 const initialCustomerPhone = ref('')
 const showPhoneWarning = ref(false)
 
+// ─── Logged-in user flow state ────────────────────────────
+const loggedInContact = reactive({
+  name: '',
+  phone: ''
+})
+const formDiscountOptions = ref<DiscountOption[]>([])
+const formSelectedDiscount = ref<OrderDiscountInput | null>({ type: null })
+const formReferrerLoading = ref(false)
+const submitLoading = ref(false)
+const formOrderError = ref('')
+
+// Đồng bộ thông tin profile vào form khi đã login
+watch(
+  getCustomer,
+  (cust) => {
+    if (cust) {
+      if (!loggedInContact.name) loggedInContact.name = cust.full_name || ''
+      if (!loggedInContact.phone) loggedInContact.phone = cust.phone || ''
+    }
+  },
+  { immediate: true }
+)
+
+// Kiểm tra xem SĐT trên form có khác với SĐT tài khoản (đặt hộ)
+const isDifferentPhone = computed(() => {
+  if (!isLoggedIn.value || !getCustomer.value?.phone) return false
+  const cleanEntered = loggedInContact.phone.trim().replace(/\s+/g, '')
+  const cleanAccount = getCustomer.value.phone.trim().replace(/\s+/g, '')
+  return cleanEntered.length > 0 && cleanEntered !== cleanAccount
+})
+
 // ─── Success state ────────────────────────────────────────
-const successData = ref({
+const successData = ref<SuccessData>({
   departure_city: '',
   departure_district: '',
   departure_address_1: '',
@@ -324,10 +468,17 @@ const successData = ref({
   destination_district: '',
   destination_address_1: '',
   service_name: '',
-  price: 0
+  price: 0,
+  price_customer_pay: 0,
+  discount: undefined
 })
 
 onMounted(async () => {
+  // Sync profile nếu có token mà chưa có profile
+  if (token.value && !getCustomer.value) {
+    syncMe()
+  }
+
   const { getOrderFormData, clearOrderFormData } = useOrderForm()
   const savedOrderData = getOrderFormData()
 
@@ -343,16 +494,22 @@ onMounted(async () => {
     }
     if (savedOrderData.customer_name) {
       initialCustomerName.value = savedOrderData.customer_name
+      if (!loggedInContact.name) loggedInContact.name = savedOrderData.customer_name
     }
     if (savedOrderData.customer_phone) {
       initialCustomerPhone.value = savedOrderData.customer_phone
+      if (!loggedInContact.phone) loggedInContact.phone = savedOrderData.customer_phone
     }
     clearOrderFormData()
-    calcPreviews()
+    await calcPreviews()
+    if (!order.value.id_service) {
+      order.value.id_service = services.value[0]?.id || ''
+    }
+    fetchDiscountOptions()
     return
   }
 
-  // Pre-fill from route props (fromData / toData): Sử dụng điểm trung tâm tối ưu để ra mức giá sàn thấp nhất
+  // Pre-fill from route props (fromData / toData)
   if (props.fromData || props.toData) {
     try {
       const endpoints = getDefaultRouteEndpoints(props.fromData?.slug, props.toData?.slug)
@@ -367,6 +524,7 @@ onMounted(async () => {
       if (!order.value.id_service) {
         order.value.id_service = services.value[0]?.id || ''
       }
+      fetchDiscountOptions()
     } catch {
       // API failed, leave form empty
     }
@@ -395,6 +553,35 @@ const selectedServiceName = computed(
   () => services.value.find(s => s.id === order.value.id_service)?.name || ''
 )
 
+const selectedTripPrice = computed(() => {
+  const p = getPreview(order.value.id_service)
+  return p?.price_guest_after || 0
+})
+
+// Tính số tiền giảm giá đang chọn trên form
+const formSelectedAmount = computed(() => {
+  if (!formSelectedDiscount.value || !formSelectedDiscount.value.type) return 0
+  if (formSelectedDiscount.value.type === 'Voucher') {
+    const v = formDiscountOptions.value.find(
+      o => o.type === 'Voucher' && o.campaign_id === (formSelectedDiscount.value as { type: 'Voucher', campaign_id: string }).campaign_id
+    )
+    return v?.eligible ? (v.amount || 0) : 0
+  }
+  if (formSelectedDiscount.value.type === 'ReferralCredit') {
+    const c = formDiscountOptions.value.find(o => o.type === 'ReferralCredit')
+    return c?.eligible ? (c.amount || 0) : 0
+  }
+  if (formSelectedDiscount.value.type === 'ReferralWelcome') {
+    const w = formDiscountOptions.value.find(o => o.type === 'ReferralWelcome')
+    return w?.eligible ? (w.amount || 0) : 0
+  }
+  return 0
+})
+
+const formCustomerPay = computed(() => {
+  return Math.max(0, selectedTripPrice.value - formSelectedAmount.value)
+})
+
 const canSubmit = computed(
   () =>
     previews.value.some(p => p.price_guest_after > 0)
@@ -414,9 +601,8 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>
 
 // ─── Handlers ─────────────────────────────────────────────
-function onSubmit(_e: FormSubmitEvent<Schema>) {
+async function onSubmit(_e: FormSubmitEvent<Schema>) {
   if (!canSubmit.value) return
-  isModalOpen.value = true
 
   // Track GA4 & Meta Pixel booking_start event
   const preview = getPreview(order.value.id_service)
@@ -428,23 +614,133 @@ function onSubmit(_e: FormSubmitEvent<Schema>) {
   }
   trackBookingStart(params)
   trackPixelBookingStart(params)
+
+  if (!isLoggedIn.value) {
+    // Luồng A: Khách ẩn danh -> Mở modal liên hệ & xác thực OTP
+    isModalOpen.value = true
+  } else {
+    // Luồng B: Khách đã đăng nhập -> Tạo đơn trực tiếp qua by-ajax (1 chạm)
+    await submitLoggedInOrder()
+  }
 }
 
 function selectService(item: { id: string }) {
   if (!getPreview(item.id)) return
   order.value.id_service = item.id
+  fetchDiscountOptions()
 }
 
-function onOrderConfirmed(data: {
-  departure_city: string
-  departure_district: string
-  departure_address_1: string
-  destination_city: string
-  destination_district: string
-  destination_address_1: string
-  service_name: string
-  price: number
-}) {
+// Luồng B: Submit đơn hàng cho khách đã đăng nhập
+async function submitLoggedInOrder() {
+  if (!token.value) return
+  submitLoading.value = true
+  formOrderError.value = ''
+
+  const preview = getPreview(order.value.id_service)
+  const discountToSend = isDifferentPhone.value ? { type: null } : formSelectedDiscount.value
+
+  const payload: CreateOrderByAjaxPayload = {
+    departure_city: order.value.departure_city,
+    departure_dictrict: order.value.departure_dictrict,
+    departure_address_1: order.value.departure_address_1,
+    destination_city: order.value.destination_city,
+    destination_dictrict: order.value.destination_dictrict,
+    destination_address_1: order.value.destination_address_1,
+    date_of_destination: order.value.date_of_destination,
+    id_service: order.value.id_service,
+    full_name: loggedInContact.name || getCustomer.value?.full_name || 'Khách hàng',
+    phone: loggedInContact.phone || getCustomer.value?.phone || '',
+    price_guest_after: preview?.price_guest_after ?? 0,
+    price_guest: preview?.price_guest ?? 0,
+    price: preview?.price_original ?? 0,
+    note: order.value.note?.trim() || '',
+    discount: discountToSend || { type: null }
+  }
+
+  try {
+    const res = await orderService.createOrderByAjax(token.value, payload)
+
+    onOrderConfirmed({
+      departure_city: order.value.departure_city,
+      departure_district: order.value.departure_dictrict,
+      departure_address_1: order.value.departure_address_1,
+      destination_city: order.value.destination_city,
+      destination_district: order.value.destination_dictrict,
+      destination_address_1: order.value.destination_address_1,
+      service_name: selectedServiceName.value,
+      price: res.price_guest_after || preview?.price_guest_after || 0,
+      price_customer_pay: res.price_customer_pay,
+      discount: res.discount
+    })
+
+    // Track purchase event
+    const trackingParams = {
+      route_from: order.value.departure_city,
+      route_to: order.value.destination_city,
+      service_name: selectedServiceName.value,
+      price: res.price_customer_pay || res.price_guest_after || 0
+    }
+    trackPurchase(trackingParams)
+    trackPixelBookingSuccess(trackingParams)
+
+    $fetch('/api/logs/booking', {
+      method: 'POST',
+      body: trackingParams
+    }).catch(console.error)
+  } catch (err: unknown) {
+    formOrderError.value = err?.message || 'Có lỗi xảy ra khi tạo chuyến xe. Vui lòng thử lại.'
+    // Khi lỗi ưu đãi, gọi lại discount-options cho khách chọn lại
+    fetchDiscountOptions()
+  } finally {
+    submitLoading.value = false
+  }
+}
+
+// Áp dụng SĐT người giới thiệu trong Form khi đã đăng nhập
+async function handleFormApplyReferrer(phone: string) {
+  if (!token.value || !selectedTripPrice.value) return
+  formReferrerLoading.value = true
+  formOrderError.value = ''
+  try {
+    formDiscountOptions.value = await orderService.getDiscountOptions(token.value, {
+      price_guest_after: selectedTripPrice.value,
+      referrer_phone: phone
+    })
+  } catch (err: unknown) {
+    formOrderError.value
+      = err?.data?.message
+        || (typeof err?.data === 'string' && err.data)
+        || 'Không thể áp dụng số điện thoại người giới thiệu.'
+  } finally {
+    formReferrerLoading.value = false
+  }
+}
+
+// Gọi API lấy danh sách ưu đãi cho khách đã login
+async function fetchDiscountOptions() {
+  if (!isLoggedIn.value || !token.value || isDifferentPhone.value) {
+    formDiscountOptions.value = []
+    formSelectedDiscount.value = { type: null }
+    return
+  }
+  const price = selectedTripPrice.value
+  if (price <= 0) {
+    formDiscountOptions.value = []
+    return
+  }
+
+  try {
+    const opts = await orderService.getDiscountOptions(token.value, {
+      price_guest_after: price
+    })
+    formDiscountOptions.value = Array.isArray(opts) ? opts : []
+  } catch (err) {
+    console.warn('Lỗi discount-options:', err)
+    formDiscountOptions.value = []
+  }
+}
+
+function onOrderConfirmed(data: SuccessData) {
   order.value = {
     id_service: '',
     date_of_destination: null,
@@ -457,25 +753,30 @@ function onOrderConfirmed(data: {
     note: ''
   }
   previews.value = []
+  formDiscountOptions.value = []
+  formSelectedDiscount.value = { type: null }
+  formOrderError.value = ''
   formKey.value++
   successData.value = data
   openDepositModal.value = true
 
   // Track Meta Pixel Purchase event
   if (typeof window !== 'undefined' && 'fbq' in window) {
-    (window as typeof window & { fbq: (...args: unknown[]) => void }).fbq('track', 'Purchase', { value: data.price, currency: 'VND' })
+    (window as typeof window & { fbq: (...args: unknown[]) => void }).fbq(
+      'track',
+      'Purchase',
+      { value: data.price_customer_pay || data.price, currency: 'VND' }
+    )
   }
 }
 
 // ─── Watch ────────────────────────────────────────────────
-// Chỉ lấy phần ngày (YYYY-MM-DD) để đổi giờ không trigger preview
 const dateOnly = computed(() => {
   const d = order.value.date_of_destination
   if (!d) return null
   return String(d).slice(0, 10)
 })
 
-// Fingerprint chứa nội dung địa chỉ chi tiết, thay đổi bất kỳ field nào cũng trigger
 const addressFingerprint = computed(() => {
   const o = order.value
   return [
@@ -494,14 +795,25 @@ watch(
     if (!isReady) {
       previews.value = []
       order.value.id_service = ''
+      formDiscountOptions.value = []
       return
     }
     await calcPreviews()
     if (!order.value.id_service) {
       order.value.id_service = services.value[0]?.id || ''
     }
+    fetchDiscountOptions()
   }
 )
+
+watch(isDifferentPhone, (diff) => {
+  if (diff) {
+    formDiscountOptions.value = []
+    formSelectedDiscount.value = { type: null }
+  } else {
+    fetchDiscountOptions()
+  }
+})
 
 // Watch note to detect and mask phone numbers
 watch(
