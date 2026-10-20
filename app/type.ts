@@ -454,3 +454,50 @@ export interface CreateOrderByAjaxResponse {
     state?: string
   }
 }
+
+// === TRANG "ƯU ĐÃI CỦA TÔI" (VOUCHER & SỐ DƯ GIỚI THIỆU) ===
+
+export type VoucherOfferState = 'Available' | 'Reserved'
+
+export interface VoucherTier {
+  min_price: number
+  amount: number
+}
+
+// GET api/customer_app/vouchers — mỗi phần tử là 1 voucher còn dùng được / đang giữ cho chuyến
+export interface CustomerVoucher {
+  campaign_id: string
+  campaign_name: string
+  issued_at: string
+  expires_at: string
+  tiers: VoucherTier[]
+  state: VoucherOfferState
+  status: string
+  order_id: string | null
+  order_short_id: string | null
+}
+
+export interface ReferralCreditSummary {
+  balance: number
+  reserved_amount: number
+  max_rate: number
+  next_expiring_amount: number | null
+  next_expires_at: string | null
+}
+
+// Mỗi lần nhận 100.000đ từ giới thiệu bạn bè (hạn 6 tháng)
+export interface ReferralCreditDetail {
+  id: string
+  amount: number
+  remaining: number
+  reserved_amount: number
+  issued_at: string
+  expires_at: string
+  referee_phone: string
+}
+
+// GET api/customer_app/referral-credits
+export interface ReferralCreditsResponse {
+  summary: ReferralCreditSummary
+  details: ReferralCreditDetail[]
+}

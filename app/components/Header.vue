@@ -653,6 +653,13 @@ const menuItems = computed(() => {
           navigateTo("/history");
         },
       },
+      {
+        label: "Ưu đãi của tôi",
+        icon: "i-lucide-ticket-percent",
+        onSelect: () => {
+          navigateTo("/offers");
+        },
+      },
     ],
   ];
   if (needCreatePassword.value) {
