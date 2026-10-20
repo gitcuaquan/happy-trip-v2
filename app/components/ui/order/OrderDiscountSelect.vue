@@ -54,7 +54,7 @@
         :class="[
           selectedKey === getOptionKey(opt, idx)
             ? 'border-primary bg-white shadow-xs'
-            : opt.eligible
+            : (opt.eligible || opt.requires_referrer)
               ? 'border-slate-200/80 bg-white/70 hover:bg-white'
               : 'border-slate-200/50 bg-slate-50/70 opacity-90'
         ]"
@@ -68,7 +68,7 @@
             name="discount_option"
             :value="getOptionKey(opt, idx)"
             :checked="selectedKey === getOptionKey(opt, idx)"
-            :disabled="!opt.eligible"
+            :disabled="!opt.eligible && !opt.requires_referrer"
             class="mt-1 text-primary focus:ring-primary size-4 disabled:opacity-40"
             @change="chooseOption(opt, idx)"
           >
@@ -82,6 +82,12 @@
                 class="text-xs font-black text-emerald-600 shrink-0"
               >
                 −{{ numberToCurrency(opt.amount) }}
+              </span>
+              <span
+                v-else-if="opt.requires_referrer && !opt.eligible"
+                class="text-[11px] font-semibold text-primary/80 shrink-0"
+              >
+                −50.000đ (nhập SĐT)
               </span>
             </div>
 
@@ -111,60 +117,63 @@
               HSD: {{ formatDate(opt.expires_at) }}
             </p>
 
-            <!-- Khách mới cần nhập SĐT người giới thiệu -->
-            <div
-              v-if="opt.requires_referrer"
-              class="mt-2 pt-2 border-t border-slate-100"
-              @click.stop
-            >
-              <div class="flex items-center gap-2">
-                <UInput
-                  v-model="referrerPhoneInput"
-                  placeholder="SĐT người giới thiệu (09...)"
-                  type="tel"
-                  size="xs"
-                  class="flex-1"
-                  :disabled="referrerLoading"
-                  @keyup.enter="handleApplyReferrer"
-                />
-                <UButton
-                  size="xs"
-                  color="primary"
-                  :loading="referrerLoading"
-                  :disabled="!canApplyReferrer"
-                  label="Áp dụng"
-                  @click="handleApplyReferrer"
-                />
-              </div>
-
-              <!-- Reason alert khi chưa đủ điều kiện -->
+            <!-- Khách mới cần nhập SĐT người giới thiệu (chỉ hiển thị khi click chọn mục này hoặc đã áp dụng) -->
+            <Transition name="fade">
               <div
-                v-if="!opt.eligible && (opt.reason || localReferrerError)"
-                class="text-[11px] text-amber-700 bg-amber-50 border border-amber-200/80 rounded-md p-1.5 mt-1.5 flex items-start gap-1"
+                v-if="opt.requires_referrer && (selectedKey === getOptionKey(opt, idx) || opt.eligible)"
+                class="mt-2 pt-2 border-t border-slate-100"
+                @click.stop
               >
-                <UIcon
-                  name="i-lucide-alert-triangle"
-                  class="size-3.5 text-amber-500 shrink-0 mt-0.5"
-                />
-                <span>{{ localReferrerError || opt.reason }}</span>
-              </div>
+                <div class="flex items-center gap-2">
+                  <UInput
+                    ref="referrerInputRef"
+                    v-model="referrerPhoneInput"
+                    placeholder="SĐT người giới thiệu (09...)"
+                    type="tel"
+                    size="xs"
+                    class="flex-1"
+                    :disabled="referrerLoading"
+                    @keyup.enter="handleApplyReferrer"
+                  />
+                  <UButton
+                    size="xs"
+                    color="primary"
+                    :loading="referrerLoading"
+                    :disabled="!canApplyReferrer"
+                    label="Áp dụng"
+                    @click="handleApplyReferrer"
+                  />
+                </div>
 
-              <!-- Success alert khi đã áp dụng thành công -->
-              <div
-                v-else-if="opt.eligible"
-                class="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200/80 rounded-md p-1.5 mt-1.5 flex items-center gap-1"
-              >
-                <UIcon
-                  name="i-lucide-check-circle"
-                  class="size-3.5 text-emerald-500 shrink-0"
-                />
-                <span>Đã áp dụng người giới thiệu: {{ appliedReferrerPhone }}</span>
+                <!-- Reason alert khi chưa đủ điều kiện -->
+                <div
+                  v-if="!opt.eligible && (opt.reason || localReferrerError)"
+                  class="text-[11px] text-amber-700 bg-amber-50 border border-amber-200/80 rounded-md p-1.5 mt-1.5 flex items-start gap-1"
+                >
+                  <UIcon
+                    name="i-lucide-alert-triangle"
+                    class="size-3.5 text-amber-500 shrink-0 mt-0.5"
+                  />
+                  <span>{{ localReferrerError || opt.reason }}</span>
+                </div>
+
+                <!-- Success alert khi đã áp dụng thành công -->
+                <div
+                  v-else-if="opt.eligible"
+                  class="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200/80 rounded-md p-1.5 mt-1.5 flex items-center gap-1"
+                >
+                  <UIcon
+                    name="i-lucide-check-circle"
+                    class="size-3.5 text-emerald-500 shrink-0"
+                  />
+                  <span>Đã áp dụng người giới thiệu: {{ appliedReferrerPhone }}</span>
+                </div>
               </div>
-            </div>
+            </Transition>
 
             <!-- Reason khi không đủ điều kiện cho voucher/credit -->
             <div
-              v-else-if="!opt.eligible && opt.reason"
+              v-if="!opt.eligible && opt.reason && !opt.requires_referrer"
               class="text-[11px] text-slate-500 bg-slate-100 rounded p-1 mt-1 flex items-center gap-1"
             >
               <UIcon
@@ -218,6 +227,7 @@ const referrerPhoneInput = ref('')
 const appliedReferrerPhone = ref('')
 const localReferrerError = ref('')
 const selectedKey = ref<string>('none')
+const referrerInputRef = ref()
 
 // Tạo key định danh cho từng option
 function getOptionKey(opt: DiscountOption, idx: number): string {
@@ -251,7 +261,7 @@ function chooseNone() {
 }
 
 function chooseOption(opt: DiscountOption, idx: number) {
-  if (!opt.eligible) return
+  if (!opt.eligible && !opt.requires_referrer) return
   selectedKey.value = getOptionKey(opt, idx)
 
   if (opt.type === 'Voucher') {
@@ -264,10 +274,18 @@ function chooseOption(opt: DiscountOption, idx: number) {
       type: 'ReferralCredit'
     })
   } else if (opt.type === 'ReferralWelcome') {
-    emit('update:modelValue', {
-      type: 'ReferralWelcome',
-      referrer_phone: appliedReferrerPhone.value || referrerPhoneInput.value.trim()
-    })
+    if (opt.eligible) {
+      emit('update:modelValue', {
+        type: 'ReferralWelcome',
+        referrer_phone: appliedReferrerPhone.value || referrerPhoneInput.value.trim()
+      })
+    } else {
+      emit('update:modelValue', { type: null })
+      nextTick(() => {
+        const inputEl = referrerInputRef.value?.$el?.querySelector('input') || referrerInputRef.value?.input || referrerInputRef.value
+        inputEl?.focus?.()
+      })
+    }
   }
 }
 
@@ -297,7 +315,7 @@ watch(
     // Nếu option đang chọn không còn hợp lệ, reset về 'none'
     if (selectedKey.value !== 'none') {
       const current = newOpts.find((o, idx) => getOptionKey(o, idx) === selectedKey.value)
-      if (!current || !current.eligible) {
+      if (!current || (!current.eligible && !current.requires_referrer)) {
         chooseNone()
       }
     }
