@@ -2,9 +2,32 @@
   <div class="min-h-screen bg-slate-50">
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
       <UContainer class="flex items-center justify-between py-3">
-        <div class="flex items-center gap-3">
-          <AppLogo class="h-8 w-auto" />
-          <UBadge label="Admin" color="primary" variant="subtle" size="md" />
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3">
+            <AppLogo class="h-8 w-auto" />
+            <UBadge label="Admin" color="primary" variant="subtle" size="md" />
+          </div>
+
+          <nav class="hidden md:flex items-center gap-1 border-l border-slate-200 pl-4 ml-1">
+            <UButton
+              to="/admin/blog"
+              variant="ghost"
+              color="neutral"
+              size="sm"
+              icon="i-lucide-file-text"
+              label="Bài viết"
+              :class="{ 'text-primary font-bold bg-primary/10': $route.path.startsWith('/admin/blog') }"
+            />
+            <UButton
+              to="/admin/popup-modal"
+              variant="ghost"
+              color="neutral"
+              size="sm"
+              icon="i-lucide-megaphone"
+              label="Modal thông báo"
+              :class="{ 'text-primary font-bold bg-primary/10': $route.path.startsWith('/admin/popup-modal') }"
+            />
+          </nav>
         </div>
 
         <ClientOnly>
@@ -41,6 +64,11 @@ const menuItems = computed(() => [
       label: 'Quản lý bài viết',
       icon: 'i-lucide-file-text',
       onSelect: () => { navigateTo('/admin/blog') },
+    },
+    {
+      label: 'Modal thông báo',
+      icon: 'i-lucide-megaphone',
+      onSelect: () => { navigateTo('/admin/popup-modal') },
     },
   ],
   [

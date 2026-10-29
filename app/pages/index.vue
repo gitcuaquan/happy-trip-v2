@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import CollapsibleCard from "~/components/shared/collapsible-card.vue";
+import NotificationModal from "~/components/ui/NotificationModal.vue";
 
 const carLogos = [
   "honda.svg",
@@ -275,6 +276,9 @@ watch(
 </script>
 
 <template>
+  <!-- Notification / Announcement Popup Modal -->
+  <NotificationModal />
+
   <!-- Hero Section with Booking Form -->
   <Hero />
 
