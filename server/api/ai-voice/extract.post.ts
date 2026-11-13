@@ -239,7 +239,17 @@ export default defineEventHandler(async (event) => {
     })
 
     const parsed = JSON.parse(response.output_text || '{}')
-    const fields = sanitizeBookingFields({ ...draft, ...parsed })
+
+    // Gộp: chỉ ghi đè draft bằng giá trị KHÁC RỖNG để model bỏ trống không xoá dữ liệu đã có
+    const merged: Partial<BookingFormFields> = { ...draft }
+    for (const key of BOOKING_KEYS as readonly BookingKey[]) {
+      const value = parsed?.[key]
+      if (typeof value === 'string' && value.trim() !== '') {
+        merged[key] = value
+      }
+    }
+
+    const fields = sanitizeBookingFields(merged)
 
     return {
       fields,

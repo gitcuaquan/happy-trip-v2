@@ -25,6 +25,40 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
+// Rút gọn thông báo lỗi từ fetch/createError về 1 chuỗi an toàn để hiển thị UI
+export function extractErrorMessage(err: unknown, fallback = 'Có lỗi xảy ra, vui lòng thử lại.'): string {
+  if (!err) return fallback
+
+  const e = err as {
+    data?: unknown
+    message?: unknown
+    statusMessage?: unknown
+  }
+
+  const data = e.data as
+    | string
+    | { message?: unknown, statusMessage?: unknown, data?: unknown }
+    | undefined
+
+  if (typeof data === 'string' && data.trim()) return data
+
+  if (data && typeof data === 'object') {
+    const direct = data.message ?? data.statusMessage
+    if (typeof direct === 'string' && direct.trim()) return direct
+    if (Array.isArray(direct) && direct.length) return String(direct[0])
+
+    const nested = (data as { data?: { message?: unknown } }).data
+    if (nested && typeof nested === 'object' && typeof nested.message === 'string' && nested.message.trim()) {
+      return nested.message
+    }
+  }
+
+  if (typeof e.statusMessage === 'string' && e.statusMessage.trim()) return e.statusMessage
+  if (typeof e.message === 'string' && e.message.trim()) return e.message
+
+  return fallback
+}
+
 // === NGÀY THÁNG (API trả UTC, website hiển thị giờ Việt Nam GMT+7) ===
 
 // Hiển thị ngày theo giờ Việt Nam: 20/03/2027

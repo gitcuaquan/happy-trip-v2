@@ -109,7 +109,7 @@ async function partnerFetch<T = any>(
   opts: { method?: string; headers?: Record<string, string>; body?: any } = {}
 ): Promise<T> {
   if (typeof $fetch !== 'undefined') {
-    return await $fetch<T>(url, opts as any)
+    return await $fetch<T>(url, opts as any) as T
   }
 
   const res = await fetch(url, {

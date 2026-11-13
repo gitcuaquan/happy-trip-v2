@@ -191,10 +191,15 @@ export function useVoiceBookingSync(options?: {
 
   /**
    * Kiểm tra điều kiện đủ thông tin để tính cước
+   * Yêu cầu đủ địa chỉ 2 đầu: thành phố/tỉnh + phường/xã + địa chỉ chi tiết
    */
   const isReadyToCalculate = computed(() => {
-    const hasPickup = Boolean(bookingForm.pickupArea || bookingForm.pickupWard)
-    const hasDropoff = Boolean(bookingForm.dropoffArea || bookingForm.dropoffWard)
+    const hasPickup = Boolean(
+      bookingForm.pickupArea && bookingForm.pickupWard && bookingForm.pickupDetail
+    )
+    const hasDropoff = Boolean(
+      bookingForm.dropoffArea && bookingForm.dropoffWard && bookingForm.dropoffDetail
+    )
     return hasPickup && hasDropoff
   })
 

@@ -4,6 +4,7 @@ import { aiVoiceService } from '~/services/ai-voice.service'
 export type PermissionStatus = 'prompt' | 'granted' | 'denied' | 'unsupported'
 export type VoiceSpeakerMode = 'idle' | 'user' | 'assistant'
 export type VoiceServerMode = 'live' | 'demo' | 'checking'
+export type VoiceErrorKind = 'not_configured' | 'auth' | 'rate_limited' | 'connection'
 
 export interface VoiceScenario {
   id: string
@@ -49,6 +50,10 @@ export function useTripVoice() {
   const isMuted = ref(false)
   const statusMessage = ref('Sẵn sàng kết nối')
 
+  // Lỗi kết nối trợ lý AI (không tự fallback sang Demo/Web Speech)
+  const voiceError = ref<string | null>(null)
+  const voiceErrorKind = ref<VoiceErrorKind | null>(null)
+
   // Transcript hội thoại
   const userTranscript = ref('')
   const assistantTranscript = ref('')
@@ -70,6 +75,15 @@ export function useTripVoice() {
   let remoteStream: MediaStream | null = null
   let remoteAnalyser: AnalyserNode | null = null
   let remoteSource: MediaStreamAudioSourceNode | null = null
+
+  // Giọng nữ tiếng Việt (MP3 từ POST /api/ai-voice/tts)
+  let ttsAudio: HTMLAudioElement | null = null
+  let ttsObjectUrl: string | null = null
+  let ttsAnalyser: AnalyserNode | null = null
+  let ttsMediaSource: MediaElementAudioSourceNode | null = null
+  let ttsPlaybackId = 0
+  let ttsStopCurrent: (() => void) | null = null
+  const isTtsPlaying = ref(false)
 
   let animationFrameId: number | null = null
   let sessionTimer: ReturnType<typeof setTimeout> | null = null
@@ -192,10 +206,11 @@ export function useTripVoice() {
       let activeLevel = 0
       const bars: number[] = []
 
-      // 1. Kiểm tra âm thanh AI phát ra (nếu có remote analyser)
+      // 1. Kiểm tra âm thanh AI phát ra (remote WebRTC hoặc MP3 TTS)
       let assistantSignal = 0
-      if (remoteAnalyser) {
-        remoteAnalyser.getByteFrequencyData(dataArrayRemote)
+      const assistantAnalyser = remoteAnalyser || ttsAnalyser
+      if (assistantAnalyser) {
+        assistantAnalyser.getByteFrequencyData(dataArrayRemote)
         let sum = 0
         for (let i = 0; i < 24; i++) {
           sum += dataArrayRemote[i] || 0
@@ -203,17 +218,21 @@ export function useTripVoice() {
         assistantSignal = Math.min(100, Math.round((sum / 24 / 255) * 100))
       }
 
-      // 2. Kiểm tra nếu đang nói bằng Web SpeechSynthesis
+      // 2. Kiểm tra nếu đang nói bằng Web SpeechSynthesis (giọng trình duyệt)
       const isSynthesisSpeaking = typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis.speaking
 
-      if (assistantSignal > 8 || isSynthesisSpeaking) {
+      if (assistantSignal > 8 || isSynthesisSpeaking || isTtsPlaying.value) {
         speakerMode.value = 'assistant'
-        activeLevel = isSynthesisSpeaking ? Math.max(assistantSignal, 45 + Math.sin(Date.now() / 90) * 35) : assistantSignal
+        // Có analyser thật thì lấy theo âm thanh; không có thì mô phỏng sóng
+        const useSynthWave = isSynthesisSpeaking || (isTtsPlaying.value && assistantSignal <= 8)
+        activeLevel = useSynthWave
+          ? Math.max(assistantSignal, 45 + Math.sin(Date.now() / 90) * 35)
+          : assistantSignal
 
         for (let i = 0; i < 24; i++) {
           const raw = dataArrayRemote[i] || 0
           const synthSim = Math.abs(Math.sin((Date.now() / 150) + i * 0.4)) * 75 + 15
-          const val = isSynthesisSpeaking ? Math.round(synthSim) : Math.round((raw / 255) * 100)
+          const val = useSynthWave ? Math.round(synthSim) : Math.round((raw / 255) * 100)
           bars.push(Math.max(12, Math.min(val, 100)))
         }
       } else {
@@ -330,10 +349,174 @@ export function useTripVoice() {
     window.speechSynthesis.onvoiceschanged = loadVoices
   }
 
+  // ─── Giọng nữ tiếng Việt (MP3 từ server) ──────────────────────────────
+  /** Dừng mọi âm thanh giọng trợ lý đang phát (MP3 TTS + Web Speech API) */
+  const stopAssistantPlayback = () => {
+    ttsPlaybackId++
+
+    if (ttsStopCurrent) {
+      try {
+        ttsStopCurrent()
+      } catch {
+        // bỏ qua lỗi khi huỷ audio đang phát
+      }
+      ttsStopCurrent = null
+    }
+
+    if (ttsAudio) {
+      try {
+        ttsAudio.pause()
+      } catch {
+        // bỏ qua khi audio chưa sẵn sàng
+      }
+      try {
+        ttsAudio.removeAttribute('src')
+        ttsAudio.load()
+      } catch {
+        // bỏ qua khi audio đã bị giải phóng
+      }
+    }
+
+    if (ttsObjectUrl) {
+      try {
+        URL.revokeObjectURL(ttsObjectUrl)
+      } catch {
+        // bỏ qua khi URL đã được thu hồi
+      }
+      ttsObjectUrl = null
+    }
+
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel()
+      } catch {
+        // bỏ qua khi trình duyệt không hỗ trợ
+      }
+    }
+
+    isTtsPlaying.value = false
+    speakerMode.value = 'idle'
+  }
+
   /**
-   * Phát giọng nói tiếng Việt tự nhiên qua Web Speech Synthesis (Demo/Fallback)
+   * Lấy (hoặc tạo) thẻ audio phát giọng nữ tiếng Việt.
+   * Gắn analyser để visualizer nhảy theo giọng thật khi có AudioContext.
    */
-  const speakTrip = (text: string): Promise<void> => {
+  const ensureTtsAudio = (): HTMLAudioElement | null => {
+    if (typeof window === 'undefined') return null
+
+    if (!ttsAudio) {
+      ttsAudio = new Audio()
+      ttsAudio.preload = 'auto'
+      ttsAudio.setAttribute('playsinline', '')
+    }
+
+    if (!ttsMediaSource && audioContext && audioContext.state === 'running') {
+      try {
+        ttsAnalyser = audioContext.createAnalyser()
+        ttsAnalyser.fftSize = 64
+        ttsAnalyser.smoothingTimeConstant = 0.85
+        ttsMediaSource = audioContext.createMediaElementSource(ttsAudio)
+        ttsMediaSource.connect(ttsAnalyser)
+        ttsAnalyser.connect(audioContext.destination)
+      } catch (err) {
+        console.warn('[useTripVoice] Không gắn được analyser cho giọng TTS:', err)
+        ttsAnalyser = null
+        ttsMediaSource = null
+      }
+    }
+
+    return ttsAudio
+  }
+
+  /** Phát MP3 giọng nữ tiếng Việt; trả về true nếu phát xong bình thường. */
+  const playTtsBlob = (blob: Blob, playbackId: number): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const audio = ensureTtsAudio()
+      if (!audio) {
+        resolve(false)
+        return
+      }
+
+      if (ttsObjectUrl) {
+        try {
+          URL.revokeObjectURL(ttsObjectUrl)
+        } catch {
+          // bỏ qua khi URL đã được thu hồi
+        }
+        ttsObjectUrl = null
+      }
+
+      const objectUrl = URL.createObjectURL(blob)
+      ttsObjectUrl = objectUrl
+      let settled = false
+      let stopFn: (() => void) | null = null
+
+      const finish = (played: boolean) => {
+        if (settled) return
+        settled = true
+        audio.onended = null
+        audio.onerror = null
+        if (stopFn && ttsStopCurrent === stopFn) ttsStopCurrent = null
+
+        if (ttsObjectUrl === objectUrl) {
+          try {
+            URL.revokeObjectURL(objectUrl)
+          } catch {
+            // bỏ qua khi URL đã được thu hồi
+          }
+          ttsObjectUrl = null
+        }
+
+        if (playbackId === ttsPlaybackId) {
+          isTtsPlaying.value = false
+          speakerMode.value = 'idle'
+        }
+        resolve(played)
+      }
+      stopFn = () => finish(false)
+
+      audio.onended = () => finish(true)
+      audio.onerror = () => finish(false)
+
+      ttsStopCurrent = stopFn
+      audio.src = objectUrl
+      isTtsPlaying.value = true
+      speakerMode.value = 'assistant'
+
+      audio.play().catch((err) => {
+        console.warn('[useTripVoice] Không phát được MP3 TTS:', err)
+        finish(false)
+      })
+    })
+  }
+
+  const VIETNAMESE_VOICE_HINTS = ['hoai my', 'hoài my', 'linh', 'huyen', 'huyền', 'thuy', 'thủy', 'mai', 'lan', 'hong', 'hồng', 'female', 'nữ']
+
+  /** Chọn giọng nữ tiếng Việt trong danh sách giọng của trình duyệt */
+  const pickVietnameseVoice = (voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null => {
+    const isVietnamese = (v: SpeechSynthesisVoice) => {
+      const lang = (v.lang || '').toLowerCase()
+      const name = (v.name || '').toLowerCase()
+      return lang.startsWith('vi') || lang.includes('-vn') || name.includes('vietnam') || name.includes('tiếng việt')
+    }
+
+    const viVoices = voices.filter(isVietnamese)
+    if (viVoices.length === 0) return null
+
+    const femaleVoice = viVoices.find((v) => {
+      const name = (v.name || '').toLowerCase()
+      return VIETNAMESE_VOICE_HINTS.some(hint => name.includes(hint))
+    })
+
+    return femaleVoice ?? viVoices[0] ?? null
+  }
+
+  /**
+   * Phương án cuối: giọng tiếng Việt của trình duyệt (chỉ dùng khi server TTS lỗi).
+   * Không bao giờ đọc tiếng Việt bằng giọng tiếng Anh.
+   */
+  const speakWithBrowserVoice = (text: string, playbackId: number): Promise<void> => {
     return new Promise((resolve) => {
       if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
         resolve()
@@ -344,45 +527,32 @@ export function useTripVoice() {
         window.speechSynthesis.cancel()
         window.speechSynthesis.resume()
 
-        const utterance = new SpeechSynthesisUtterance(text)
-        utterance.rate = 1.05
-        utterance.pitch = 1.0
-
         if (availableVoices.length === 0) {
           availableVoices = window.speechSynthesis.getVoices()
         }
 
-        // Tìm voice tiếng Việt
-        const viVoice = availableVoices.find(v =>
-          v.lang.toLowerCase().includes('vi') ||
-          v.lang.toLowerCase().includes('vn') ||
-          v.name.toLowerCase().includes('vietnam') ||
-          v.name.toLowerCase().includes('tiếng việt')
-        )
+        const viVoice = pickVietnameseVoice(availableVoices)
 
-        if (viVoice) {
-          utterance.voice = viVoice
-          utterance.lang = viVoice.lang || 'vi-VN'
-        } else {
-          // Fallback sang voice mặc định của hệ thống để đảm bảo luôn phát ra âm thanh
-          utterance.lang = 'vi-VN'
-          if (availableVoices.length > 0) {
-            const defaultVoice = availableVoices.find(v => v.default) || availableVoices[0]
-            if (defaultVoice) utterance.voice = defaultVoice
-          }
+        if (!viVoice) {
+          statusMessage.value = 'Thiết bị chưa cài giọng tiếng Việt. Bấm nút loa cạnh câu trả lời để nghe giọng nữ tiếng Việt.'
+          resolve()
+          return
         }
 
-        utterance.onstart = () => {
-          speakerMode.value = 'assistant'
-        }
-        utterance.onend = () => {
-          speakerMode.value = 'idle'
+        const utterance = new SpeechSynthesisUtterance(text)
+        utterance.rate = 1.05
+        utterance.pitch = 1.0
+        utterance.voice = viVoice
+        utterance.lang = viVoice.lang || 'vi-VN'
+
+        const finish = () => {
+          if (playbackId === ttsPlaybackId) speakerMode.value = 'idle'
           resolve()
         }
+        utterance.onend = finish
         utterance.onerror = (e) => {
           console.warn('[useTripVoice] SpeechSynthesis error:', e)
-          speakerMode.value = 'idle'
-          resolve()
+          finish()
         }
 
         speakerMode.value = 'assistant'
@@ -398,10 +568,52 @@ export function useTripVoice() {
         }, 300)
       } catch (e) {
         console.warn('[useTripVoice] SpeechSynthesis error:', e)
-        speakerMode.value = 'idle'
+        if (playbackId === ttsPlaybackId) speakerMode.value = 'idle'
         resolve()
       }
     })
+  }
+
+  /**
+   * Phát câu trả lời của trợ lý bằng giọng NỮ TIẾNG VIỆT.
+   * Ưu tiên MP3 tổng hợp từ server /api/ai-voice/tts,
+   * chỉ fallback Web Speech API (vi-VN) khi server lỗi.
+   */
+  const speakTrip = async (text: string): Promise<void> => {
+    const clean = (text || '').trim()
+    if (!clean) return
+
+    // Câu mới: dừng câu đang đọc trước, không chồng tiếng
+    stopAssistantPlayback()
+    const playbackId = ttsPlaybackId
+
+    speakerMode.value = 'assistant'
+
+    // 1. Ưu tiên giọng nữ tiếng Việt tổng hợp từ server
+    try {
+      if (audioContext && audioContext.state === 'suspended') {
+        try {
+          await audioContext.resume()
+        } catch {
+          // bỏ qua: AudioContext có thể đã bị đóng
+        }
+      }
+
+      const blob = await aiVoiceService.synthesize(clean)
+      if (playbackId !== ttsPlaybackId) return
+
+      if (blob && blob.size > 0) {
+        const played = await playTtsBlob(blob, playbackId)
+        if (played || playbackId !== ttsPlaybackId) return
+      }
+    } catch (err) {
+      console.warn('[useTripVoice] Lỗi TTS server, chuyển sang giọng trình duyệt:', err)
+    }
+
+    if (playbackId !== ttsPlaybackId) return
+
+    // 2. Phương án cuối: giọng tiếng Việt của trình duyệt
+    await speakWithBrowserVoice(clean, playbackId)
   }
 
   /**
@@ -427,7 +639,7 @@ export function useTripVoice() {
         isConnected.value = true
         statusMessage.value = 'Trip đang lắng nghe 🎙️ (Trình duyệt vi-VN)'
 
-        const welcome = 'Dạ em chào anh chị! Em là Trip, trợ lý đặt xe của Happy Trip. Mình muốn đi đâu và đón ở đâu ạ?'
+        const welcome = 'Dạ em chào anh chị! Em là Trip, trợ lý đặt xe của Happy Trip. Anh/chị đi từ đâu đến đâu để em báo giá ạ?'
         assistantTranscript.value = welcome
         speakTrip(welcome)
       }
@@ -534,17 +746,83 @@ export function useTripVoice() {
       const code = String(e.error?.code || e.code || '')
       const msg = String(e.error?.message || e.message || '')
       if (code === 'missing_scope' && msg.toLowerCase().includes('history compaction')) return
-      statusMessage.value = 'Lỗi kết nối OpenAI Live. Vui lòng thử lại.'
       console.warn('[useTripVoice] Live event error:', code, msg)
+
+      // Phân loại để khách thấy đúng nguyên nhân, không chỉ báo "lỗi kết nối"
+      const signature = `${code} ${msg}`
+      const kind: VoiceErrorKind = /rate_limit|quota|429/i.test(signature)
+        ? 'rate_limited'
+        : /invalid_api_key|unauthorized|authentication|permission|forbidden|401|403/i.test(signature)
+          ? 'auth'
+          : 'connection'
+
+      const detail = msg ? `${msg}${code ? ` (${code})` : ''}` : code
+      setVoiceError(
+        kind,
+        detail
+          ? `Lỗi OpenAI Live: ${detail}. Vui lòng bấm "Thử lại" để kết nối lại.`
+          : 'Lỗi kết nối OpenAI Live. Vui lòng bấm "Thử lại" để kết nối lại.'
+      )
+
+      // Kết thúc phiên đang lỗi để nút "Thử lại" mở được phiên mới
+      stopSession()
+    }
+  }
+
+  // ─── Báo lỗi kết nối OpenAI (KHÔNG tự fallback sang Demo) ─────────────
+  const clearVoiceError = () => {
+    voiceError.value = null
+    voiceErrorKind.value = null
+  }
+
+  const setVoiceError = (kind: VoiceErrorKind, message: string) => {
+    voiceErrorKind.value = kind
+    voiceError.value = message
+    statusMessage.value = message
+    isConnecting.value = false
+  }
+
+  /** Chuyển lỗi kỹ thuật thành thông báo thân thiện cho khách */
+  const describeSessionError = (err: unknown): { kind: VoiceErrorKind; message: string } => {
+    const detail = (err || {}) as { statusCode?: number, status?: number, statusMessage?: string, message?: string }
+    const status = Number(detail.statusCode || detail.status || 0)
+    const raw = String(detail.statusMessage || detail.message || '').trim()
+    const looksTechnical = /failed to fetch|networkerror|load failed|timeout|aborted|http error|sdp|webrtc|ice/i.test(raw)
+
+    if (status === 429) {
+      return {
+        kind: 'rate_limited',
+        message: raw && !looksTechnical
+          ? raw
+          : 'Trợ lý AI đang giới hạn số phiên kết nối. Vui lòng thử lại sau ít phút.'
+      }
+    }
+
+    if (status === 401 || status === 403) {
+      return {
+        kind: 'auth',
+        message: 'Không xác thực được với OpenAI (API key không hợp lệ hoặc thiếu quyền). Vui lòng kiểm tra cấu hình.'
+      }
+    }
+
+    if (raw && !looksTechnical) {
+      return { kind: 'connection', message: raw }
+    }
+
+    return {
+      kind: 'connection',
+      message: 'Không kết nối được tới trợ lý AI. Vui lòng kiểm tra kết nối mạng và thử lại.'
     }
   }
 
   /**
-   * Bắt đầu phiên kết nối AI Voice (Kiểm tra quyền -> check server -> WebRTC hoặc Demo Fallback)
+   * Bắt đầu phiên kết nối AI Voice (kiểm tra quyền -> trạng thái server -> WebRTC Live).
+   * Nếu OpenAI lỗi hoặc chưa cấu hình -> báo lỗi rõ ràng, KHÔNG tự chuyển Demo.
    */
   const startSession = async () => {
     if (isConnected.value || isConnecting.value) return
 
+    clearVoiceError()
     isConnecting.value = true
     isStopping.value = false
     statusMessage.value = 'Đang kiểm tra quyền Microphone...'
@@ -565,21 +843,31 @@ export function useTripVoice() {
 
     statusMessage.value = 'Đang kiểm tra trạng thái máy chủ...'
 
-    // 1. Kiểm tra trạng thái máy chủ từ server
-    let serverStatus = null
+    // 1. Kiểm tra trạng thái + cấu hình OpenAI từ server
+    let serverStatus: Awaited<ReturnType<typeof aiVoiceService.getStatus>> | null = null
     try {
       serverStatus = await aiVoiceService.getStatus()
-    } catch {
-      serverStatus = { live: false, hasOpenAIKey: false, mode: 'demo' as const }
+    } catch (statusErr) {
+      console.warn('[useTripVoice] Không lấy được trạng thái AI Voice:', statusErr)
+      serverStatus = null
     }
 
-    const hasLiveKey = Boolean(serverStatus?.hasOpenAIKey && serverStatus?.mode === 'live')
+    if (!serverStatus) {
+      isConnected.value = false
+      setVoiceError('connection', 'Không kiểm tra được trạng thái trợ lý AI. Vui lòng kiểm tra kết nối mạng rồi thử lại.')
+      return
+    }
+
+    const hasLiveKey = Boolean(serverStatus.hasOpenAIKey && serverStatus.mode === 'live')
     mode.value = hasLiveKey ? 'live' : 'demo'
 
-    // 2. Nếu server không có OpenAI API Key -> Chạy trực tiếp Demo Simulator (Web Speech API)
+    // 2. Chưa cấu hình OpenAI -> báo lỗi rõ ràng, không tự chạy Demo
     if (!hasLiveKey) {
-      statusMessage.value = 'Đang khởi động Trip Voice Demo (Web Speech API)...'
-      startBrowserSpeech()
+      isConnected.value = false
+      setVoiceError(
+        'not_configured',
+        'Trợ lý giọng nói AI chưa được cấu hình OpenAI trên hệ thống. Vui lòng thử lại sau hoặc liên hệ bộ phận hỗ trợ.'
+      )
       return
     }
 
@@ -635,6 +923,11 @@ export function useTripVoice() {
         }
       })
 
+      // Lưu ý: KHÔNG gửi { type: 'response.create' } để chào chủ động.
+      // Phiên realtime hiện tại không bật Responses delegation nên OpenAI trả:
+      // "invalid_request_error: response.create requires a session with Responses delegation."
+      // Trợ lý sẽ chào/hỏi theo instructions khi khách bắt đầu lượt nói đầu tiên.
+
       const offer = await pc.createOffer()
       await pc.setLocalDescription(offer)
 
@@ -660,14 +953,11 @@ export function useTripVoice() {
       const sdpBody = pc.localDescription?.sdp || ''
       const sessionResult = await aiVoiceService.createSession(sdpBody)
 
-      if (sessionResult.demo || !sessionResult.sdp) {
-        // Chuyển sang fallback Web Speech API
-        mode.value = 'demo'
-        statusMessage.value = 'Chuyển sang chế độ Demo nhận diện giọng nói trình duyệt.'
-        try { pc?.close(); } catch (_) {}
-        pc = dc = null
-        startBrowserSpeech()
-        return
+      if (!sessionResult.sdp) {
+        throw Object.assign(
+          new Error(sessionResult.message || 'Không tạo được phiên trò chuyện với OpenAI.'),
+          { statusCode: 502, statusMessage: sessionResult.message }
+        )
       }
 
       await pc.setRemoteDescription({ type: 'answer', sdp: sessionResult.sdp })
@@ -680,12 +970,26 @@ export function useTripVoice() {
         stopSession()
       }, MAX_SESSION_MS)
 
-    } catch (err: any) {
-      console.warn('[useTripVoice] WebRTC lỗi, chuyển sang Web Speech API fallback:', err)
-      mode.value = 'demo'
-      try { pc?.close(); } catch (_) {}
-      pc = dc = null
-      startBrowserSpeech()
+    } catch (err: unknown) {
+      const detail = (err || {}) as { message?: string }
+      console.warn('[useTripVoice] Lỗi kết nối OpenAI Live:', detail.message || err)
+      try {
+        dc?.close()
+      } catch {
+        // bỏ qua khi DataChannel đã đóng
+      }
+      try {
+        pc?.close()
+      } catch {
+        // bỏ qua khi PeerConnection đã đóng
+      }
+      pc = null
+      dc = null
+      isConnected.value = false
+
+      // Báo lỗi rõ ràng cho khách, không âm thầm chuyển sang Demo/Web Speech
+      const described = describeSessionError(err)
+      setVoiceError(described.kind, described.message)
     }
   }
 
@@ -721,10 +1025,8 @@ export function useTripVoice() {
       recognition = null
     }
 
-    // Dừng SpeechSynthesis
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel()
-    }
+    // Dừng giọng trợ lý đang phát (MP3 TTS + Web Speech API)
+    stopAssistantPlayback()
 
     // Dừng remote audio
     if (remoteAudioElement) {
@@ -737,7 +1039,10 @@ export function useTripVoice() {
     isConnecting.value = false
     isStopping.value = false
     speakerMode.value = 'idle'
-    statusMessage.value = 'Đã kết thúc cuộc gọi. Thông tin chuyến đi được lưu giữ.'
+    // Giữ nguyên thông báo lỗi (nếu có) để khách còn thấy và bấm Thử lại
+    if (!voiceError.value) {
+      statusMessage.value = 'Đã kết thúc cuộc gọi. Thông tin chuyến đi được lưu giữ.'
+    }
   }
 
   /**
@@ -763,6 +1068,8 @@ export function useTripVoice() {
     localSource = null
     remoteAnalyser = null
     remoteSource = null
+    ttsAnalyser = null
+    ttsMediaSource = null
   }
 
   /**
@@ -792,6 +1099,16 @@ export function useTripVoice() {
     } catch (error: any) {
       console.warn('[useTripVoice] Không thể gửi cập nhật biểu mẫu sang Live:', error?.message)
     }
+  }
+
+  /**
+   * Chỉ dùng khi người dùng CHỦ ĐỘNG chọn chế độ Demo (không tự động fallback).
+   */
+  const startDemoSession = () => {
+    clearVoiceError()
+    mode.value = 'demo'
+    statusMessage.value = 'Đang khởi động Trip Voice Demo (Web Speech API)...'
+    startBrowserSpeech()
   }
 
   /**
@@ -836,6 +1153,9 @@ export function useTripVoice() {
     isStopping,
     isMuted,
     statusMessage,
+    voiceError,
+    voiceErrorKind,
+    clearVoiceError,
 
     // Dữ liệu lời nói & Visualizer
     userTranscript,
@@ -843,9 +1163,11 @@ export function useTripVoice() {
     audioLevel,
     waveformData,
     speakerMode,
+    isTtsPlaying,
 
     // Hành động
     startSession,
+    startDemoSession,
     stopSession,
     toggleMute,
     sendManualUpdate,

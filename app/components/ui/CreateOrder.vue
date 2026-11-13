@@ -688,7 +688,7 @@ async function submitLoggedInOrder() {
       body: trackingParams
     }).catch(console.error)
   } catch (err: unknown) {
-    formOrderError.value = err?.message || 'Có lỗi xảy ra khi tạo chuyến xe. Vui lòng thử lại.'
+    formOrderError.value = extractErrorMessage(err, 'Có lỗi xảy ra khi tạo chuyến xe. Vui lòng thử lại.')
     // Khi lỗi ưu đãi, gọi lại discount-options cho khách chọn lại
     fetchDiscountOptions()
   } finally {
@@ -708,9 +708,7 @@ async function handleFormApplyReferrer(phone: string) {
     })
   } catch (err: unknown) {
     formOrderError.value
-      = err?.data?.message
-        || (typeof err?.data === 'string' && err.data)
-        || 'Không thể áp dụng số điện thoại người giới thiệu.'
+      = extractErrorMessage(err, 'Không thể áp dụng số điện thoại người giới thiệu.')
   } finally {
     formReferrerLoading.value = false
   }

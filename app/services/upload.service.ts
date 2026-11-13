@@ -17,11 +17,11 @@ export const uploadService = {
   },
 
   async remove(fileUrl: string): Promise<{ success: boolean }> {
-    return await $fetch('/api/delete', {
+    return await $fetch<{ success: boolean }>('/api/delete', {
       method: 'POST',
       body: {
         fileUrl
       }
-    })
+    } as any)
   }
 }

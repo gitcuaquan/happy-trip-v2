@@ -92,6 +92,45 @@ const { cities, fetchCities, fetchCityDetail, getCachedCityDetail } = useCityDat
 const selectedCityId = ref<string>('')
 const selectedDistrictName = ref<string>(props.province || '')
 const detailAddress = ref(props.address || '')
+// Chỉ bật khi NGƯỜI DÙNG vừa đổi thành phố -> mới tự chọn phường đầu tiên
+const pendingAutoDistrict = ref(false)
+
+// So khớp tên thành phố linh hoạt: "TP.HCM" ≈ "TP Hồ Chí Minh", "Vũng Tàu" ≈ "TP Hồ Chí Minh"
+const normCityText = (s: string) =>
+  String(s || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+
+const findCityByPropName = (cityList: Array<{ id: string, name: string }>, cityName: string) => {
+  const target = normCityText(cityName)
+  if (!target) return undefined
+
+  // 1. Khớp chính xác (đã chuẩn hóa)
+  const exact = cityList.find(c => normCityText(c.name) === target)
+  if (exact) return exact
+
+  // 2. Alias TP.HCM
+  const isHcm = /\b(hcm|ho chi minh|sai gon|tphcm)\b/.test(target)
+  if (isHcm) {
+    return cityList.find(c => /\b(ho chi minh|sai gon|hcm)\b/.test(normCityText(c.name)))
+  }
+
+  // 3. Alias Vũng Tàu / Bà Rịa (catalog nằm trong TP Hồ Chí Minh)
+  const isVungTau = /\b(vung tau|ba ria|brvt)\b/.test(target)
+  if (isVungTau) {
+    return cityList.find(c => /\b(ho chi minh|sai gon|hcm)\b/.test(normCityText(c.name)))
+  }
+
+  // 4. Khớp chứa (một chiều) — "Đồng Nai" với "Tỉnh Đồng Nai"
+  return cityList.find((c) => {
+    const n = normCityText(c.name)
+    return n.includes(target) || target.includes(n)
+  })
+}
 
 const cityData = computed(() => {
   if (!selectedCityId.value) return null
@@ -101,7 +140,7 @@ const cityData = computed(() => {
 onMounted(async () => {
   await fetchCities()
   if (props.city && cities.value && cities.value.length > 0) {
-    const city = cities.value.find(c => c.name === props.city)
+    const city = findCityByPropName(cities.value, props.city)
     if (city && selectedCityId.value !== city.id) {
       selectedCityId.value = city.id
       await fetchCityDetail(city.id)
@@ -112,7 +151,7 @@ onMounted(async () => {
 watch(() => cities.value, async (newCities) => {
   // Khi cities load xong, nếu có props.city thì set selectedCityId
   if (newCities && newCities.length > 0 && props.city) {
-    const city = newCities.find(c => c.name === props.city)
+    const city = findCityByPropName(newCities, props.city)
     if (city && selectedCityId.value !== city.id) {
       selectedCityId.value = city.id
       await fetchCityDetail(city.id)
@@ -151,28 +190,56 @@ const availableDistrictNames = computed(() => {
   )
 })
 
-// Tự động chọn phường/xã nếu chưa chọn hoặc không hợp lệ
+// Khớp tên phường linh hoạt để hiển thị đúng giá trị AI trích xuất
+// (vd: "Phường Bàn Cờ" ≈ "Bàn Cờ", "Phường 1" ≈ "Phường 1")
+function matchDistrictName(rawName: string, districts: string[]): string {
+  const value = String(rawName || '').trim()
+  if (!value) return ''
+
+  if (districts.includes(value)) return value
+
+  const target = normCityText(value)
+  if (!target) return ''
+
+  const exact = districts.find(d => normCityText(d) === target)
+  if (exact) return exact
+
+  return districts.find((d) => {
+    const n = normCityText(d)
+    return n.includes(target) || target.includes(n)
+  }) || ''
+}
+
+// Tự động chọn phường/xã CHỈ khi người dùng vừa đổi thành phố.
+// Khi dữ liệu do AI/route điền sẵn, chỉ đồng bộ hiển thị — KHÔNG emit,
+// tránh việc form tự động ghi đè và khóa trường (AI không điền được nữa).
 watch(availableDistrictNames, (districts) => {
-  if (districts && districts.length > 0) {
-    const target = selectedDistrictName.value || props.province
-    if (target && districts.includes(target)) {
-      if (selectedDistrictName.value !== target) {
-        selectedDistrictName.value = target
+  if (!districts || districts.length === 0) return
+
+  const target = selectedDistrictName.value || props.province
+
+  if (target) {
+    const matched = matchDistrictName(target, districts)
+    if (matched) {
+      if (selectedDistrictName.value !== matched) {
+        selectedDistrictName.value = matched
       }
-      if (props.province !== target) {
-        emit('update:province', target)
-      }
-    } else {
-      const firstDistrict = districts[0]
-      if (firstDistrict) {
-        selectedDistrictName.value = firstDistrict
-        emit('update:province', firstDistrict)
-      }
+      return
     }
   }
-}, { immediate: true })
+
+  if (!pendingAutoDistrict.value) return
+
+  const firstDistrict = districts[0]
+  if (firstDistrict) {
+    selectedDistrictName.value = firstDistrict
+    pendingAutoDistrict.value = false
+    emit('update:province', firstDistrict)
+  }
+})
 
 async function onCityChange(cityId: string) {
+  pendingAutoDistrict.value = true
   selectedDistrictName.value = ''
   detailAddress.value = ''
   emit('update:province', '')
@@ -192,7 +259,9 @@ function onDistrictChange(district: string) {
 }
 
 function onAddressBlur() {
-  emit('update:address', detailAddress.value)
+  if (detailAddress.value !== (props.address || '')) {
+    emit('update:address', detailAddress.value)
+  }
 }
 
 watch(() => props.address, (val) => {
@@ -208,7 +277,7 @@ watch(() => props.city, async (val) => {
   } else {
     // Nếu cities đã load, tìm và set ngay
     if (cities.value && cities.value.length > 0) {
-      const city = cities.value.find(c => c.name === val)
+      const city = findCityByPropName(cities.value, val)
       if (city) {
         selectedCityId.value = city.id
         await fetchCityDetail(city.id)
@@ -221,13 +290,6 @@ watch(() => props.city, async (val) => {
 watch(() => props.province, (val) => {
   if (val !== selectedDistrictName.value) {
     selectedDistrictName.value = val || ''
-    if (!val && availableDistrictNames.value.length > 0) {
-      const firstDistrict = availableDistrictNames.value[0]
-      if (firstDistrict) {
-        selectedDistrictName.value = firstDistrict
-        emit('update:province', firstDistrict)
-      }
-    }
   }
 }, { immediate: true })
 </script>

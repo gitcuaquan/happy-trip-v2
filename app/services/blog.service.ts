@@ -128,8 +128,8 @@ export class BlogService {
   async deletePage(token: string, id: string): Promise<void> {
     await $fetch(`/api/admin/articles/${id}`, {
       method: 'DELETE',
-      headers: this.authHeaders(token),
-    })
+      headers: this.authHeaders(token)
+    } as any)
   }
 
   // Upload file (ảnh)

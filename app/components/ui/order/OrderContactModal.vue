@@ -327,9 +327,7 @@ async function sendOTP() {
     trackPixelBookingSubmit(params)
   } catch (err: unknown) {
     hookError.value
-      = err?.data?.message
-        || (typeof err?.data === 'string' && err.data)
-        || 'Không thể gửi OTP. Vui lòng thử lại.'
+      = extractErrorMessage(err, 'Không thể gửi OTP. Vui lòng thử lại.')
   } finally {
     hookLoading.value = false
   }
@@ -345,9 +343,7 @@ async function handleResend() {
     startResendCooldown()
   } catch (err: unknown) {
     otpError.value
-      = err?.data?.message
-        || (typeof err?.data === 'string' && err.data)
-        || 'Không thể gửi lại OTP. Vui lòng thử lại sau.'
+      = extractErrorMessage(err, 'Không thể gửi lại OTP. Vui lòng thử lại sau.')
   } finally {
     otpLoading.value = false
   }
@@ -405,9 +401,7 @@ async function confirmOTP() {
     }
   } catch (err: unknown) {
     otpError.value
-      = err?.data?.message
-        || (typeof err?.data === 'string' && err.data)
-        || 'Mã OTP không đúng hoặc đã hết hạn.'
+      = extractErrorMessage(err, 'Mã OTP không đúng hoặc đã hết hạn.')
   } finally {
     otpLoading.value = false
   }
@@ -424,9 +418,7 @@ async function handleApplyReferrer(phone: string) {
     })
   } catch (err: unknown) {
     createOrderError.value
-      = err?.data?.message
-        || (typeof err?.data === 'string' && err.data)
-        || 'Không thể áp dụng số điện thoại người giới thiệu.'
+      = extractErrorMessage(err, 'Không thể áp dụng số điện thoại người giới thiệu.')
   } finally {
     referrerLoading.value = false
   }
@@ -495,7 +487,7 @@ async function executeOrderByAjax(authToken: string, discount: OrderDiscountInpu
     emit('update:open', false)
     resetModalState()
   } catch (err: unknown) {
-    createOrderError.value = err?.message || 'Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.'
+    createOrderError.value = extractErrorMessage(err, 'Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.')
     // Khi gặp lỗi ưu đãi, không có đơn nào được tạo: gọi lại discount-options, cho khách chọn lại
     if (step.value === 'discount') {
       try {

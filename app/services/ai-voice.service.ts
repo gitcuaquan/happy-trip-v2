@@ -142,23 +142,13 @@ export class AiVoiceService {
   private baseUrl = '/api/ai-voice'
 
   /**
-   * Lấy trạng thái hoạt động của server AI Voice (live hoặc demo)
+   * Lấy trạng thái hoạt động của server AI Voice (live hoặc demo).
+   * Ném lỗi khi không gọi được API để caller phân biệt "chưa cấu hình" vs "mất kết nối".
    */
   async getStatus(): Promise<AiVoiceStatusResponse> {
-    try {
-      return await $fetch<AiVoiceStatusResponse>(`${this.baseUrl}/status`, {
-        method: 'GET'
-      })
-    } catch (error) {
-      console.warn('[AiVoiceService] getStatus error, falling back to demo mode:', error)
-      return {
-        live: false,
-        hasOpenAIKey: false,
-        mode: 'demo',
-        model: 'demo-simulator',
-        message: 'Chế độ Demo tương tác (Web Speech API / Fallback)'
-      }
-    }
+    return await $fetch<AiVoiceStatusResponse>(`${this.baseUrl}/status`, {
+      method: 'GET'
+    })
   }
 
   /**
@@ -233,34 +223,71 @@ export class AiVoiceService {
   }
 
   /**
-   * Khởi tạo WebRTC session với OpenAI Live (gửi SDP offer, nhận SDP answer)
+   * Tổng hợp giọng nữ tiếng Việt thành MP3 từ server
+   * (OpenAI TTS nếu có key, ngược lại Google Translate TTS)
    */
-  async createSession(sdpOffer: string): Promise<AiVoiceSessionResponse> {
+  async synthesize(text: string, voice?: string): Promise<Blob | null> {
+    const clean = (text || '').trim()
+    if (!clean) return null
+
     try {
-      const response = await fetch(`${this.baseUrl}/session`, {
+      const blob = await $fetch<Blob>(`${this.baseUrl}/tts`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/sdp',
-          'Accept': 'application/sdp, application/json, text/plain'
-        },
-        body: sdpOffer
+        body: voice ? { text: clean, voice } : { text: clean },
+        responseType: 'blob',
+        timeout: 20000,
+        retry: 0
       })
 
-      const contentType = response.headers.get('content-type') || ''
-      if (contentType.includes('application/json')) {
-        const jsonData = await response.json()
-        return jsonData as AiVoiceSessionResponse
+      return blob instanceof Blob && blob.size > 0 ? blob : null
+    } catch (error) {
+      console.warn('[AiVoiceService] synthesize error:', error)
+      return null
+    }
+  }
+
+  /**
+   * Khởi tạo WebRTC session với OpenAI Live (gửi SDP offer, nhận SDP answer).
+   * Ném lỗi kèm statusCode + statusMessage khi server/OpenAI từ chối để UI báo rõ.
+   */
+  async createSession(sdpOffer: string): Promise<AiVoiceSessionResponse> {
+    const response = await fetch(`${this.baseUrl}/session`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/sdp',
+        'Accept': 'application/sdp, application/json, text/plain'
+      },
+      body: sdpOffer
+    })
+
+    const contentType = response.headers.get('content-type') || ''
+    const isJson = contentType.includes('application/json')
+
+    if (!response.ok) {
+      let statusMessage = ''
+      if (isJson) {
+        try {
+          const data = await response.json()
+          statusMessage = String(data?.statusMessage || data?.message || '')
+        } catch {
+          statusMessage = ''
+        }
+      } else {
+        statusMessage = (await response.text().catch(() => '')).slice(0, 200)
       }
 
-      const answerSdp = await response.text()
-      return { sdp: answerSdp, demo: false }
-    } catch (error: any) {
-      console.warn('[AiVoiceService] createSession error:', error)
-      return {
-        demo: true,
-        error: error?.message || 'Không thể kết nối Live session, chuyển sang chế độ Demo'
-      }
+      throw Object.assign(
+        new Error(statusMessage || `Không thể tạo phiên OpenAI Live (HTTP ${response.status}).`),
+        { statusCode: response.status, statusMessage }
+      )
     }
+
+    if (isJson) {
+      return await response.json() as AiVoiceSessionResponse
+    }
+
+    const answerSdp = await response.text()
+    return { sdp: answerSdp, demo: false }
   }
 }
 

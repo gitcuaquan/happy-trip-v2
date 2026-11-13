@@ -731,7 +731,9 @@ function onImageLoaded(e: Event) {
 }
 
 // Tự động lưu cấu hình
-async function autoSave(showToast = false) {
+// Nhận cả boolean (gọi từ code) và Event (gán trực tiếp vào @blur/@change)
+async function autoSave(showToast: boolean | Event = false) {
+  const shouldToast = showToast === true
   if (!adminToken.value) return
 
   // Nếu không có ảnh thì mặc định tắt hiển thị
