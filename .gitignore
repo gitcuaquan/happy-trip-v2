@@ -27,4 +27,8 @@ logs
 uploads/*
 public/uploads/*
 
+# Local SSL certificates for dev HTTPS
+ssl/*
+!ssl/.gitkeep
+
 ecosystem.config.cjs

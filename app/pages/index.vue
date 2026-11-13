@@ -1,6 +1,12 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import CollapsibleCard from "~/components/shared/collapsible-card.vue";
 import NotificationModal from "~/components/ui/NotificationModal.vue";
+import VoiceBookingModal from "~/components/ai-voice/VoiceBookingModal.vue";
+import VoiceFloatingButton from "~/components/ai-voice/VoiceFloatingButton.vue";
+import { useVoiceModalState } from "~/composables/useTripVoice";
+
+const isVoiceModalOpen = useVoiceModalState();
 
 const carLogos = [
   "honda.svg",
@@ -526,4 +532,10 @@ watch(
       </div>
     </UContainer>
   </section>
+
+  <!-- ============ AI VOICE BOOKING MODAL & FLOATING BUTTON ============ -->
+  <ClientOnly>
+    <VoiceFloatingButton @click="isVoiceModalOpen = true" />
+    <VoiceBookingModal v-model="isVoiceModalOpen" />
+  </ClientOnly>
 </template>

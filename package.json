@@ -32,6 +32,7 @@
     "mongoose": "^9.9.3",
     "nuxt": "^4.3.1",
     "nuxt-schema-org": "6.2.1",
+    "openai": "^7.51.0",
     "playwright-core": "^1.61.0",
     "tailwindcss": "^4.1.18",
     "zod": "^4.3.6"
@@ -45,5 +46,11 @@
     "typescript": "^5.9.3",
     "vue-tsc": "^3.2.4"
   },
-  "packageManager": "pnpm@10.29.3"
+  "packageManager": "pnpm@10.29.3",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "vue-demi"
+    ]
+  }
 }

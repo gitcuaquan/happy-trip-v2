@@ -7,6 +7,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     mongodbUri: process.env.NUXT_MONGODB_URI || "",
     jwtSecret: process.env.NUXT_JWT_SECRET || "happytrip_jwt_secret_key_2026_super_secure",
+    openaiApiKey: process.env.NUXT_OPENAI_API_KEY || "",
+    partnerApiKey: process.env.NUXT_PARTNER_API_KEY || "hip_lq3Ttty8BTcoFvoMov1JzjXe0OwBGGh0xvS0os",
+    partnerBaseUrl: process.env.NUXT_PARTNER_BASE_URL || "https://sysdev.happytrip.vn",
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "https://sys.happytrip.vn",
     },
@@ -45,6 +48,11 @@ export default defineNuxtConfig({
   },
   devServer: {
     port: 2711,
+    host: "0.0.0.0",
+    https: {
+      key: "./ssl/server.key",
+      cert: "./ssl/server.crt",
+    },
   },
   experimental: {
     viewTransition: true,

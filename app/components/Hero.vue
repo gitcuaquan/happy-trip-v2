@@ -27,6 +27,17 @@
           nơi với dịch vụ chuyên nghiệp chuẩn 5 sao trên mọi nẻo đường Hồ Chí
           Minh và các tỉnh lân cận.
         </p>
+        <div v-if="!isAdmin" class="mt-4 flex flex-wrap gap-3 justify-center md:justify-start">
+          <UButton
+            color="primary"
+            variant="solid"
+            size="lg"
+            icon="i-lucide-mic"
+            class="font-bold rounded-xl shadow-lg hover:scale-105 transition-all cursor-pointer"
+            label="Đặt xe bằng Giọng nói AI"
+            @click="isVoiceModalOpen = true"
+          />
+        </div>
         <div v-if="isAdmin" class="mt-4 text-center md:text-left">
           <UButton
             to="/admin/blog"
@@ -42,7 +53,10 @@
 </template>
 
 <script lang="ts" setup>
+import { useVoiceModalState } from '~/composables/useTripVoice'
+
 const { isAdmin } = useAuth()
+const isVoiceModalOpen = useVoiceModalState()
 </script>
 
 <style scoped>
